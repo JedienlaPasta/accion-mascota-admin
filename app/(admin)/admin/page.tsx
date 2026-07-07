@@ -7,8 +7,11 @@ import TableWrapper from '@/app/ui/admin/TableWrapper';
 import { FilterSelect } from '@/app/ui/admin/dashboard/FilterSelect';
 import SummaryCard from '@/app/ui/admin/dashboard/SummaryCard';
 import AppointmentTable from '@/app/ui/admin/dashboard/TodayAppointments';
+import HeatMap from '@/app/ui/admin/dashboard/heatmap/Heatmap';
+import { HeatmapTableSkeleton } from '@/app/ui/admin/dashboard/heatmap/HeatmapTable';
 import { SecondaryButton } from '@/app/ui/components/Button';
 import { Download, ListFilter } from 'lucide-react';
+import { Suspense } from 'react';
 
 const parseISODate = (value: string) => new Date(`${value}T00:00:00`);
 
@@ -57,24 +60,15 @@ export default function PortalAdmin() {
       <section className="flex flex-col gap-4">
         {/* <SummaryCards /> */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <SummaryCard title="Citas (total)" value={8} icon="calendar" />
-          <SummaryCard title="Mascotas registradas" value={7} icon="paw" />
-          <SummaryCard title="Propietarios" value={7} icon="user" />
+          <SummaryCard title="Citas (hoy)" value={8} icon="calendar" />
           <SummaryCard title={`Atenciones (mes)`} value={6} icon="month" />
-
-          <SummaryCard title="Mascotas atendidas (mes)" value={3} icon="paw" />
+          <SummaryCard title="Mascotas registradas" value={7} icon="paw" />
           <SummaryCard title="Operativos (mes)" value={2} icon="calendar" />
-          <SummaryCard
-            title="Sectores visitados (mes)"
-            value={4}
-            icon="mapPin"
-          />
-          <SummaryCard
-            title="Mascotas rescatadas (mes)"
-            value={1}
-            icon="report"
-          />
         </div>
+
+        <Suspense fallback={<HeatmapTableSkeleton />}>
+          <HeatMap year={String(currentYear)} />
+        </Suspense>
 
         {/* Appointments Table */}
         <TableWrapper title="Horario de Hoy">
