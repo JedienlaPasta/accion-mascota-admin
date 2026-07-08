@@ -18,11 +18,11 @@ export default function BoardCube({
 
   const stateColor = [
     'bg-slate-200/60 border-slate-300/50',
-    'bg-emerald-100/70 border-emerald-200/50',
-    'bg-emerald-200/70 border-emerald-300/50',
-    'bg-emerald-300/70 border-emerald-400/50',
-    'bg-emerald-400/70 border-emerald-500/50',
-    'bg-emerald-500/70 border-emerald-600/50',
+    'bg-teal-100/90 border-teal-200/50',
+    'bg-teal-200/90 border-teal-300/50',
+    'bg-teal-300/90 border-teal-400/50',
+    'bg-teal-400/90 border-teal-500/50',
+    'bg-teal-500/90 border-teal-600/50',
   ];
 
   // Select the color based on count thresholds—or highlight if today.
@@ -46,17 +46,16 @@ export default function BoardCube({
 
   return (
     <div
-      className={`group relative flex h-4 w-4 items-center justify-center rounded border ${cubeClass}`}
+      className={`group relative flex items-center justify-center border ${cubeClass} ${
+        isToday
+          ? 'z-10 mx-auto size-3.5 self-center rounded-full'
+          : 'size-4 rounded'
+      }`}
     >
-      {isToday && (
-        <span
-          className={`group relative flex size-2 items-center justify-center rounded-[2px] border ${cubeClass}`}
-        ></span>
-      )}
       {!disabled && (
         <div className="absolute bottom-5 z-10 hidden flex-col rounded-md bg-gray-800 px-2 py-1 text-xs whitespace-nowrap text-white group-hover:flex">
           <p>{date}</p>
-          <p>Entregas: {count}</p>
+          <p>Atenciones: {count}</p>
         </div>
       )}
     </div>

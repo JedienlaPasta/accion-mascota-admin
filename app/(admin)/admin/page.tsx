@@ -66,9 +66,7 @@ export default function PortalAdmin() {
           <SummaryCard title="Operativos (mes)" value={2} icon="calendar" />
         </div>
 
-        <Suspense fallback={<HeatmapTableSkeleton />}>
-          <HeatMap year={String(currentYear)} />
-        </Suspense>
+        <HeatMap year={String(currentYear)} />
 
         {/* Appointments Table */}
         <TableWrapper title="Horario de Hoy">

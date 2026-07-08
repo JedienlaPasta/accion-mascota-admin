@@ -30,12 +30,22 @@ export default async function HeatMapTable({ year }: HeatMapTableProps) {
   console.log(attentions);
 
   function calculateThresholds(data: number[]): number[] {
-    const sorted = [...data].sort((a, b) => a - b);
-    const percentiles = [0.2, 0.4, 0.6, 0.8];
-    return percentiles.map((p) => {
-      const idx = Math.floor(p * sorted.length);
-      return sorted[idx];
-    });
+    console.log('data:', data.length);
+    if (data.length === 0) {
+      return [2, 4, 6, 8, 10];
+    }
+
+    const max = Math.max(...data);
+    const topScale = Math.max(max, 10);
+
+    const step = topScale / 5;
+    return [
+      Math.ceil(step),
+      Math.ceil(step * 2),
+      Math.ceil(step * 3),
+      Math.ceil(step * 4),
+      Math.ceil(step * 5),
+    ];
   }
 
   const counts = Object.values(attentions).filter(
@@ -44,6 +54,8 @@ export default async function HeatMapTable({ year }: HeatMapTableProps) {
 
   const thresholds =
     counts.length > 0 ? calculateThresholds(counts) : [0, 1, 2, 3];
+
+  console.log('thresholds:', thresholds);
 
   const days = getDaysBetween(`${year}-01-01`, `${year}-12-31`);
 
