@@ -1,11 +1,11 @@
 'use client';
-import { formatShortDate } from '@/app/(portal)/portal/mascotas/[id]/page';
 import {
   HistorialClinico,
   tipoColors,
   tipoIcon,
   tipoLabels,
 } from '@/app/_lib/mock-data';
+import { formatShortDate } from '@/app/_lib/utils/format';
 import { Button } from '@/app/ui/components/Button';
 import { LargeMutedBorderLink } from '@/app/ui/components/Link';
 import { Calendar, ChevronDown, Stethoscope } from 'lucide-react';

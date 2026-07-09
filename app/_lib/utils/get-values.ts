@@ -26,3 +26,15 @@ export const getYearsBetween = (start: string, end: string) => {
 
   return years;
 };
+
+export const getAge = (fechaNacimiento: string) => {
+  const nacimiento = new Date(fechaNacimiento);
+  const hoy = new Date();
+  const diff = hoy.getTime() - nacimiento.getTime();
+  const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
+  const months = Math.floor(
+    (diff % (1000 * 60 * 60 * 24 * 365.25)) / (1000 * 60 * 60 * 24 * 30)
+  );
+  if (years === 0) return `${months} meses`;
+  return `${years} año${years > 1 ? 's' : ''} y ${months} mes${months > 1 ? 'es' : ''}`;
+};

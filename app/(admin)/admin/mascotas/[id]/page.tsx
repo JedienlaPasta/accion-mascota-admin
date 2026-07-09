@@ -26,36 +26,13 @@ import {
   tipoLabels,
 } from '@/app/_lib/mock-data';
 import Badge from '@/app/ui/components/Badge';
-import { capitalize } from '@/app/_lib/utils/format';
+import {
+  capitalize,
+  formatDate,
+  formatShortDate,
+} from '@/app/_lib/utils/format';
 import { BaseLink } from '@/app/ui/components/Link';
-
-function calcularEdad(fechaNacimiento: string) {
-  const nacimiento = new Date(fechaNacimiento);
-  const hoy = new Date();
-  const diff = hoy.getTime() - nacimiento.getTime();
-  const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
-  const months = Math.floor(
-    (diff % (1000 * 60 * 60 * 24 * 365.25)) / (1000 * 60 * 60 * 24 * 30)
-  );
-  if (years === 0) return `${months} meses`;
-  return `${years} año${years > 1 ? 's' : ''} y ${months} mes${months > 1 ? 'es' : ''}`;
-}
-
-function formatDate(dateString: string) {
-  return new Date(dateString).toLocaleDateString('es-CL', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
-}
-
-export function formatShortDate(dateString: string) {
-  return new Date(dateString).toLocaleDateString('es-CL', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  });
-}
+import { getAge } from '@/app/_lib/utils/get-values';
 
 type MascotaDetalleProps = {
   params: Promise<{ id: string }>;
@@ -127,7 +104,7 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                     {mascota.nombre}
                   </h1>
                   <p className="text-muted-foreground">
-                    {mascota.raza} · {calcularEdad(mascota.fechaNacimiento)} ·{' '}
+                    {mascota.raza} · {getAge(mascota.fechaNacimiento)} ·{' '}
                     <span className="font-medium text-zinc-700">
                       {mascota.propietarioNombre}
                     </span>

@@ -52,3 +52,19 @@ export const formatRUT = (rut: string | number, dv: string) => {
   if (!rut) return '';
   return formatNumber(rut) + '-' + dv;
 };
+
+export const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('es-CL', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+};
+
+export const formatShortDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('es-CL', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+};

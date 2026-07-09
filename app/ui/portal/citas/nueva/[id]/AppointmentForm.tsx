@@ -1,7 +1,7 @@
 'use client';
-import { calcularEdad } from '@/app/(portal)/portal/mascotas/page';
 import { especieIcon, mascotas } from '@/app/_lib/mock-data';
 import { capitalize } from '@/app/_lib/utils/format';
+import { getAge } from '@/app/_lib/utils/get-values';
 import { Button } from '@/app/ui/components/Button';
 import { ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { useState } from 'react';
@@ -209,7 +209,7 @@ function PetSelection({
                       {mascota.raza}
                     </p>
                     <p className="text-xs text-gray-400">
-                      {calcularEdad(mascota.fechaNacimiento)}
+                      {getAge(mascota.fechaNacimiento)}
                     </p>
                   </div>
                 </div>
