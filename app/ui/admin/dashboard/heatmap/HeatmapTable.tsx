@@ -23,23 +23,24 @@ const months = [
 ];
 
 const weekDays = ['Lun', 'Mar', 'Mie', 'Jue', 'Vie'];
-const boardDays = weekDays.map((day) => <p key={day}>{day}</p>);
+// const boardDays = weekDays.map((day) => <p key={day}>{day}</p>);
 
 export default async function HeatMapTable({ year }: HeatMapTableProps) {
   const attentions = await getDailyAttentionCountByYear(year);
-  console.log(attentions);
 
-  function calculateThresholds(data: number[]): number[] {
-    console.log('data:', data.length);
-    if (data.length === 0) {
-      return [2, 4, 6, 8, 10];
-    }
+  const counts = Object.values(attentions).filter(
+    (value) => typeof value === 'number'
+  ) as number[];
 
-    const max = Math.max(...data);
+  let thresholds: number[];
+  if (counts.length === 0) {
+    thresholds = [2, 4, 6, 8, 10];
+  } else {
+    const max = Math.max(...counts);
     const topScale = Math.max(max, 10);
 
     const step = topScale / 5;
-    return [
+    thresholds = [
       Math.ceil(step),
       Math.ceil(step * 2),
       Math.ceil(step * 3),
@@ -48,65 +49,91 @@ export default async function HeatMapTable({ year }: HeatMapTableProps) {
     ];
   }
 
-  const counts = Object.values(attentions).filter(
-    (value) => typeof value === 'number'
-  ) as number[];
+  // const days = getDaysBetween(`${year}-01-01`, `${year}-12-31`);
 
-  const thresholds =
-    counts.length > 0 ? calculateThresholds(counts) : [0, 1, 2, 3];
+  // const filteredDays = days.filter((day) => day.year() === Number(year));
 
-  console.log('thresholds:', thresholds);
+  // // Array de semanas (cada semana tiene 5 dias)
+  // const weeks: Array<JSX.Element[]> = [];
+  // let currentWeek: JSX.Element[] = [];
 
-  const days = getDaysBetween(`${year}-01-01`, `${year}-12-31`);
+  // // Determinar el primer dia de trabajo (Lunes-Viernes)
+  // const firstWorkdayIndex = filteredDays.findIndex((day) => {
+  //   const dayOfWeek = day.day();
+  //   return dayOfWeek >= 1 && dayOfWeek <= 5;
+  // });
+  // const firstWorkDay = filteredDays[firstWorkdayIndex];
+  // const dayOfWeek = firstWorkDay.day();
+  // const offset = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
 
-  const filteredDays = days.filter((day) => day.year() === Number(year));
+  // // Rellenar primera semana con cubos deshabilitados correspondientes a dias fuera del año (offset)
+  // for (let i = 0; i < offset; i++) {
+  //   currentWeek.push(<BoardCube key={`offset-${i}`} count={0} disabled />);
+  // }
 
-  // Array de semanas (cada semana tiene 5 dias)
-  const weeks: Array<JSX.Element[]> = [];
-  let currentWeek: JSX.Element[] = [];
+  // filteredDays.forEach((day) => {
+  //   const dOW = day.day();
+  //   if (dOW >= 1 && dOW <= 5) {
+  //     const dateStr = day.format('YYYY-MM-DD');
+  //     const count = attentions[dateStr] || 0;
+  //     currentWeek.push(
+  //       <BoardCube
+  //         key={dateStr}
+  //         count={count}
+  //         dateStr={dateStr}
+  //         thresholds={thresholds}
+  //       />
+  //     );
 
-  // Determinar el primer dia de trabajo (Lunes-Viernes)
-  const firstWorkdayIndex = filteredDays.findIndex((day) => {
-    const dayOfWeek = day.day();
-    return dayOfWeek >= 1 && dayOfWeek <= 5;
-  });
-  const firstWorkDay = filteredDays[firstWorkdayIndex];
-  const dayOfWeek = firstWorkDay.day();
-  const offset = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  //     if (currentWeek.length === 5) {
+  //       weeks.push(currentWeek);
+  //       currentWeek = [];
+  //     }
+  //   }
+  // });
 
-  // Rellenar primera semana con cubos deshabilitados correspondientes a dias fuera del año (offset)
-  for (let i = 0; i < offset; i++) {
-    currentWeek.push(<BoardCube key={`offset-${i}`} count={0} disabled />);
+  // // Rellenar ultima semana, en caso de ser necesario, con cubos deshabilitados a los dias fuera del año (offset)
+  // if (currentWeek.length > 0) {
+  //   const pad = 5 - currentWeek.length;
+  //   for (let i = 0; i < pad; i++) {
+  //     currentWeek.push(<BoardCube key={`final-pad-${i}`} count={0} disabled />);
+  //   }
+  //   weeks.push(currentWeek);
+  // }
+
+  const allDays = getDaysBetween(`${year}-01-01`, `${year}-12-31`);
+
+  const workDays = allDays.filter((day) => day.day() >= 1 && day.day() <= 5);
+
+  const cubes: JSX.Element[] = [];
+
+  if (workDays.length > 0) {
+    const firstDay = workDays[0].day();
+    const initialOffset = firstDay === 0 ? 6 : firstDay - 1;
+    for (let i = 0; i < initialOffset; i++) {
+      cubes.push(<BoardCube key={`offset-${i}`} count={0} disabled />);
+    }
   }
 
-  filteredDays.forEach((day) => {
-    const dOW = day.day();
-    if (dOW >= 1 && dOW <= 5) {
-      const dateStr = day.format('YYYY-MM-DD');
-      const count = attentions[dateStr] || 0;
-      currentWeek.push(
-        <BoardCube
-          key={dateStr}
-          count={count}
-          dateStr={dateStr}
-          thresholds={thresholds}
-        />
-      );
-
-      if (currentWeek.length === 5) {
-        weeks.push(currentWeek);
-        currentWeek = [];
-      }
-    }
+  workDays.forEach((day) => {
+    const dateStr = day.format('YYYY-MM-DD');
+    cubes.push(
+      <BoardCube
+        key={dateStr}
+        count={attentions[dateStr] || 0}
+        dateStr={dateStr}
+        thresholds={thresholds}
+      />
+    );
   });
 
-  // Rellenar ultima semana, en caso de ser necesario, con cubos deshabilitados a los dias fuera del año (offset)
-  if (currentWeek.length > 0) {
-    const pad = 5 - currentWeek.length;
-    for (let i = 0; i < pad; i++) {
-      currentWeek.push(<BoardCube key={`final-pad-${i}`} count={0} disabled />);
+  const totalCubes = cubes.length;
+  const remainder = totalCubes % 5;
+  if (remainder !== 0) {
+    const finalPad = 5 - remainder;
+    for (let i = 0; i < finalPad; i++) {
+      cubes.push(<BoardCube key={`final-pad-${i}`} count={0} disabled />);
     }
-    weeks.push(currentWeek);
   }
 
   return (
@@ -120,20 +147,24 @@ export default async function HeatMapTable({ year }: HeatMapTableProps) {
       </div>
       <div className="flex items-center justify-center gap-2">
         <div className="flex flex-col gap-1 text-center text-xs text-gray-600">
-          {boardDays}
+          {weekDays.map((day) => (
+            <p key={day}>{day}</p>
+          ))}
         </div>
-        <div className="grid grid-flow-col grid-rows-5 gap-1">
-          {weeks.flat()}
-        </div>
+        <div className="grid grid-flow-col grid-rows-5 gap-1">{cubes}</div>
       </div>
     </div>
   );
 }
 
 export function HeatmapTableSkeleton() {
-  const weeks: Array<JSX.Element> = [];
+  // const weeks: Array<JSX.Element> = [];
+  // for (let i = 0; i < 265; i++) {
+  //   weeks.push(<BoardCube key={`final-pad-${i}`} count={0} disabled />);
+  // }
+  const skeletonCubes: JSX.Element[] = [];
   for (let i = 0; i < 265; i++) {
-    weeks.push(<BoardCube key={`final-pad-${i}`} count={0} disabled />);
+    skeletonCubes.push(<BoardCube key={`skeleton-${i}`} count={0} disabled />);
   }
 
   return (
@@ -147,10 +178,12 @@ export function HeatmapTableSkeleton() {
       </div>
       <div className="flex items-center justify-center gap-2">
         <div className="flex flex-col gap-1 text-center text-xs text-gray-600">
-          {boardDays}
+          {weekDays.map((day) => (
+            <p key={day}>{day}</p>
+          ))}
         </div>
         <div className="grid grid-flow-col grid-rows-5 gap-1">
-          {weeks.flat()}
+          {skeletonCubes}
         </div>
       </div>
     </div>

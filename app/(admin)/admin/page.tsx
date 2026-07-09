@@ -4,14 +4,11 @@ import {
   mascotasAdopcion,
 } from '@/app/_lib/mock-data';
 import TableWrapper from '@/app/ui/admin/TableWrapper';
-import { FilterSelect } from '@/app/ui/admin/dashboard/FilterSelect';
 import SummaryCard from '@/app/ui/admin/dashboard/SummaryCard';
 import AppointmentTable from '@/app/ui/admin/dashboard/TodayAppointments';
 import HeatMap from '@/app/ui/admin/dashboard/heatmap/Heatmap';
-import { HeatmapTableSkeleton } from '@/app/ui/admin/dashboard/heatmap/HeatmapTable';
 import { SecondaryButton } from '@/app/ui/components/Button';
 import { Download, ListFilter } from 'lucide-react';
-import { Suspense } from 'react';
 
 const parseISODate = (value: string) => new Date(`${value}T00:00:00`);
 
@@ -19,17 +16,17 @@ const isSameMonth = (value: Date, ref: Date) =>
   value.getFullYear() === ref.getFullYear() &&
   value.getMonth() === ref.getMonth();
 
-const startDate = { year: 2026 };
-const currentYear = new Date().getFullYear();
-const yearOptions = Array.from(
-  { length: currentYear - startDate.year + 1 },
-  (_, i) => ({
-    value: String(currentYear - i),
-    label: String(currentYear - i),
-  })
-);
+type PortalAdminProps = {
+  searchParams?: Promise<{
+    year?: string;
+  }>;
+};
 
-export default function PortalAdmin() {
+export default async function PortalAdmin(props: PortalAdminProps) {
+  const searchParams = await props.searchParams;
+  const currentYear = new Date().getFullYear();
+  const year = searchParams?.year || String(currentYear);
+
   return (
     <div className="flex min-h-full flex-col space-y-4 bg-gray-50/50 p-6 lg:p-8">
       {/* Header */}
@@ -43,8 +40,6 @@ export default function PortalAdmin() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <FilterSelect options={yearOptions} className="rounded-lg border" />
-
           <SecondaryButton className="gap-2 bg-white px-4 text-sm">
             <ListFilter className="h-4 w-4" />
             Filtrar
@@ -66,7 +61,7 @@ export default function PortalAdmin() {
           <SummaryCard title="Operativos (mes)" value={2} icon="calendar" />
         </div>
 
-        <HeatMap year={String(currentYear)} />
+        <HeatMap year={year} />
 
         {/* Appointments Table */}
         <TableWrapper title="Horario de Hoy">

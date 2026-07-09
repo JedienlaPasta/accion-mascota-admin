@@ -17,7 +17,7 @@ export default function HeatMapFilter({
     router.replace(`?${params.toString()}`, { scroll: false });
   };
 
-  const start = '2026';
+  const start = '2019';
   const end = currentYear;
   const years = getYearsBetween(start, end);
 

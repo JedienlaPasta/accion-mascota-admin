@@ -53,7 +53,7 @@ export default function BoardCube({
       }`}
     >
       {!disabled && (
-        <div className="absolute bottom-5 z-10 hidden flex-col rounded-md bg-gray-800 px-2 py-1 text-xs whitespace-nowrap text-white group-hover:flex">
+        <div className="invisible absolute bottom-5 z-10 flex-col rounded-md bg-gray-800 px-2 py-1 text-xs whitespace-nowrap text-white transition-opacity group-hover:visible group-hover:opacity-100">
           <p>{date}</p>
           <p>Atenciones: {count}</p>
         </div>

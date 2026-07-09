@@ -11,13 +11,18 @@ export async function getDailyAttentionCountByYear(year: string) {
 
     const result = await sql`
       SELECT
-        DATE(fecha_atencion) AS fecha,
-        COUNT(*) AS cantidad_atenciones
-      FROM consultas
-      WHERE fecha_atencion BETWEEN ${startDate} AND ${endDate}
-      GROUP BY DATE(fecha_atencion)
+        DATE(c.fecha_atencion) AS fecha,
+        COUNT(*) AS cantidad_atenciones,
+        COUNT(*) FILTER (WHERE m.especie = 'FELINO') AS gatos,
+        COUNT(*) FILTER (WHERE m.especie = 'CANINO') AS perros
+      FROM consultas c
+      JOIN mascotas m ON c.mascota_id = m.id
+      WHERE c.fecha_atencion BETWEEN ${startDate} AND ${endDate}
+      GROUP BY fecha
       ORDER BY fecha;
     `;
+    // Agregada la cantidad de mascotas atendidas por especie/dia.
+    // console.log(result);
 
     const attentionsPerDay: Record<string, number> = {};
 

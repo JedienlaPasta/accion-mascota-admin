@@ -12,7 +12,7 @@ export default function TableWrapper({
 }) {
   return (
     <div className="flex flex-col space-y-4 overflow-hidden rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-shadow hover:shadow-md lg:col-span-3">
-      <header className="flex items-center justify-between">
+      <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold text-gray-900">{title}</h2>
         <div className="flex gap-4">
           <SecondaryButton className="gap-2 px-3! text-sm">
@@ -27,7 +27,7 @@ export default function TableWrapper({
             <SearchBar placeholder="Buscar" />
           </Suspense>
         </div>
-      </header>
+      </div>
       {children}
     </div>
   );
