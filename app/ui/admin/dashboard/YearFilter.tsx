@@ -3,6 +3,7 @@
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { Calendar, Check } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { SecondaryButton } from '../../components/Button';
 
 export default function YearFilter() {
   const searchParams = useSearchParams();
@@ -51,18 +52,18 @@ export default function YearFilter() {
 
   return (
     <div ref={containerRef} className="relative z-50 flex items-center">
-      <button
+      <SecondaryButton
         onClick={() => setIsOpen((prev) => !prev)}
-        className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 shadow-sm transition-colors hover:border-blue-200"
+        className="text-slate-500"
       >
-        <Calendar className="h-4 w-4 text-slate-500" />
+        <Calendar className="h-4 w-4" />
         <span className="text-xs font-medium text-blue-600">{activeYear}</span>
-      </button>
+      </SecondaryButton>
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="ring-opacity-5 absolute top-full left-0 z-100 mt-2 max-h-40 w-36 overflow-hidden rounded-lg border border-slate-200 bg-white p-2 shadow-lg">
-          <div className="mb-2 px-2 py-1 text-xs font-semibold text-slate-400 uppercase">
+        <div className="ring-opacity-5 absolute top-full left-1/2 z-100 mt-1 max-h-40 w-32 -translate-x-1/2 overflow-hidden rounded-lg border border-slate-200 bg-white p-2 shadow-lg">
+          <div className="mb-1 px-2 py-1 text-[10px] font-semibold text-slate-400 uppercase">
             Año Entrega
           </div>
 
@@ -73,7 +74,7 @@ export default function YearFilter() {
               <button
                 key={year}
                 onClick={() => handleYearChange(year)}
-                className="flex w-full cursor-pointer items-center justify-between rounded-md px-2 py-2 text-left text-sm text-slate-700 tabular-nums hover:bg-slate-50"
+                className="flex w-full cursor-pointer items-center justify-between rounded-md px-2 py-2 text-left text-xs text-slate-700 tabular-nums hover:bg-slate-50"
               >
                 <span>{year}</span>
                 {year === activeYear && (

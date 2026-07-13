@@ -184,7 +184,7 @@ export function Button({ className, onClick, ...props }: ButtonProps) {
 export function SecondaryButton({ className, ...props }: ButtonProps) {
   return (
     <button
-      className={`px-auto flex min-h-9 cursor-pointer items-center justify-center rounded-lg border border-zinc-100 text-gray-800 shadow-sm shadow-zinc-200 transition-shadow duration-300 hover:shadow-md ${className}`}
+      className={`flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-medium shadow-sm transition-colors hover:border-slate-300 ${className}`}
       {...props}
     />
   );

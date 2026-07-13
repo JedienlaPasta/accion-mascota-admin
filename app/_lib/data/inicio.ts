@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import { sql } from '../db';
+import sql from '../db';
 
 export async function getDailyAttentionCountByYear(year: string) {
   try {
