@@ -10,21 +10,21 @@ export default function AppointmentTable() {
     <div className="borders rounded-xls overflow-hidden border-zinc-200/80">
       <div className="overflow-x-auto">
         <table className="w-full min-w-[720px]">
-          <thead className="bg-zinc-50s border-b border-zinc-200/80">
-            <tr className="grid grid-cols-24 items-center gap-4 py-3 text-left text-zinc-500">
-              <th className="col-span-4 text-xs font-normal">Hora</th>
-              <th className="col-span-3 text-xs font-normal">Mascota</th>
-              <th className="col-span-6 text-xs font-normal">Propietario</th>
-              <th className="col-span-6 text-xs font-normal">Tipo</th>
-              <th className="col-span-3 text-center text-xs font-normal">
+          <thead className="bg-zinc-50s border-b border-gray-200/80">
+            <tr className="grid grid-cols-24 items-center gap-4 px-2 py-3 text-left text-zinc-500">
+              <th className="col-span-4 text-xs font-medium">Hora</th>
+              <th className="col-span-3 text-xs font-medium">Mascota</th>
+              <th className="col-span-6 text-xs font-medium">Propietario</th>
+              <th className="col-span-6 text-xs font-medium">Tipo</th>
+              <th className="col-span-3 text-center text-xs font-medium">
                 Estado
               </th>
-              <th className="col-span-2 text-center text-xs font-normal">
+              <th className="col-span-2 text-center text-xs font-medium">
                 Acciones
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-200/70 bg-white">
+          <tbody className="divide-y divide-gray-100 bg-white">
             {adminTodayAppointments.map((item) => (
               <AppointmentTableRow
                 key={`${item.horaInicio}-${item.nombreMascota}`}
@@ -62,7 +62,7 @@ function AppointmentTableRow({
 }: AppointmentRowProps) {
   const isConfirmed = estado === 'confirmada';
   return (
-    <tr className="grid cursor-pointer grid-cols-24 items-center gap-4 py-4 text-sm text-zinc-600 transition-colors hover:bg-zinc-50/80">
+    <tr className="grid cursor-pointer grid-cols-24 items-center gap-4 px-2 py-3 text-sm text-zinc-600 transition-colors hover:bg-zinc-50/80">
       <td className="col-span-4 font-medium text-zinc-900 tabular-nums">
         {horaInicio}
         <span className="px-2 text-zinc-300">—</span>
