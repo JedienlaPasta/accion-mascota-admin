@@ -16,11 +16,11 @@ export const getDaysBetween = (start: string, end: string) => {
 };
 
 export const getYearsBetween = (start: string, end: string) => {
-  const startYear = parseInt(start);
-  const endYear = parseInt(end);
-  const years = [];
+  const startYear = Number(start);
+  const endYear = Number(end);
+  const years: string[] = [];
 
-  for (let year = startYear; year <= endYear; year++) {
+  for (let year = endYear; year >= startYear; year--) {
     years.push(year.toString());
   }
 
