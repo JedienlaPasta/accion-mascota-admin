@@ -31,5 +31,47 @@ export type MascotasTableData = {
   microchip: string;
   esterilizado: boolean | null;
   nombre_propietario: string;
-  telefono: string;
+  rut: string;
+};
+
+export type PetsSummaryData = {
+  total_mascotas: number;
+  total_perros: number;
+  total_gatos: number;
+};
+
+export type PetDetails = {
+  id: string;
+  nombre_mascota: string;
+  especie: string;
+  fecha_nacimiento: string;
+  raza: string;
+  sexo: string;
+  color: string;
+  peso: number;
+  microchip: string;
+  esterilizado: boolean | null;
+  nombre_propietario: string;
+};
+
+export type ProcedimientosAplicados = {
+  octuple: boolean;
+  antirrabica: boolean;
+  verificacion: boolean;
+  triple_felina: boolean;
+  microchip_implantado: boolean;
+  desparasitacion_externa: boolean;
+  desparasitacion_interna: boolean;
+};
+
+export type ClinicHistoryItem = {
+  id: string;
+  mascota_id: string;
+  fecha_atencion: string;
+  tipo_atencion: string;
+  pre_dx: string;
+  procedimientos_aplicados: ProcedimientosAplicados | null;
+  tratamiento: string | null;
+  veterinario: string;
+  proximaVisita: string | null;
 };

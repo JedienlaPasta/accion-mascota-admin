@@ -2,6 +2,7 @@
 
 import {
   AlertCircle,
+  Ambulance,
   Cat,
   CheckCircle,
   Dog,
@@ -15,8 +16,8 @@ export const especieIcon: Record<
   string,
   React.ComponentType<{ className?: string }>
 > = {
-  perro: Dog,
-  gato: Cat,
+  canino: Dog,
+  felino: Cat,
   otro: PawPrint,
 };
 
@@ -29,6 +30,7 @@ export const tipoIcon: Record<
   cirugia: Scissors,
   control: CheckCircle,
   emergencia: AlertCircle,
+  operativo: Ambulance,
 };
 
 export const tipoLabels: Record<string, string> = {
@@ -37,6 +39,7 @@ export const tipoLabels: Record<string, string> = {
   cirugia: 'Cirugía',
   control: 'Control',
   emergencia: 'Emergencia',
+  operativo: 'Operativo Sanitario',
 };
 
 export const tipoColors: Record<
@@ -72,6 +75,12 @@ export const tipoColors: Record<
     text: 'text-red-600',
     ring: 'ring-red-100',
     dot: 'bg-red-500',
+  },
+  operativo: {
+    bg: 'bg-emerald-50',
+    text: 'text-emerald-700',
+    ring: 'ring-emerald-100',
+    dot: 'bg-emerald-500',
   },
 };
 

@@ -60,9 +60,11 @@ export const formatNumber = (num: number | string) => {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 };
 
-export const formatRUT = (rut: string | number, dv: string) => {
+export const formatRUT = (rut: string | number) => {
   if (!rut) return '';
-  return formatNumber(rut) + '-' + dv;
+  const dv = rut.toString().slice(-1);
+  const sub = rut.toString().slice(0, -1);
+  return formatNumber(sub) + '-' + dv;
 };
 
 export const formatDate = (dateString: string) => {

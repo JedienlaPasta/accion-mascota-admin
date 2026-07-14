@@ -28,11 +28,16 @@ import {
 import Badge from '@/app/ui/components/Badge';
 import {
   capitalize,
+  capitalizeAll,
   formatDate,
   formatShortDate,
 } from '@/app/_lib/utils/format';
 import { BaseLink } from '@/app/ui/components/Link';
 import { getAge } from '@/app/_lib/utils/get-values';
+import {
+  getPetClinicHistoryById,
+  getPetDetailsById,
+} from '@/app/_lib/data/mascotas';
 
 type MascotaDetalleProps = {
   params: Promise<{ id: string }>;
@@ -40,7 +45,9 @@ type MascotaDetalleProps = {
 
 export default async function MascotaDetallePage(props: MascotaDetalleProps) {
   const { id } = await props.params;
-  const mascota = mascotas.find((mascota) => mascota.id === id);
+  const mascota = await getPetDetailsById(id);
+  const clinicHistory = await getPetClinicHistoryById(id);
+  console.log(clinicHistory);
 
   if (!mascota) {
     return (
@@ -60,7 +67,7 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
     );
   }
 
-  const EspecieIcon = especieIcon[mascota?.especie] || PawPrint;
+  const EspecieIcon = especieIcon[mascota?.especie.toLowerCase()] || PawPrint;
 
   const historial = historialClinico
     .filter((h) => h.mascotaId === mascota.id)
@@ -90,98 +97,140 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
       </Link>
 
       {/* Header Card */}
-      <div className="flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all hover:shadow-md">
-        <div className="p-6">
-          <div className="flex flex-col items-start gap-6 sm:flex-row">
-            <div className="from-primary/10 to-primary/3 flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-linear-to-br">
-              <EspecieIcon className="text-primary h-10 w-10" />
+      <div className="flex flex-col overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm transition-all hover:shadow-md">
+        <div className="p-7">
+          <div className="flex flex-col items-start gap-7 sm:flex-row">
+            {/* Avatar mejorado con anillo y efecto */}
+            <div className="relative flex h-28 w-28 shrink-0 items-center justify-center rounded-3xl bg-linear-to-br from-emerald-100/50 to-blue-100/50 shadow-sm shadow-gray-200">
+              <div className="absolute inset-0 rounded-3xl bg-linear-to-br from-emerald-500/10 to-blue-500/10"></div>
+              <EspecieIcon className="relative h-14 w-14 text-emerald-700" />
             </div>
 
             <div className="flex-1">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <h1 className="text-foreground text-3xl font-bold">
-                    {mascota.nombre}
-                  </h1>
-                  <p className="text-muted-foreground">
-                    {mascota.raza} · {getAge(mascota.fechaNacimiento)} ·{' '}
-                    <span className="font-medium text-zinc-700">
-                      {mascota.propietarioNombre}
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <h1 className="text-foreground text-4xl font-bold tracking-tight">
+                      {capitalize(mascota.nombre_mascota)}
+                    </h1>
+                  </div>
+                  <p className="text-muted-foreground flex flex-wrap items-center gap-2 text-base">
+                    <span className="font-semibold text-gray-800">
+                      {capitalize(mascota.raza)}
+                    </span>
+                    <span className="text-gray-300">•</span>
+                    <span className="text-sm font-medium text-gray-500">
+                      {getAge(mascota.fecha_nacimiento)}
+                    </span>
+                    <span className="text-gray-300">•</span>
+                    <span className="font-medium text-gray-800">
+                      {capitalizeAll(mascota.nombre_propietario)}
                     </span>
                   </p>
                 </div>
-                <Button className="gap-2">
+                <Button className="gap-2 shadow-md transition-all hover:shadow-lg">
                   <Pencil className="h-4 w-4" />
                   Editar
                 </Button>
               </div>
 
               <div className="mt-4 flex flex-wrap gap-2">
+                {/* Badges premium */}
                 {mascota.esterilizado ? (
-                  <Badge className="border-emerald-700/10 bg-emerald-50 text-emerald-700">
-                    Esterilizado
+                  <Badge className="border-emerald-200 bg-emerald-50 px-3 text-emerald-700 shadow-sm">
+                    <span className="flex items-center gap-1">
+                      Esterilizado
+                    </span>
+                  </Badge>
+                ) : mascota.esterilizado === null ? (
+                  <Badge className="border-gray-200 bg-gray-50 px-3 py-1 text-gray-600 shadow-sm">
+                    No especificado
                   </Badge>
                 ) : (
-                  <Badge className="border-rose-200 bg-rose-50 text-rose-700">
-                    Sin esterilizar
+                  <Badge className="border-rose-200 bg-rose-50 px-3 py-1 text-rose-700 shadow-sm">
+                    <span className="flex items-center gap-1">
+                      Sin esterilizar
+                    </span>
                   </Badge>
                 )}
-                {mascota.chip ? (
-                  <Badge className="border-gray-200">
-                    {'Chip: ' + mascota.chip}
+                {mascota.microchip ? (
+                  <Badge className="border-slate-200 bg-slate-50 px-3 py-1 text-slate-700 shadow-sm">
+                    <span className="flex items-center gap-1">
+                      <Cpu className="h-3.5 w-3.5" />
+                      {mascota.microchip}
+                    </span>
                   </Badge>
                 ) : (
-                  <Badge className="text-muted-foreground border-gray-200">
+                  <Badge className="border-gray-200 bg-gray-50 px-3 text-gray-500 shadow-sm">
                     Sin microchip
                   </Badge>
                 )}
-                <Badge className="border-gray-200 capitalize">
-                  {mascota.sexo}
-                </Badge>
+                {mascota.sexo && (
+                  <Badge className="border-slate-200 bg-slate-50 px-3 text-slate-700 shadow-sm">
+                    {capitalize(mascota.sexo)}
+                  </Badge>
+                )}
               </div>
             </div>
           </div>
 
-          {/* Info Grid */}
-          <div className="border-border mt-6 grid grid-cols-2 gap-4 border-t pt-6 sm:grid-cols-4">
-            <div className="flex items-center gap-1.5">
-              <div className="bg-muted flex h-9 w-9 items-center justify-center rounded-lg">
-                <PawPrint className="text-muted-foreground h-4 w-4" />
+          {/* Info Grid mejorado */}
+          <div className="border-border mt-8 grid grid-cols-2 gap-5 border-t pt-8 sm:grid-cols-4">
+            <div className="group flex items-center gap-3 rounded-2xl bg-gray-50 p-4 transition-all hover:bg-gray-100">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br from-slate-100 to-slate-200 text-slate-700 transition-all group-hover:scale-105">
+                <PawPrint className="h-5 w-5" />
               </div>
-              <div>
-                <p className="text-muted-foreground text-xs">Especie</p>
-                <p className="text-sm font-medium capitalize">
-                  {mascota.especie}
+              <div className="space-y-0.5">
+                <p className="text-muted-foreground text-[10px] font-medium uppercase">
+                  Especie
+                </p>
+                <p className="text-sm font-bold text-gray-800">
+                  {capitalize(mascota.especie)}
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-1.5">
-              <div className="bg-muted flex h-9 w-9 items-center justify-center rounded-lg">
-                <Palette className="text-muted-foreground h-4 w-4" />
+
+            <div className="group flex items-center gap-3 rounded-2xl bg-gray-50 p-4 transition-all hover:bg-gray-100">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br from-slate-100 to-slate-200 text-slate-700 transition-all group-hover:scale-105">
+                <Palette className="h-5 w-5" />
               </div>
-              <div>
-                <p className="text-muted-foreground text-xs">Color</p>
-                <p className="text-sm font-medium">{mascota.color}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="bg-muted flex h-9 w-9 items-center justify-center rounded-lg">
-                <Calendar className="text-muted-foreground h-4 w-4" />
-              </div>
-              <div>
-                <p className="text-muted-foreground text-xs">Nacimiento</p>
-                <p className="text-sm font-medium">
-                  {formatShortDate(mascota.fechaNacimiento)}
+              <div className="space-y-0.5">
+                <p className="text-muted-foreground text-[10px] font-medium uppercase">
+                  Color
+                </p>
+                <p className="text-sm font-bold text-gray-800">
+                  {mascota.color ? capitalizeAll(mascota.color) : '-'}
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-1.5">
-              <div className="bg-muted flex h-9 w-9 items-center justify-center rounded-lg">
-                <HeartPulse className="text-muted-foreground h-4 w-4" />
+
+            <div className="group flex items-center gap-3 rounded-2xl bg-gray-50 p-4 transition-all hover:bg-gray-100">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br from-slate-100 to-slate-200 text-slate-700 transition-all group-hover:scale-105">
+                <Calendar className="h-5 w-5" />
               </div>
-              <div>
-                <p className="text-muted-foreground text-xs">Peso</p>
-                <p className="text-sm font-medium">{mascota.peso}</p>
+              <div className="space-y-0.5">
+                <p className="text-muted-foreground text-[10px] font-medium uppercase">
+                  Nacimiento
+                </p>
+                <p className="text-sm font-bold text-gray-800">
+                  {formatShortDate(
+                    mascota.fecha_nacimiento ? mascota.fecha_nacimiento : '-'
+                  )}
+                </p>
+              </div>
+            </div>
+
+            <div className="group flex items-center gap-3 rounded-2xl bg-gray-50 p-4 transition-all hover:bg-gray-100">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br from-slate-100 to-slate-200 text-slate-700 transition-all group-hover:scale-105">
+                <HeartPulse className="h-5 w-5" />
+              </div>
+              <div className="space-y-0.5">
+                <p className="text-muted-foreground text-[10px] font-medium uppercase">
+                  Peso
+                </p>
+                <p className="text-sm font-bold text-gray-800">
+                  {mascota.peso ? `${mascota.peso} kg` : '-'}
+                </p>
               </div>
             </div>
           </div>
@@ -192,34 +241,38 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
       <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
         {/* Vacunas */}
         <div className="flex items-center gap-4 rounded-xl border border-gray-100 bg-white p-5 shadow-sm transition-all hover:shadow-md">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-green-50">
-            <Syringe className="h-6 w-6 text-green-600" />
+          <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-emerald-100/90 to-emerald-200/90">
+            <Syringe className="size-5 text-emerald-700" />
           </div>
           <div>
             <p className="text-2xl font-bold text-gray-900">{totalVacunas}</p>
-            <p className="text-sm font-medium text-gray-500">Vacunas</p>
+            <p className="-mt-0.5 text-sm font-medium text-gray-500">Vacunas</p>
           </div>
         </div>
 
         {/* Consultas */}
         <div className="flex items-center gap-4 rounded-xl border border-gray-100 bg-white p-5 shadow-sm transition-all hover:shadow-md">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50">
-            <Stethoscope className="h-6 w-6 text-blue-600" />
+          <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-blue-100 to-blue-200">
+            <Stethoscope className="size-5 text-blue-700" />
           </div>
           <div>
             <p className="text-2xl font-bold text-gray-900">{totalConsultas}</p>
-            <p className="text-sm font-medium text-gray-500">Consultas</p>
+            <p className="-mt-0.5 text-sm font-medium text-gray-500">
+              Consultas
+            </p>
           </div>
         </div>
 
         {/* Cirugías */}
         <div className="flex items-center gap-4 rounded-xl border border-gray-100 bg-white p-5 shadow-sm transition-all hover:shadow-md">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-rose-50">
-            <Scissors className="h-6 w-6 text-rose-600" />
+          <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-rose-100 to-rose-200">
+            <Scissors className="size-5 text-rose-700" />
           </div>
           <div>
             <p className="text-2xl font-bold text-gray-900">{totalCirugias}</p>
-            <p className="text-sm font-medium text-gray-500">Cirugías</p>
+            <p className="-mt-0.5 text-sm font-medium text-gray-500">
+              Cirugías
+            </p>
           </div>
         </div>
       </div>
@@ -280,42 +333,43 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
             </div>
 
             <div className="space-y-3">
-              {historial.length > 0 ? (
-                historial.map((registro) => {
-                  const TipoIcon = tipoIcon[registro.tipo] || Stethoscope;
+              {clinicHistory.length > 0 ? (
+                clinicHistory.map((registro) => {
+                  const TipoIcon =
+                    tipoIcon[registro.tipo_atencion.toLowerCase()] ||
+                    Stethoscope;
                   const colors =
-                    tipoColors[registro.tipo] || tipoColors.consulta;
+                    tipoColors[registro.tipo_atencion.toLowerCase()] ||
+                    tipoColors.consulta;
 
                   return (
                     <details
                       key={registro.id}
-                      className="group overflow-hidden rounded-xl border border-gray-200/80 bg-white transition-colors hover:border-gray-200"
+                      className="group overflow-hidden rounded-xl border border-gray-200/80 bg-white transition-colors select-none hover:border-gray-200"
                     >
                       <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-4">
                         <div className="flex min-w-0 items-center gap-4">
                           <div
-                            className={
-                              'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ' +
-                              colors.bg
-                            }
+                            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${colors.bg} ${colors.text}`}
                           >
                             <TipoIcon className="h-5 w-5" />
                           </div>
                           <div className="min-w-0">
                             <p className="truncate font-semibold text-gray-900">
-                              {registro.descripcion}
+                              {registro.tipo_atencion.toLowerCase() ===
+                              'operativo'
+                                ? 'Operativo Sanitario'
+                                : registro.tipo_atencion}
                             </p>
                             <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs">
-                              <span className="font-medium text-gray-500">
-                                {formatShortDate(registro.fecha)}
+                              <span className="font-medium text-gray-500 tabular-nums">
+                                {formatShortDate(registro.fecha_atencion)}
                               </span>
                               <span
-                                className={
-                                  'rounded-full px-2 py-0.5 font-medium ' +
-                                  colors.bg
-                                }
+                                className={`rounded-full px-2 py-0.5 font-medium ${colors.bg} ${colors.text}`}
                               >
-                                {tipoLabels[registro.tipo] || registro.tipo}
+                                {tipoLabels[registro.tipo_atencion] ||
+                                  registro.tipo_atencion}
                               </span>
                               <span className="text-gray-400">·</span>
                               <span className="font-medium text-gray-600">
@@ -331,11 +385,58 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                         <div className="grid gap-3 sm:grid-cols-2">
                           <div>
                             <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
-                              Diagnóstico
+                              {registro.tipo_atencion.toLowerCase() ===
+                              'operativo'
+                                ? 'Procedimientos'
+                                : 'Diagnóstico'}
                             </p>
-                            <p className="mt-1 font-medium text-gray-900">
-                              {registro.diagnostico}
-                            </p>
+                            <div className="mt-1 space-y-2">
+                              {registro.tipo_atencion.toLowerCase() ===
+                              'operativo' ? (
+                                <div className="flex flex-wrap gap-2">
+                                  {registro.procedimientos_aplicados ? (
+                                    Object.entries(
+                                      registro.procedimientos_aplicados
+                                    )
+                                      .filter(([_, value]) => value)
+                                      .map(([key, _]) => {
+                                        // Mapear nombres de keys a nombres legibles
+                                        const nombresLegibles: Record<
+                                          string,
+                                          string
+                                        > = {
+                                          octuple: 'Óctuple',
+                                          antirrabica: 'Antirrábica',
+                                          verificacion: 'Verificación',
+                                          triple_felina: 'Triple Felina',
+                                          microchip_implantado:
+                                            'Microchip Implantado',
+                                          desparasitacion_externa:
+                                            'Desparasitación Externa',
+                                          desparasitacion_interna:
+                                            'Desparasitación Interna',
+                                        };
+                                        return (
+                                          <Badge
+                                            key={key}
+                                            className="border-emerald-200 bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700 shadow-sm"
+                                          >
+                                            {nombresLegibles[key] || key}
+                                          </Badge>
+                                        );
+                                      })
+                                  ) : (
+                                    <p className="text-sm text-gray-500">
+                                      Sin procedimientos registrados
+                                    </p>
+                                  )}
+                                </div>
+                              ) : (
+                                <p className="font-medium text-gray-900">
+                                  {'Sin diagnóstico registrado'}
+                                </p>
+                              )}
+                            </div>
                           </div>
                           <div>
                             <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
@@ -437,7 +538,7 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                   Ver atenciones
                 </SecondaryButton>
               </Link>
-              {!mascota.chip && (
+              {!mascota.microchip && (
                 <Link href="/admin/propietarios">
                   <SecondaryButton className="w-full justify-start gap-2 border-gray-200 px-3 hover:bg-gray-50 hover:text-gray-900">
                     <Cpu className="h-4 w-4 text-gray-500" />

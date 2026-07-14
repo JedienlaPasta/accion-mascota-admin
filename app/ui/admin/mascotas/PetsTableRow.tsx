@@ -1,15 +1,14 @@
-'use client';
 import { MascotasTableData } from '@/app/_lib/data-types/mascotas';
 import { validateMicrochip } from '@/app/_lib/utils/check-values';
 import {
   capitalize,
   capitalizeAll,
   formatPhone,
+  formatRUT,
 } from '@/app/_lib/utils/format';
 import { getAge } from '@/app/_lib/utils/get-values';
 import { ArrowRight, Check, CircleAlert, X } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function PetTableRow({
   id,
@@ -20,21 +19,8 @@ export default function PetTableRow({
   microchip,
   esterilizado,
   nombre_propietario,
-  telefono,
+  rut,
 }: MascotasTableData) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const formattedPhone = formatPhone(telefono);
-
-  const handleClick = () => {
-    if (!microchip) return;
-    const params = new URLSearchParams(searchParams);
-    params.set('id', String(microchip));
-    const qs = params.toString();
-    router.replace(qs ? `?${qs}` : '', { scroll: false });
-  };
-
   return (
     <tr className="grid cursor-pointer grid-cols-24 items-center gap-4 py-4 text-sm text-zinc-600 transition-colors hover:bg-zinc-50/80">
       <td className="col-span-4 lg:col-span-5">
@@ -53,15 +39,12 @@ export default function PetTableRow({
         <p className="font-medium text-zinc-900">
           {capitalizeAll(nombre_propietario)}
         </p>
-        <p className="text-xs tabular-nums">{formattedPhone}</p>
+        <p className="text-xs tabular-nums">{formatRUT(rut)}</p>
       </td>
-      <td
-        onClick={handleClick}
-        className="truncates relative col-span-5 tabular-nums hover:underline"
-      >
+      <td className="truncates relative col-span-5 tabular-nums">
         {validateMicrochip(microchip).length > 0 && (
           <span title={validateMicrochip(microchip)[0]}>
-            <CircleAlert className="absolute top-1/2 -left-6 size-4 -translate-y-1/2 text-zinc-500/80" />
+            <CircleAlert className="absolute top-1/2 -left-7 size-4 -translate-y-1/2 text-rose-500/80" />
           </span>
         )}
         {microchip}

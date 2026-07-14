@@ -38,7 +38,7 @@ export default async function PetsTable({ query }: { query: string }) {
                 microchip={item.microchip}
                 esterilizado={item.esterilizado}
                 nombre_propietario={item.nombre_propietario}
-                telefono={item.telefono}
+                rut={item.rut}
               />
             ))}
           </tbody>
