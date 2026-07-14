@@ -59,8 +59,8 @@ export function AdminSidebar() {
   }
 
   return (
-    <aside className="w-72">
-      <div className="fixed top-0 hidden h-full w-72 flex-col border-r border-zinc-800 bg-[#111727] lg:flex">
+    <aside className="hidden w-72 lg:block">
+      <div className="fixed top-0 flex h-full w-72 flex-col border-r border-zinc-800 bg-[#111727]">
         {/* Sección del Logo */}
         <div className="border-b border-zinc-800/50 bg-linear-to-b from-zinc-900/50 to-transparent">
           <Link

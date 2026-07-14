@@ -1,5 +1,5 @@
 export const capitalize = (str: string) => {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 };
 
 export const capitalizeAll = (str?: string) => {
@@ -41,7 +41,19 @@ export const formatFileSize = (size: number) => {
 
 export const formatPhone = (phone?: string | number) => {
   if (!phone) return '';
-  return phone.toString().replace(/\B(?=(\d{4})+(?!\d))/g, ' ');
+  let phoneStr = phone.toString();
+  // Eliminar cualquier caracter no numérico excepto el +
+  phoneStr = phoneStr.replace(/[^+\d]/g, '');
+  // Agregar +56 si no tiene código de país
+  if (!phoneStr.startsWith('+')) {
+    // Si empieza con 0, quitarlo primero
+    if (phoneStr.startsWith('0')) {
+      phoneStr = phoneStr.slice(1);
+    }
+    phoneStr = '+56' + phoneStr;
+  }
+  // Formatear con espacios
+  return phoneStr.replace(/\B(?=(\d{4})+(?!\d))/g, ' ');
 };
 
 export const formatNumber = (num: number | string) => {

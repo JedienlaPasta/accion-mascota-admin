@@ -1,20 +1,9 @@
-import {
-  adminOperationalLogs,
-  campanas,
-  mascotasAdopcion,
-} from '@/app/_lib/mock-data';
 import TableWrapper from '@/app/ui/admin/TableWrapper';
 import SummaryCard from '@/app/ui/admin/dashboard/SummaryCard';
 import AppointmentTable from '@/app/ui/admin/dashboard/TodayAppointments';
 import HeatMap from '@/app/ui/admin/dashboard/heatmap/Heatmap';
 import { SecondaryButton } from '@/app/ui/components/Button';
 import { Download, ListFilter } from 'lucide-react';
-
-const parseISODate = (value: string) => new Date(`${value}T00:00:00`);
-
-const isSameMonth = (value: Date, ref: Date) =>
-  value.getFullYear() === ref.getFullYear() &&
-  value.getMonth() === ref.getMonth();
 
 type PortalAdminProps = {
   searchParams?: Promise<{

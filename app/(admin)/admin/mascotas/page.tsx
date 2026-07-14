@@ -1,18 +1,22 @@
 import { todasLasMascotas } from '@/app/_lib/mock-data';
-import SummaryCard from '@/app/ui/admin/dashboard/SummaryCard';
+import SearchBar from '@/app/ui/admin/dashboard/SearchBar';
 import PetRecord from '@/app/ui/admin/mascotas/PetRecord';
 import PetsTable from '@/app/ui/admin/mascotas/PetsTable';
-import TableWrapper from '@/app/ui/admin/TableWrapper';
+import PetsTableSkeleton from '@/app/ui/admin/mascotas/PetsTableSkeleton';
 import { SecondaryButton } from '@/app/ui/components/Button';
-import { Plus } from 'lucide-react';
+import { ListFilter, Plus } from 'lucide-react';
+import { Suspense } from 'react';
+import PetsSummary from '@/app/ui/admin/dashboard/PetsSummary';
+import PetsSummarySkeleton from '@/app/ui/admin/dashboard/PetsSummarySkeleton';
 
 type MascotasPageProps = {
-  searchParams?: Promise<{ id?: string }>;
+  searchParams?: Promise<{ id?: string; query?: string }>;
 };
 
 export default async function MascotasPageAdmin(props: MascotasPageProps) {
   const searchParams = await props.searchParams;
   const id = searchParams?.id ?? '';
+  const query = searchParams?.query ?? '';
 
   return (
     <div className="flex min-h-full w-full flex-col space-y-4 bg-gray-50/50 p-6 lg:p-8">
@@ -37,17 +41,35 @@ export default async function MascotasPageAdmin(props: MascotasPageProps) {
         </div>
       </div>
       <section className="flex flex-col gap-4 xl:col-span-5">
-        {/* <SummaryCards /> */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <SummaryCard title="Total Mascotas" value={100} icon="paw" />
-          <SummaryCard title="Total Perros" value={53} icon="dog" />
-          <SummaryCard title="Total Gatos" value={47} icon="cat" />
-        </div>
+        <Suspense fallback={<PetsSummarySkeleton />}>
+          <PetsSummary />
+        </Suspense>
 
-        {/* Pets Table */}
-        <TableWrapper title="Mascotas">
-          <PetsTable data={todasLasMascotas} />
-        </TableWrapper>
+        <div className="flex flex-col space-y-4 overflow-hidden rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-shadow hover:shadow-md lg:col-span-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-gray-900">Mascotas</h2>
+            <div className="flex gap-4">
+              <SecondaryButton className="gap-2 px-3! text-sm">
+                <ListFilter className="h-4 w-4" />
+                Filtros
+              </SecondaryButton>
+              <Suspense
+                fallback={
+                  <input
+                    disabled
+                    placeholder="Buscar"
+                    className="flex h-10 min-w-52 flex-1 items-center rounded-lg border border-slate-200 bg-white px-4 shadow-sm"
+                  />
+                }
+              >
+                <SearchBar placeholder="Buscar" />
+              </Suspense>
+            </div>
+          </div>
+          <Suspense fallback={<PetsTableSkeleton />}>
+            <PetsTable query={query} />
+          </Suspense>
+        </div>
       </section>
     </div>
   );
