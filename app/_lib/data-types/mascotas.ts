@@ -51,7 +51,10 @@ export type PetDetails = {
   peso: number;
   microchip: string;
   esterilizado: boolean | null;
+  propietario_id: string;
   nombre_propietario: string;
+  telefono: string | null;
+  correo: string | null;
 };
 
 export type ProcedimientosAplicados = {

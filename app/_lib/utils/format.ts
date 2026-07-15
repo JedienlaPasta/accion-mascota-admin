@@ -39,21 +39,20 @@ export const formatFileSize = (size: number) => {
   return `${(size / Math.pow(1024, unitIndex)).toFixed(2)} ${units[unitIndex]}`;
 };
 
-export const formatPhone = (phone?: string | number) => {
+export const formatPhone = (phone: string | null) => {
   if (!phone) return '';
-  let phoneStr = phone.toString();
   // Eliminar cualquier caracter no numérico excepto el +
-  phoneStr = phoneStr.replace(/[^+\d]/g, '');
+  phone = phone.replace(/[^+\d]/g, '');
   // Agregar +56 si no tiene código de país
-  if (!phoneStr.startsWith('+')) {
+  if (!phone.startsWith('+')) {
     // Si empieza con 0, quitarlo primero
-    if (phoneStr.startsWith('0')) {
-      phoneStr = phoneStr.slice(1);
+    if (phone.startsWith('0')) {
+      phone = phone.slice(1);
     }
-    phoneStr = '+56' + phoneStr;
+    phone = '+56' + phone;
   }
   // Formatear con espacios
-  return phoneStr.replace(/\B(?=(\d{4})+(?!\d))/g, ' ');
+  return phone.replace(/\B(?=(\d{4})+(?!\d))/g, ' ');
 };
 
 export const formatNumber = (num: number | string) => {

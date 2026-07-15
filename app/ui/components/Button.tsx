@@ -119,65 +119,17 @@ export function MutedCTAButtonLogin({
 
 // ===============
 
-// Normal Button
-// export function MenuButton({ ...props }: { children: React.ReactNode }) {
-//   return (
-//     <button className="group relative cursor-pointer rounded-lg px-3 py-2 text-sm text-gray-600 transition-colors outline-none hover:bg-slate-100/60">
-//       <span className="flex items-center gap-2 font-medium">
-//         {props.children}
-//       </span>
-//       <div
-//         role="menu"
-//         className="absolute top-full right-1/2 mt-2 hidden w-40 translate-x-1/2 overflow-hidden rounded-xl border border-zinc-200 bg-white p-3 shadow-lg shadow-gray-700/20 group-hover:block"
-//       >
-//         <div className="grid grid-cols-1 gap-x-2">
-//           <Link
-//             role="menuitem"
-//             href="/portal/mascotas"
-//             className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-2 text-[13px] text-zinc-700 transition-colors hover:bg-slate-100/60"
-//           >
-//             {/* <PawPrint className="h-4 w-4" /> */}
-//             Mis Mascotas
-//           </Link>
-//           <Link
-//             role="menuitem"
-//             href="/portal/citas"
-//             className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-2 text-[13px] text-zinc-700 transition-colors hover:bg-slate-100/60"
-//           >
-//             {/* <Calendar className="h-4 w-4" /> */}
-//             Citas Agendadas
-//           </Link>
-//           <Link
-//             role="menuitem"
-//             href="/portal/historial"
-//             className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-2 text-[13px] text-zinc-700 transition-colors hover:bg-slate-100/60"
-//           >
-//             {/* <Calendar className="h-4 w-4" /> */}
-//             Historial Clínico
-//           </Link>
-//           <Link
-//             role="menuitem"
-//             href="/portal/solicitudes"
-//             className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-2 text-[13px] text-zinc-700 transition-colors hover:bg-slate-100/60"
-//           >
-//             {/* <Calendar className="h-4 w-4" /> */}
-//             Solicitudes
-//           </Link>
-//         </div>
-//       </div>
-//     </button>
-//   );
-// }
-
-// ===============
-
 export function Button({ className, onClick, ...props }: ButtonProps) {
   return (
     <button
       onClick={onClick}
-      className={`flex h-12 cursor-pointer items-center rounded-xl bg-emerald-800/90 px-7 text-white shadow-emerald-950/30 transition-shadow duration-300 hover:shadow-lg ${className}`}
-      {...props}
-    />
+      className={`group relative flex h-12 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl bg-emerald-800/90 px-8 text-white shadow-md transition-all duration-300 hover:bg-emerald-700 ${className}`}
+    >
+      <div className="absolute inset-0 bg-linear-to-br from-emerald-600 via-emerald-700 to-emerald-800 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      <div className="relative z-10 flex items-center justify-center gap-2">
+        {props.children}
+      </div>
+    </button>
   );
 }
 

@@ -74,7 +74,10 @@ export async function getPetDetailsById(
       m.peso,
       m.microchip,
       m.esterilizado,
-      p.nombre AS nombre_propietario
+      p.public_id AS propietario_id,
+      p.nombre AS nombre_propietario,
+      p.telefono,
+      p.correo
     FROM mascotas m
     JOIN propietarios p ON m.propietario_id = p.id
     WHERE m.public_id = ${id}
