@@ -1,12 +1,12 @@
-import { PropietariosTableData } from '../data-types/propietarios';
+import { OwnersSummaryData, OwnersTableData } from '../data-types/propietarios';
 import sql from '../db';
 
 export const getAllOwnersWithQuery = async (
   query: string
-): Promise<PropietariosTableData[]> => {
+): Promise<OwnersTableData[]> => {
   try {
     const searchTerm = `%${query}%`;
-    const propietarios = await sql`
+    const owners = await sql`
       SELECT
         p.public_id as id,
         p.nombre AS nombre_propietario,
@@ -39,11 +39,25 @@ export const getAllOwnersWithQuery = async (
       LIMIT 10
     `;
 
-    return propietarios.map(
-      (propietario) => propietario as PropietariosTableData
-    );
+    return owners.map((owner) => owner as OwnersTableData);
   } catch (error) {
     console.error('Error al obtener propietarios:', error);
-    return [] as PropietariosTableData[];
+    return [] as OwnersTableData[];
+  }
+};
+
+export const getOwnersSummaryData = async (): Promise<OwnersSummaryData> => {
+  try {
+    const totalOwners = await sql`
+      SELECT 
+        COUNT(*) AS total_propietarios,
+        COUNT(*) FILTER (WHERE correo IS NOT NULL) AS total_propietarios_verificados // Cambiar a correo_personal eventualmente
+      FROM propietarios
+    `;
+
+    return totalOwners[0] as OwnersSummaryData;
+  } catch (error) {
+    console.error('Error al obtener propietarios:', error);
+    return {} as OwnersSummaryData;
   }
 };

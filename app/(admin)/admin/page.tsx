@@ -1,5 +1,5 @@
 import TableWrapper from '@/app/ui/admin/TableWrapper';
-import SummaryCard from '@/app/ui/admin/dashboard/SummaryCard';
+import SummaryCard from '@/app/ui/admin/SummaryCard';
 import AppointmentTable from '@/app/ui/admin/dashboard/TodayAppointments';
 import HeatMap from '@/app/ui/admin/dashboard/heatmap/Heatmap';
 import { SecondaryButton } from '@/app/ui/components/Button';

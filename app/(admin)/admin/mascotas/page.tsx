@@ -6,8 +6,8 @@ import PetsTableSkeleton from '@/app/ui/admin/mascotas/PetsTableSkeleton';
 import { SecondaryButton } from '@/app/ui/components/Button';
 import { ListFilter, Plus } from 'lucide-react';
 import { Suspense } from 'react';
-import PetsSummary from '@/app/ui/admin/dashboard/PetsSummary';
-import PetsSummarySkeleton from '@/app/ui/admin/dashboard/PetsSummarySkeleton';
+import PetsSummary from '@/app/ui/admin/mascotas/PetsSummary';
+import PetsSummarySkeleton from '@/app/ui/admin/mascotas/PetsSummarySkeleton';
 
 type MascotasPageProps = {
   searchParams?: Promise<{ id?: string; query?: string }>;

@@ -8,14 +8,16 @@ import {
   FileCheck,
   MapPin,
   PawPrint,
-  User,
+  User2,
+  UserCheck2,
 } from 'lucide-react';
 import type { ComponentType } from 'react';
 
 const cardIcons: Record<string, ComponentType<{ className?: string }>> = {
   calendar: Calendar,
   paw: PawPrint,
-  user: User,
+  user: User2,
+  userCheck: UserCheck2,
   month: FileCheck,
   cat: Cat,
   dog: Dog,

@@ -1,7 +1,7 @@
 import { historialClinico } from '@/app/_lib/mock-data';
 import VisitRecordDetailModal from '@/app/ui/admin/atenciones/VisitRecordDetailModal';
 import VisitsTable from '@/app/ui/admin/atenciones/VisitsTable';
-import SummaryCard from '@/app/ui/admin/dashboard/SummaryCard';
+import SummaryCard from '@/app/ui/admin/SummaryCard';
 import TableWrapper from '@/app/ui/admin/TableWrapper';
 import { SecondaryButton } from '@/app/ui/components/Button';
 import { Plus } from 'lucide-react';

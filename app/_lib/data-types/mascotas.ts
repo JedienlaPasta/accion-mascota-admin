@@ -1,4 +1,4 @@
-export type Mascota = {
+export type Pet = {
   id: string;
   microchip: string;
   inscrito_registro_nacional: boolean;
@@ -22,7 +22,7 @@ export type Mascota = {
 
 // type MascotasTableData = Pick<Mascota, 'id'>;
 
-export type MascotasTableData = {
+export type PetsTableData = {
   id: string; // public_id
   nombre_mascota: string;
   especie: string;
@@ -57,7 +57,7 @@ export type PetDetails = {
   correo: string | null;
 };
 
-export type ProcedimientosAplicados = {
+export type AppliedProcedures = {
   octuple: boolean;
   antirrabica: boolean;
   verificacion: boolean;
@@ -73,7 +73,7 @@ export type ClinicHistoryItem = {
   fecha_atencion: string;
   tipo_atencion: string;
   pre_dx: string;
-  procedimientos_aplicados: ProcedimientosAplicados | null;
+  procedimientos_aplicados: AppliedProcedures | null;
   tratamiento: string | null;
   veterinario: string;
   proximaVisita: string | null;

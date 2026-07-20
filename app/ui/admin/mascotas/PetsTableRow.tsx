@@ -1,4 +1,4 @@
-import { MascotasTableData } from '@/app/_lib/data-types/mascotas';
+import { PetsTableData } from '@/app/_lib/data-types/mascotas';
 import { validateMicrochip } from '@/app/_lib/utils/check-values';
 import { capitalize, capitalizeAll, formatRUT } from '@/app/_lib/utils/format';
 import { getAge } from '@/app/_lib/utils/get-values';
@@ -15,7 +15,7 @@ export default function PetTableRow({
   esterilizado,
   nombre_propietario,
   rut,
-}: MascotasTableData) {
+}: PetsTableData) {
   return (
     <tr className="grid cursor-pointer grid-cols-24 items-center gap-4 py-4 text-sm text-zinc-600 transition-colors hover:bg-zinc-50/80">
       <td className="col-span-4 lg:col-span-5">

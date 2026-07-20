@@ -1,10 +1,12 @@
 import SearchBar from '@/app/ui/admin/dashboard/SearchBar';
-import SummaryCard from '@/app/ui/admin/dashboard/SummaryCard';
+import SummaryCard from '@/app/ui/admin/SummaryCard';
 import OwnersTable from '@/app/ui/admin/propietarios/OwnersTable';
 import OwnersTableSkeleton from '@/app/ui/admin/propietarios/OwnersTableSkeleton';
 import { SecondaryButton } from '@/app/ui/components/Button';
 import { ListFilter, Plus } from 'lucide-react';
 import { Suspense } from 'react';
+import OwnersSummary from '@/app/ui/admin/propietarios/OwnersSummary';
+import OwnersSummarySkeleton from '@/app/ui/admin/propietarios/OwnersSummarySkeleton';
 
 type OwnersTableProps = {
   searchParams?: Promise<{ query?: string }>;
@@ -35,11 +37,9 @@ export default async function PropietariosPageAdmin(props: OwnersTableProps) {
         </div>
       </div>
       <section className="flex flex-col gap-4 xl:col-span-5">
-        {/* <SummaryCards /> */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <SummaryCard title="Total Propietarios" value={78} icon="user" />
-          <SummaryCard title="Total Mascotas" value={100} icon="paw" />
-        </div>
+        <Suspense fallback={<OwnersSummarySkeleton />}>
+          <OwnersSummary />
+        </Suspense>
 
         {/* Owners Table */}
         <div className="flex flex-col space-y-4 overflow-hidden rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-shadow hover:shadow-md lg:col-span-3">

@@ -1,4 +1,4 @@
-export type Propietario = {
+export type Owner = {
   id: string;
   nombre_propietario: string;
   rut: string;
@@ -12,7 +12,7 @@ export type Propietario = {
   profesion: string;
 };
 
-export type PropietariosTableData = {
+export type OwnersTableData = {
   id: string; // public_id
   nombre_propietario: string;
   rut: string;
@@ -22,4 +22,9 @@ export type PropietariosTableData = {
   region: string | null;
   telefono: string | null;
   total_mascotas: number;
+};
+
+export type OwnersSummaryData = {
+  total_propietarios: number;
+  total_propietarios_verificados: number;
 };

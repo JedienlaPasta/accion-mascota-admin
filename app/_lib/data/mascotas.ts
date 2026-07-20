@@ -1,5 +1,5 @@
 import type {
-  MascotasTableData,
+  PetsTableData,
   PetDetails,
   PetsSummaryData,
   ClinicHistoryItem,
@@ -8,7 +8,7 @@ import sql from '../db';
 
 export const getAllPetsWithQuery = async (
   query: string
-): Promise<MascotasTableData[]> => {
+): Promise<PetsTableData[]> => {
   try {
     const searchTerm = `%${query}%`;
     const pets = await sql`
@@ -34,10 +34,10 @@ export const getAllPetsWithQuery = async (
       LIMIT 10
     `;
 
-    return pets.map((pet) => pet as MascotasTableData);
+    return pets.map((pet) => pet as PetsTableData);
   } catch (error) {
     console.error('Error al obtener listado de mascotas:', error);
-    return [] as MascotasTableData[];
+    return [] as PetsTableData[];
   }
 };
 

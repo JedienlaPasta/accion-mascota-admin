@@ -1,4 +1,4 @@
-import { PropietariosTableData } from '@/app/_lib/data-types/propietarios';
+import { OwnersTableData } from '@/app/_lib/data-types/propietarios';
 import { formatPhone, formatRUT } from '@/app/_lib/utils/format';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
@@ -13,7 +13,7 @@ export default function OwnerTableRow({
   region,
   telefono,
   total_mascotas,
-}: PropietariosTableData) {
+}: OwnersTableData) {
   return (
     <tr className="grid cursor-pointer grid-cols-24 items-center gap-4 py-4 text-sm text-zinc-600 transition-colors hover:bg-zinc-50/80">
       <td className="col-span-5">

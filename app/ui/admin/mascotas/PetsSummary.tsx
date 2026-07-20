@@ -1,5 +1,5 @@
 import { getSummaryData } from '@/app/_lib/data/mascotas';
-import SummaryCard from './SummaryCard';
+import SummaryCard from '../SummaryCard';
 
 export default async function PetsSummary() {
   const { total_mascotas, total_perros, total_gatos } = await getSummaryData();
