@@ -8,6 +8,7 @@ import { ListFilter, Plus } from 'lucide-react';
 import { Suspense } from 'react';
 import PetsSummary from '@/app/ui/admin/mascotas/PetsSummary';
 import PetsSummarySkeleton from '@/app/ui/admin/mascotas/PetsSummarySkeleton';
+import { BaseMutedLink, SmallBaseMutedLink } from '@/app/ui/components/Link';
 
 type MascotasPageProps = {
   searchParams?: Promise<{ id?: string; query?: string }>;
@@ -34,10 +35,17 @@ export default async function MascotasPageAdmin(props: MascotasPageProps) {
         </div>
         {/* Top Content Buttons */}
         <div className="flex flex-wrap gap-2">
-          <SecondaryButton className="gap-2 bg-white px-4 text-sm">
+          {/* <SecondaryButton className="gap-2 bg-white px-4 text-sm">
             <Plus className="h-4 w-4" />
             Nueva Mascota
-          </SecondaryButton>
+          </SecondaryButton> */}
+          <SmallBaseMutedLink
+            href="/admin/mascotas/nueva"
+            className="gap-2 bg-white px-4 text-sm"
+          >
+            <Plus className="h-4 w-4" />
+            Nueva Mascota
+          </SmallBaseMutedLink>
         </div>
       </div>
       <section className="flex flex-col gap-4 xl:col-span-5">

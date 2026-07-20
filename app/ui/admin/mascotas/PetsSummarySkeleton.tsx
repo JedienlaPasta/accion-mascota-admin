@@ -18,9 +18,7 @@ function SkeletonCard() {
         <div className="h-5 w-28 grow animate-pulse rounded-md bg-gray-200"></div>
       </div>
 
-      <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-zinc-100 text-zinc-600">
-        <span className="size-7 animate-pulse rounded-full bg-zinc-200" />
-      </div>
+      <div className="flex size-11 shrink-0 animate-pulse items-center justify-center rounded-xl bg-gray-200"></div>
     </div>
   );
 }
