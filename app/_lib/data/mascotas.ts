@@ -6,9 +6,9 @@ import type {
 } from '../data-types/mascotas';
 import sql from '../db';
 
-export async function getAllPetsWithQuery(
+export const getAllPetsWithQuery = async (
   query: string
-): Promise<MascotasTableData[]> {
+): Promise<MascotasTableData[]> => {
   try {
     const searchTerm = `%${query}%`;
     const pets = await sql`
@@ -37,11 +37,11 @@ export async function getAllPetsWithQuery(
     return pets.map((pet) => pet as MascotasTableData);
   } catch (error) {
     console.error('Error al obtener listado de mascotas:', error);
-    return [];
+    return [] as MascotasTableData[];
   }
-}
+};
 
-export async function getSummaryData(): Promise<PetsSummaryData | null> {
+export const getSummaryData = async (): Promise<PetsSummaryData> => {
   try {
     const totalPets = await sql`
       SELECT 
@@ -51,16 +51,14 @@ export async function getSummaryData(): Promise<PetsSummaryData | null> {
       FROM mascotas
     `;
 
-    return (totalPets[0] as PetsSummaryData) || null;
+    return totalPets[0] as PetsSummaryData;
   } catch (error) {
     console.error('Error al obtener resumen de mascotas:', error);
-    return null;
+    return {} as PetsSummaryData;
   }
-}
+};
 
-export async function getPetDetailsById(
-  id: string
-): Promise<PetDetails | null> {
+export const getPetDetailsById = async (id: string): Promise<PetDetails> => {
   try {
     const pet = await sql`
     SELECT
@@ -83,16 +81,16 @@ export async function getPetDetailsById(
     WHERE m.public_id = ${id}
   `;
 
-    return (pet[0] as PetDetails) || null;
+    return pet[0] as PetDetails;
   } catch (error) {
     console.error('Error al obtener detalles de mascota:', error);
-    return null;
+    return {} as PetDetails;
   }
-}
+};
 
-export async function getPetClinicHistoryById(
+export const getPetClinicHistoryById = async (
   id: string
-): Promise<ClinicHistoryItem[]> {
+): Promise<ClinicHistoryItem[]> => {
   try {
     const history = await sql`
       SELECT
@@ -114,6 +112,6 @@ export async function getPetClinicHistoryById(
     return history.map((item) => item as ClinicHistoryItem);
   } catch (error) {
     console.error('Error al obtener historial clico:', error);
-    return [];
+    return [] as ClinicHistoryItem[];
   }
-}
+};

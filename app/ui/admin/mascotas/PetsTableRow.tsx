@@ -1,11 +1,6 @@
 import { MascotasTableData } from '@/app/_lib/data-types/mascotas';
 import { validateMicrochip } from '@/app/_lib/utils/check-values';
-import {
-  capitalize,
-  capitalizeAll,
-  formatPhone,
-  formatRUT,
-} from '@/app/_lib/utils/format';
+import { capitalize, capitalizeAll, formatRUT } from '@/app/_lib/utils/format';
 import { getAge } from '@/app/_lib/utils/get-values';
 import { ArrowRight, Check, CircleAlert, X } from 'lucide-react';
 import Link from 'next/link';

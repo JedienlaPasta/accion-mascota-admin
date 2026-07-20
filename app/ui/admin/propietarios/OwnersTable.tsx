@@ -1,15 +1,13 @@
-'use client';
+import { getAllOwnersWithQuery } from '@/app/_lib/data/propietarios';
+import OwnerTableRow from './OwnersTableRow';
 
-import { propietariosAdmin } from '@/app/_lib/mock-data';
-import { formatPhone, formatRUT } from '@/app/_lib/utils/format';
-import { ArrowRight } from 'lucide-react';
-import Link from 'next/link';
+export default async function OwnersTable({ query }: { query: string }) {
+  const owners = await getAllOwnersWithQuery(query);
 
-export default function OwnersTable() {
   return (
-    <div className="borders overflow-hidden border-zinc-200/80">
+    <div className="overflow-hidden border-zinc-200/80">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[720px]">
+        <table className="w-full min-w-[1024px]">
           <thead className="border-b border-zinc-200/80">
             <tr className="grid grid-cols-24 items-center gap-4 py-3 text-left text-zinc-500">
               <th className="col-span-5 text-xs font-normal">Propietario</th>
@@ -27,79 +25,23 @@ export default function OwnersTable() {
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-200/70 bg-white">
-            {propietariosAdmin.map((item) => (
+            {owners.map((item) => (
               <OwnerTableRow
-                key={`${item.rut}`}
-                nombrePropietario={item.nombre}
+                key={`${item.id}`}
+                id={item.id}
+                nombre_propietario={item.nombre_propietario}
                 rut={item.rut}
-                contacto={item.contacto}
                 correo={item.correo}
                 direccion={item.direccion}
-                mascotas={item.mascotas}
-                registro={item.registro}
+                comuna={item.comuna}
+                region={item.region}
+                telefono={item.telefono}
+                total_mascotas={item.total_mascotas}
               />
             ))}
           </tbody>
         </table>
       </div>
     </div>
-  );
-}
-
-type OwnerTableRowProps = {
-  nombrePropietario: string;
-  rut: string;
-  contacto: string;
-  correo: string;
-  direccion: string;
-  mascotas: number;
-  registro: string;
-};
-
-function OwnerTableRow({
-  nombrePropietario,
-  rut,
-  contacto,
-  correo,
-  direccion,
-  mascotas,
-  registro,
-}: OwnerTableRowProps) {
-  const subrut = rut.split('-')[0];
-  const dv = rut.split('-')[1];
-  const formattedRut = formatRUT(subrut, dv);
-
-  const id = '1';
-
-  return (
-    <tr className="grid cursor-pointer grid-cols-24 items-center gap-4 py-4 text-sm text-zinc-600 transition-colors hover:bg-zinc-50/80">
-      <td className="col-span-5">
-        <p className="font-medium text-zinc-900">{nombrePropietario}</p>
-        <p className="text-xs tabular-nums">{formattedRut}</p>
-      </td>
-      <td className="col-span-5">
-        <p className="font-medium text-zinc-900 tabular-nums">
-          {formatPhone(contacto)}
-        </p>
-        <p className="text-xs">{correo}</p>
-      </td>
-      <td className="col-span-7 truncate">
-        <p className="font-medium text-zinc-900">{direccion}</p>
-      </td>
-
-      <td className="col-span-3 flex justify-center tabular-nums">
-        <span className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-600 capitalize">
-          {mascotas}
-        </span>
-      </td>
-      <td className="col-span-2 truncate text-center tabular-nums">
-        {registro}
-      </td>
-      <td className="relative col-span-2 flex justify-center">
-        <Link href={`/admin/propietarios/${id}`}>
-          <ArrowRight className="peer relative z-10 size-8 rounded-lg p-2 text-zinc-500/80 transition-colors hover:bg-zinc-200/40 hover:text-zinc-600/90" />
-        </Link>
-      </td>
-    </tr>
   );
 }

@@ -45,6 +45,7 @@ export default async function MascotasPageAdmin(props: MascotasPageProps) {
           <PetsSummary />
         </Suspense>
 
+        {/* Pets Table */}
         <div className="flex flex-col space-y-4 overflow-hidden rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-shadow hover:shadow-md lg:col-span-3">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-gray-900">Mascotas</h2>

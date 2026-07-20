@@ -1,10 +1,19 @@
+import SearchBar from '@/app/ui/admin/dashboard/SearchBar';
 import SummaryCard from '@/app/ui/admin/dashboard/SummaryCard';
 import OwnersTable from '@/app/ui/admin/propietarios/OwnersTable';
-import TableWrapper from '@/app/ui/admin/TableWrapper';
+import OwnersTableSkeleton from '@/app/ui/admin/propietarios/OwnersTableSkeleton';
 import { SecondaryButton } from '@/app/ui/components/Button';
-import { Plus } from 'lucide-react';
+import { ListFilter, Plus } from 'lucide-react';
+import { Suspense } from 'react';
 
-export default function ProietariosPageAdmin() {
+type OwnersTableProps = {
+  searchParams?: Promise<{ query?: string }>;
+};
+
+export default async function PropietariosPageAdmin(props: OwnersTableProps) {
+  const searchParams = await props.searchParams;
+  const query = searchParams?.query ?? '';
+
   return (
     <div className="flex min-h-full flex-col space-y-4 bg-gray-50/50 p-6 lg:p-8">
       {/* Header */}
@@ -32,10 +41,32 @@ export default function ProietariosPageAdmin() {
           <SummaryCard title="Total Mascotas" value={100} icon="paw" />
         </div>
 
-        {/* Pets Table */}
-        <TableWrapper title="Propietarios">
-          <OwnersTable />
-        </TableWrapper>
+        {/* Owners Table */}
+        <div className="flex flex-col space-y-4 overflow-hidden rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-shadow hover:shadow-md lg:col-span-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-gray-900">Propietarios</h2>
+            <div className="flex gap-4">
+              <SecondaryButton className="gap-2 px-3! text-sm">
+                <ListFilter className="h-4 w-4" />
+                Filtros
+              </SecondaryButton>
+              <Suspense
+                fallback={
+                  <input
+                    disabled
+                    placeholder="Buscar"
+                    className="flex h-10 min-w-52 flex-1 items-center rounded-lg border border-slate-200 bg-white px-4 shadow-sm"
+                  />
+                }
+              >
+                <SearchBar placeholder="Buscar" />
+              </Suspense>
+            </div>
+          </div>
+          <Suspense fallback={<OwnersTableSkeleton />}>
+            <OwnersTable query={query} />
+          </Suspense>
+        </div>
       </section>
     </div>
   );
