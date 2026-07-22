@@ -16,7 +16,8 @@ export type OwnersTableData = {
   id: string; // public_id
   nombre_propietario: string;
   rut: string;
-  correo: string;
+  correo_personal: string;
+  correo_contacto: string;
   direccion: string | null;
   comuna: string | null;
   region: string | null;

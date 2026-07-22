@@ -11,7 +11,8 @@ export const getAllOwnersWithQuery = async (
         p.public_id as id,
         p.nombre AS nombre_propietario,
         p.rut,
-        p.correo,
+        p.correo_personal,
+        p.correo_contacto,
         p.direccion,
         p.comuna,
         p.region,
@@ -22,7 +23,7 @@ export const getAllOwnersWithQuery = async (
       WHERE p.nombre ILIKE ${searchTerm}
         OR p.rut ILIKE ${searchTerm}
         OR p.telefono ILIKE ${searchTerm}
-        OR p.correo ILIKE ${searchTerm}
+        OR p.correo_personal ILIKE ${searchTerm}
         OR p.direccion ILIKE ${searchTerm}
         OR p.comuna ILIKE ${searchTerm}
       GROUP BY
@@ -30,7 +31,8 @@ export const getAllOwnersWithQuery = async (
         p.public_id,
         p.nombre,
         p.rut,
-        p.correo,
+        p.correo_personal,
+        p.correo_contacto,
         p.direccion,
         p.comuna,
         p.region,
@@ -51,7 +53,7 @@ export const getOwnersSummaryData = async (): Promise<OwnersSummaryData> => {
     const totalOwners = await sql`
       SELECT 
         COUNT(*) AS total_propietarios,
-        COUNT(*) FILTER (WHERE correo IS NOT NULL) AS total_propietarios_verificados // Cambiar a correo_personal eventualmente
+        COUNT(*) FILTER (WHERE correo_personal IS NOT NULL) AS total_propietarios_verificados -- Cambiar a correo_personal eventualmente
       FROM propietarios
     `;
 

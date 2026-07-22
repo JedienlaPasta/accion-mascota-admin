@@ -2,7 +2,7 @@ export const capitalize = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 };
 
-export const capitalizeAll = (str?: string) => {
+export const capitalizeAll = (str: string) => {
   if (!str) return '';
 
   const ignoredWords = [

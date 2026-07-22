@@ -1,5 +1,5 @@
 import { OwnersTableData } from '@/app/_lib/data-types/propietarios';
-import { formatPhone, formatRUT } from '@/app/_lib/utils/format';
+import { capitalizeAll, formatPhone, formatRUT } from '@/app/_lib/utils/format';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
@@ -7,27 +7,34 @@ export default function OwnerTableRow({
   id,
   nombre_propietario,
   rut,
-  correo,
+  correo_personal,
+  correo_contacto,
   direccion,
   comuna,
   region,
   telefono,
   total_mascotas,
 }: OwnersTableData) {
+  const correo = correo_personal || correo_contacto || '';
+
   return (
     <tr className="grid cursor-pointer grid-cols-24 items-center gap-4 py-4 text-sm text-zinc-600 transition-colors hover:bg-zinc-50/80">
       <td className="col-span-5">
-        <p className="font-medium text-zinc-900">{nombre_propietario}</p>
+        <p className="font-medium text-zinc-900">
+          {capitalizeAll(nombre_propietario)}
+        </p>
         <p className="text-xs tabular-nums">{formatRUT(rut)}</p>
       </td>
       <td className="col-span-5">
         <p className="font-medium text-zinc-900 tabular-nums">
           {formatPhone(telefono)}
         </p>
-        <p className="text-xs">{correo}</p>
+        <p className="text-xs">{correo.toLowerCase() || '-'}</p>
       </td>
       <td className="col-span-7 truncate">
-        <p className="font-medium text-zinc-900">{direccion}</p>
+        <p className="font-medium text-zinc-900">
+          {capitalizeAll(direccion || '')}
+        </p>
       </td>
 
       <td className="col-span-3 flex justify-center tabular-nums">

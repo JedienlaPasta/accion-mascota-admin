@@ -7,7 +7,7 @@ export default async function OwnersTable({ query }: { query: string }) {
   return (
     <div className="overflow-hidden border-zinc-200/80">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[1024px]">
+        <table className="w-full min-w-5xl">
           <thead className="border-b border-zinc-200/80">
             <tr className="grid grid-cols-24 items-center gap-4 py-3 text-left text-zinc-500">
               <th className="col-span-5 text-xs font-normal">Propietario</th>
@@ -31,7 +31,8 @@ export default async function OwnersTable({ query }: { query: string }) {
                 id={item.id}
                 nombre_propietario={item.nombre_propietario}
                 rut={item.rut}
-                correo={item.correo}
+                correo_personal={item.correo_personal}
+                correo_contacto={item.correo_contacto}
                 direccion={item.direccion}
                 comuna={item.comuna}
                 region={item.region}
