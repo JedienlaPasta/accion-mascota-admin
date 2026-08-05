@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
+import AdminSidebarProfile from './AdminSidebarProfile';
 
 const navItems = [
   {
@@ -130,14 +131,8 @@ export function AdminSidebar() {
           </ul>
         </nav>
 
-        <div className="p-3">
-          <div className="group flex items-center gap-2 rounded-xl border border-gray-800 bg-[#020711] px-2 py-2 text-sm text-white">
-            <span className="flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
-              <LayoutDashboard className="h-4 w-4" />
-            </span>
-            Perfil
-          </div>
-        </div>
+        {/* Perfil */}
+        <AdminSidebarProfile />
       </div>
     </aside>
   );
