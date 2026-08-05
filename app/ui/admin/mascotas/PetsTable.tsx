@@ -5,11 +5,11 @@ export default async function PetsTable({ query }: { query: string }) {
   const pets = await getAllPetsWithQuery(query);
 
   return (
-    <div className="overflow-hidden border-zinc-200/80">
+    <div className="overflow-hidden border-gray-200/80">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[1024px]">
-          <thead className="border-b border-zinc-200/80">
-            <tr className="grid grid-cols-24 items-center gap-4 py-3 text-left text-zinc-500">
+        <table className="w-full min-w-5xl">
+          <thead className="border-b border-gray-200/80">
+            <tr className="grid grid-cols-24 items-center gap-4 px-8 py-3 text-left text-gray-500">
               <th className="col-span-4 text-xs font-normal lg:col-span-5">
                 Mascota
               </th>
@@ -26,7 +26,7 @@ export default async function PetsTable({ query }: { query: string }) {
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-200/70 bg-white">
+          <tbody className="divide-y divide-gray-200/70 bg-white">
             {pets.map((item) => (
               <PetTableRow
                 key={`${item.id + item.microchip}`}

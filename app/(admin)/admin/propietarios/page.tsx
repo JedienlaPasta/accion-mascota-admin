@@ -1,12 +1,11 @@
-import SearchBar from '@/app/ui/admin/dashboard/SearchBar';
-import SummaryCard from '@/app/ui/admin/SummaryCard';
 import OwnersTable from '@/app/ui/admin/propietarios/OwnersTable';
 import OwnersTableSkeleton from '@/app/ui/admin/propietarios/OwnersTableSkeleton';
 import { SecondaryButton } from '@/app/ui/components/Button';
-import { ListFilter, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Suspense } from 'react';
 import OwnersSummary from '@/app/ui/admin/propietarios/OwnersSummary';
 import OwnersSummarySkeleton from '@/app/ui/admin/propietarios/OwnersSummarySkeleton';
+import TableWrapper from '@/app/ui/admin/TableWrapper';
 
 type OwnersTableProps = {
   searchParams?: Promise<{ query?: string }>;
@@ -42,31 +41,11 @@ export default async function PropietariosPageAdmin(props: OwnersTableProps) {
         </Suspense>
 
         {/* Owners Table */}
-        <div className="flex flex-col space-y-4 overflow-hidden rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-shadow hover:shadow-md lg:col-span-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-gray-900">Propietarios</h2>
-            <div className="flex gap-4">
-              <SecondaryButton className="gap-2 px-3! text-sm">
-                <ListFilter className="h-4 w-4" />
-                Filtros
-              </SecondaryButton>
-              <Suspense
-                fallback={
-                  <input
-                    disabled
-                    placeholder="Buscar"
-                    className="flex h-10 min-w-52 flex-1 items-center rounded-lg border border-slate-200 bg-white px-4 shadow-sm"
-                  />
-                }
-              >
-                <SearchBar placeholder="Buscar" />
-              </Suspense>
-            </div>
-          </div>
+        <TableWrapper title="Propietarios">
           <Suspense fallback={<OwnersTableSkeleton />}>
             <OwnersTable query={query} />
           </Suspense>
-        </div>
+        </TableWrapper>
       </section>
     </div>
   );

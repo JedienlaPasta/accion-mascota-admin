@@ -1,5 +1,4 @@
 import { todasLasMascotas } from '@/app/_lib/mock-data';
-import SearchBar from '@/app/ui/admin/dashboard/SearchBar';
 import PetRecord from '@/app/ui/admin/mascotas/PetRecord';
 import PetsTable from '@/app/ui/admin/mascotas/PetsTable';
 import PetsTableSkeleton from '@/app/ui/admin/mascotas/PetsTableSkeleton';
@@ -8,7 +7,8 @@ import { ListFilter, Plus } from 'lucide-react';
 import { Suspense } from 'react';
 import PetsSummary from '@/app/ui/admin/mascotas/PetsSummary';
 import PetsSummarySkeleton from '@/app/ui/admin/mascotas/PetsSummarySkeleton';
-import { BaseMutedLink, SmallBaseMutedLink } from '@/app/ui/components/Link';
+import { SmallBaseMutedLink } from '@/app/ui/components/Link';
+import TableWrapper from '@/app/ui/admin/TableWrapper';
 
 type MascotasPageProps = {
   searchParams?: Promise<{ id?: string; query?: string }>;
@@ -35,10 +35,6 @@ export default async function MascotasPageAdmin(props: MascotasPageProps) {
         </div>
         {/* Top Content Buttons */}
         <div className="flex flex-wrap gap-2">
-          {/* <SecondaryButton className="gap-2 bg-white px-4 text-sm">
-            <Plus className="h-4 w-4" />
-            Nueva Mascota
-          </SecondaryButton> */}
           <SmallBaseMutedLink
             href="/admin/mascotas/nueva"
             className="gap-2 bg-white px-4 text-sm"
@@ -54,31 +50,11 @@ export default async function MascotasPageAdmin(props: MascotasPageProps) {
         </Suspense>
 
         {/* Pets Table */}
-        <div className="flex flex-col space-y-4 overflow-hidden rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-shadow hover:shadow-md lg:col-span-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-gray-900">Mascotas</h2>
-            <div className="flex gap-4">
-              <SecondaryButton className="gap-2 px-3! text-sm">
-                <ListFilter className="h-4 w-4" />
-                Filtros
-              </SecondaryButton>
-              <Suspense
-                fallback={
-                  <input
-                    disabled
-                    placeholder="Buscar"
-                    className="flex h-10 min-w-52 flex-1 items-center rounded-lg border border-slate-200 bg-white px-4 shadow-sm"
-                  />
-                }
-              >
-                <SearchBar placeholder="Buscar" />
-              </Suspense>
-            </div>
-          </div>
+        <TableWrapper title="Mascotas">
           <Suspense fallback={<PetsTableSkeleton />}>
             <PetsTable query={query} />
           </Suspense>
-        </div>
+        </TableWrapper>
       </section>
     </div>
   );

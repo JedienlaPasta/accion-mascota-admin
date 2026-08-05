@@ -93,7 +93,7 @@ export default function Dropdown({
             onClick={() => setIsOpen(true)}
             placeholder={placeholder}
             readOnly={readOnly}
-            className={`h-11 w-full rounded-xl border bg-white pr-10 pl-4 text-sm text-gray-700 shadow-sm transition-all outline-none placeholder:text-gray-400 ${
+            className={`h-11 w-full rounded-lg border shadow-gray-200 bg-white pr-10 pl-4 text-sm text-gray-700 shadow-sm transition-all outline-none placeholder:text-gray-400 ${
               isOpen
                 ? 'border-blue-400 ring-2 ring-blue-100'
                 : 'border-slate-200'

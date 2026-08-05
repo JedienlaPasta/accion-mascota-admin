@@ -1,10 +1,12 @@
 import { historialClinico } from '@/app/_lib/mock-data';
 import VisitRecordDetailModal from '@/app/ui/admin/atenciones/VisitRecordDetailModal';
 import VisitsTable from '@/app/ui/admin/atenciones/VisitsTable';
+import VisitsTableSkeleton from '@/app/ui/admin/atenciones/VisitsTableSkeleton';
 import SummaryCard from '@/app/ui/admin/SummaryCard';
 import TableWrapper from '@/app/ui/admin/TableWrapper';
 import { SecondaryButton } from '@/app/ui/components/Button';
 import { Plus } from 'lucide-react';
+import { Suspense } from 'react';
 
 type VisitsRecordsPageAdmin = {
   searchParams?: Promise<{ visitId?: string }>;
@@ -49,7 +51,9 @@ export default async function AtencionesPageAdmin(
 
         {/* Atenciones Table */}
         <TableWrapper title="Atenciones">
-          <VisitsTable />
+          <Suspense fallback={<VisitsTableSkeleton />}>
+            <VisitsTable />
+          </Suspense>
         </TableWrapper>
       </section>
     </div>

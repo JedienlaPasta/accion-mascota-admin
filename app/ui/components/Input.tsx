@@ -76,7 +76,7 @@ export default function Input({
         maxLength={
           maxLength ? maxLength : label === 'Código Campaña' ? 2 : undefined
         }
-        className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-gray-700 shadow-sm transition-all outline-none placeholder:text-[13px] placeholder:text-gray-400 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100"
+        className="h-11 w-full rounded-lg border border-slate-200 shadow-gray-200 bg-white px-4 text-sm text-gray-700 shadow-sm transition-all outline-none placeholder:text-[13px] placeholder:text-gray-400 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100"
       />
     </div>
   );
@@ -160,7 +160,7 @@ export function SafeNumberInput({
         maxLength={
           maxLength ? maxLength : label === 'Código Campaña' ? 2 : undefined
         }
-        className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-gray-700 shadow-sm transition-all outline-none placeholder:text-[13px] placeholder:text-gray-400 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100"
+        className="h-11 w-full rounded-lg border border-slate-200 shadow-gray-200 bg-white px-4 text-sm text-gray-700 shadow-sm transition-all outline-none placeholder:text-[13px] placeholder:text-gray-400 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100"
       />
     </div>
   );
@@ -215,7 +215,7 @@ export function TextArea({
         maxLength={
           maxLength ? maxLength : label === 'Código Campaña' ? 2 : undefined
         }
-        className="h-20 w-full rounded-xl border border-slate-200 bg-white pt-2 pr-10 pl-4 text-sm text-gray-700 shadow-sm transition-all outline-none placeholder:text-gray-400"
+        className="h-20 w-full rounded-lg border border-slate-200 bg-white pt-2 pr-10 pl-4 text-sm text-gray-700 shadow-sm transition-all outline-none placeholder:text-gray-400"
       />
     </div>
   );
