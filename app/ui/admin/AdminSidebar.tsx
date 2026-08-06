@@ -9,6 +9,8 @@ import {
   User,
   LayoutDashboard,
   Settings,
+  Syringe,
+  HeartPulse,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
@@ -38,6 +40,11 @@ const navItems = [
   {
     href: '/admin/atenciones',
     label: 'Atenciones',
+    icon: HeartPulse,
+  },
+  {
+    href: '/admin/reportes',
+    label: 'Reportes',
     icon: ClipboardList,
   },
   {
