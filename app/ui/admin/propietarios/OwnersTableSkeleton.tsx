@@ -42,28 +42,40 @@ export default function OwnersTableSkeleton() {
 
 function TableRowSkeleton() {
   return (
-    <tr className="grid cursor-pointer grid-cols-24 items-center gap-4 px-8 text-sm text-gray-600 transition-colors last:mb-2 hover:bg-gray-50/80">
+    <tr className="grid h-18 cursor-pointer grid-cols-24 items-center gap-4 px-8 text-sm text-gray-600 transition-colors last:mb-2 hover:bg-gray-50/80">
       {/* Propietario */}
-      <td className="col-span-5 flex flex-col gap-1 py-4">
-        <div className="h-5 max-w-20 grow animate-pulse rounded-md bg-gray-200"></div>
-        <div className="h-3 max-w-28 grow animate-pulse rounded bg-gray-200"></div>
+      <td className="col-span-5 flex items-center justify-start gap-2.5">
+        <div className="size-10 animate-pulse rounded-xl bg-gray-200"></div>
+        <span className="flex flex-col gap-1">
+          <div className="h-4 w-32 animate-pulse rounded-md bg-gray-200"></div>
+          <div className="h-3 w-20 animate-pulse rounded bg-gray-200"></div>
+        </span>
       </td>
       {/* Contacto */}
-      <td className="col-span-5 flex flex-col gap-1 py-4">
-        <div className="h-5 max-w-28 grow animate-pulse rounded-md bg-gray-200"></div>
+      <td className="col-span-5 flex items-center justify-start gap-1">
+        <span className="flex flex-col items-end gap-1">
+          <div className="h-5 w-5 animate-pulse rounded-md bg-gray-200"></div>
+          <div className="h-4 w-4 animate-pulse rounded-md bg-gray-200"></div>
+        </span>
+        <span className="flex flex-col gap-1">
+          <div className="h-5 w-32 animate-pulse rounded-md bg-gray-200"></div>
+          <div className="h-4 w-20 animate-pulse rounded-md bg-gray-200"></div>
+        </span>
       </td>
       {/* Dirección */}
-      <td className="col-span-7 flex flex-col gap-1 py-4">
+      <td className="col-span-7 flex items-center gap-1">
+        <div className="h-5 w-5 animate-pulse rounded-md bg-gray-200"></div>
         <div className="h-5 max-w-56 grow animate-pulse rounded-md bg-gray-200"></div>
       </td>
       {/* Mascotas */}
-      <td className="col-span-3 flex justify-center py-5">
-        <div className="h-5 w-8 animate-pulse rounded-md bg-gray-200"></div>
+      <td className="col-span-3 flex items-center justify-center gap-1">
+        <div className="h-5 w-5 animate-pulse rounded-md bg-gray-200"></div>
+        <div className="h-5 w-5 animate-pulse rounded-md bg-gray-200"></div>
       </td>
       {/* Registro */}
-      <td className="col-span-2 flex gap-1 py-5">
+      <td className="col-span-2 flex items-center gap-1">
+        <div className="h-5 w-5 animate-pulse rounded-md bg-gray-200"></div>
         <div className="h-5 w-20 animate-pulse rounded-md bg-gray-200"></div>
-        <div className="h-5 w-28 animate-pulse rounded-md bg-gray-200"></div>
       </td>
       {/* Acciones */}
       <td className="col-span-2 flex justify-center gap-1 py-5 text-right">

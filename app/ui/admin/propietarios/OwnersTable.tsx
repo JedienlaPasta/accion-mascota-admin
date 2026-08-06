@@ -17,7 +17,7 @@ export default async function OwnersTable({ query }: { query: string }) {
                 Mascotas
               </th>
               <th className="col-span-2 text-center text-xs font-normal">
-                Registro
+                Es usuario
               </th>
               <th className="col-span-2 text-center text-xs font-normal">
                 Acciones

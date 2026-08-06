@@ -43,15 +43,18 @@ export default function PetsTableSkeleton() {
 
 function TableRowSkeleton() {
   return (
-    <tr className="grid cursor-pointer grid-cols-24 items-center gap-4 px-8 text-sm text-gray-600 transition-colors last:mb-2 hover:bg-gray-50/80">
+    <tr className="grid h-18 cursor-pointer grid-cols-24 items-center gap-4 px-8 text-sm text-gray-600 transition-colors last:mb-2 hover:bg-gray-50/80">
       {/* Nombre Mascota */}
-      <td className="col-span-4 flex flex-col gap-1 py-4 lg:col-span-5">
-        <div className="h-5 max-w-20 grow animate-pulse rounded-md bg-gray-200"></div>
-        <div className="h-3 max-w-28 grow animate-pulse rounded bg-gray-200"></div>
+      <td className="col-span-4 flex items-center justify-start gap-2.5 lg:col-span-5">
+        <div className="size-10 animate-pulse rounded-xl bg-gray-200"></div>
+        <span className="flex flex-col gap-1">
+          <div className="h-4 w-32 animate-pulse rounded-md bg-gray-200"></div>
+          <div className="h-3 w-20 animate-pulse rounded bg-gray-200"></div>
+        </span>
       </td>
       {/* Especie/Raza */}
-      <td className="col-span-4 flex flex-col gap-1 py-4">
-        <div className="h-5 max-w-18 grow animate-pulse rounded-md bg-gray-200"></div>
+      <td className="col-span-4 flex flex-col gap-1">
+        <div className="h-4 max-w-18 grow animate-pulse rounded-md bg-gray-200"></div>
         <div className="h-3 max-w-28 grow animate-pulse rounded bg-gray-200"></div>
       </td>
       {/* Nombre Propietario */}
@@ -60,13 +63,13 @@ function TableRowSkeleton() {
         <div className="h-3 max-w-28 grow animate-pulse rounded bg-gray-200"></div>
       </td>
       {/* Microchip */}
-      <td className="relative col-span-5 py-5">
-        <div className="absolute -left-6 h-5 w-5 animate-pulse rounded-md bg-gray-200"></div>
-        <div className="h-5 w-42 animate-pulse rounded-md bg-gray-200"></div>
+      <td className="relative col-span-5 flex items-center justify-start gap-2">
+        <div className="h-7 w-7 animate-pulse rounded-md bg-gray-200"></div>
+        <div className="h-5 w-28 animate-pulse rounded-md bg-gray-200"></div>
       </td>
       {/* Esterilizado */}
-      <td className="col-span-2 flex py-5">
-        <div className="h-5 w-28 animate-pulse rounded-md bg-gray-200"></div>
+      <td className="col-span-2 flex items-center justify-center py-5">
+        <div className="h-5 w-20 animate-pulse rounded-md bg-gray-200"></div>
       </td>
       {/* Acciones */}
       <td className="col-span-2 flex justify-center gap-1 py-5 text-right">
