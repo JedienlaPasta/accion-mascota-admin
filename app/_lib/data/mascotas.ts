@@ -75,7 +75,8 @@ export const getPetDetailsById = async (id: string): Promise<PetDetails> => {
       p.public_id AS propietario_id,
       p.nombre AS nombre_propietario,
       p.telefono,
-      p.correo
+      p.correo_personal,
+      p.correo_contacto
     FROM mascotas m
     JOIN propietarios p ON m.propietario_id = p.id
     WHERE m.public_id = ${id}
