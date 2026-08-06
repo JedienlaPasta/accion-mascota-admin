@@ -17,12 +17,12 @@ export default function BoardCube({
   const isToday = dateStr === today;
 
   const stateColor = [
-    'bg-slate-200/60 border-slate-300/50',
-    'bg-teal-100/90 border-teal-200/50',
-    'bg-teal-200/90 border-teal-300/50',
-    'bg-teal-300/90 border-teal-400/50',
-    'bg-teal-400/90 border-teal-500/50',
-    'bg-teal-500/90 border-teal-600/50',
+    'bg-slate-200/60 border-transparent',
+    'bg-teal-100/90 border-transparent',
+    'bg-teal-200/90 border-transparent',
+    'bg-teal-300/90 border-transparent',
+    'bg-teal-400/90 border-transparent',
+    'bg-teal-500/90 border-transparent',
   ];
 
   // Select the color based on count thresholds—or highlight if today.
@@ -36,7 +36,7 @@ export default function BoardCube({
   }
 
   const cubeClass = disabled
-    ? 'bg-slate-50 border-slate-200/90'
+    ? 'bg-slate-50/60 border-slate-100/70'
     : stateColor[getStateFromCount(count, thresholds)];
 
   const year = dateStr?.slice(0, 4);

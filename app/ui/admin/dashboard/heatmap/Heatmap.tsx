@@ -29,8 +29,8 @@ export default async function HeatMap({ year }: HeatmapProps) {
         </div>
       </div>
 
-      <div className="flex min-w-fit shrink-0 flex-nowrap gap-6">
-        <div className="flex flex-1 gap-4">
+      <div className="flex min-w-fit shrink-0 flex-nowrap">
+        <div className="flex flex-1 gap-6">
           <div className="flex flex-col gap-3">
             <Suspense
               key={`heatmap-table-${year}`}

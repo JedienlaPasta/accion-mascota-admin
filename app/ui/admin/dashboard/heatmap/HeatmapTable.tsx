@@ -66,7 +66,7 @@ export default async function HeatMapTable({ year }: HeatMapTableProps) {
   }
 
   return (
-    <div className="flex w-fit flex-col rounded-xl border border-slate-200 bg-slate-50 p-4">
+    <div className="flex w-fit flex-col">
       <div className="ml-7 grid grid-cols-12 pb-1 text-xs text-gray-600">
         {months.map((month) => (
           <div key={month} className="text-center whitespace-nowrap">
@@ -75,12 +75,12 @@ export default async function HeatMapTable({ year }: HeatMapTableProps) {
         ))}
       </div>
       <div className="flex items-center justify-center gap-2">
-        <div className="flex flex-col gap-1 text-center text-xs text-gray-600">
+        <div className="flex flex-col gap-0.75 text-center text-xs text-gray-600">
           {weekDays.map((day) => (
             <p key={day}>{day}</p>
           ))}
         </div>
-        <div className="grid grid-flow-col grid-rows-5 gap-1">{cubes}</div>
+        <div className="grid grid-flow-col grid-rows-5 gap-0.75">{cubes}</div>
       </div>
     </div>
   );

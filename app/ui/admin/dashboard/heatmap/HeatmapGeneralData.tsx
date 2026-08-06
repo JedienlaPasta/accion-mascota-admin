@@ -9,7 +9,7 @@ export default async function HeatmapGeneralData({ year }: { year: string }) {
 
   return (
     <div className="flex w-full flex-col gap-3">
-      <div className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-slate-50 p-5">
+      <div className="flex flex-col gap-3">
         <h3 className="text-xs font-bold tracking-wide text-slate-500 uppercase">
           Resumen del Año
         </h3>
@@ -34,7 +34,7 @@ export default async function HeatmapGeneralData({ year }: { year: string }) {
 
           <div className="grid grid-cols-2 gap-3">
             {/* Perros */}
-            <div className="flex items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2.5">
+            <div className="flex items-center justify-between gap-2 rounded-lg bg-gray-50 px-3 py-2.5">
               <div className="flex items-center gap-2">
                 <div className="flex size-7 items-center justify-center rounded-md bg-gray-50 text-gray-600">
                   <Dog className="size-3.5" />
@@ -49,7 +49,7 @@ export default async function HeatmapGeneralData({ year }: { year: string }) {
             </div>
 
             {/* Gatos */}
-            <div className="flex items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2.5">
+            <div className="flex items-center justify-between gap-2 rounded-lg bg-gray-50 px-3 py-2.5">
               <div className="flex items-center gap-2">
                 <div className="flex size-7 items-center justify-center rounded-md bg-gray-50 text-gray-600">
                   <Cat className="size-3.5" />
@@ -72,39 +72,39 @@ export default async function HeatmapGeneralData({ year }: { year: string }) {
 export function HeatmapGeneralDataSkeleton() {
   return (
     <div className="flex w-full flex-col gap-3">
-      <div className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-slate-50 p-5">
+      <div className="flex flex-col gap-3">
         {/* Título */}
-        <div className="h-4 w-28 rounded bg-slate-200 animate-pulse" />
+        <div className="h-4 w-28 animate-pulse rounded bg-slate-200" />
 
         <div className="space-y-3">
           {/* Total Atenciones */}
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-slate-200 animate-pulse" />
-              <div className="h-4 w-28 rounded bg-slate-200 animate-pulse" />
+              <div className="flex size-8 animate-pulse items-center justify-center rounded-lg bg-slate-200" />
+              <div className="h-4 w-28 animate-pulse rounded bg-slate-200" />
             </div>
-            <div className="h-7 w-16 rounded bg-slate-200 animate-pulse" />
+            <div className="h-7 w-16 animate-pulse rounded bg-slate-200" />
           </div>
 
           <div className="h-px bg-slate-200" />
 
           <div className="grid grid-cols-2 gap-3">
             {/* Perros Skeleton */}
-            <div className="flex items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2.5">
+            <div className="flex items-center justify-between gap-2 rounded-lg bg-gray-50 px-3 py-2.5">
               <div className="flex items-center gap-2">
-                <div className="flex size-7 items-center justify-center rounded-md bg-slate-200 animate-pulse" />
-                <div className="h-3 w-10 rounded bg-slate-200 animate-pulse" />
+                <div className="flex size-7 animate-pulse items-center justify-center rounded-md bg-slate-200" />
+                <div className="h-3 w-10 animate-pulse rounded bg-slate-200" />
               </div>
-              <div className="h-5 w-10 rounded bg-slate-200 animate-pulse" />
+              <div className="h-5 w-10 animate-pulse rounded bg-slate-200" />
             </div>
 
             {/* Gatos Skeleton */}
-            <div className="flex items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2.5">
+            <div className="flex items-center justify-between gap-2 rounded-lg bg-gray-50 px-3 py-2.5">
               <div className="flex items-center gap-2">
-                <div className="flex size-7 items-center justify-center rounded-md bg-slate-200 animate-pulse" />
-                <div className="h-3 w-10 rounded bg-slate-200 animate-pulse" />
+                <div className="flex size-7 animate-pulse items-center justify-center rounded-md bg-slate-200" />
+                <div className="h-3 w-10 animate-pulse rounded bg-slate-200" />
               </div>
-              <div className="h-5 w-10 rounded bg-slate-200 animate-pulse" />
+              <div className="h-5 w-10 animate-pulse rounded bg-slate-200" />
             </div>
           </div>
         </div>
