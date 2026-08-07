@@ -1,50 +1,48 @@
 'use client';
 
-import {
-  especieIcon,
-  HistorialClinico,
-  tipoColors,
-  tipoIcon,
-  todasLasMascotas,
-} from '@/app/_lib/mock-data';
-import { parseLocalDate } from '@/app/_lib/utils/parse';
+import { getVisitDetailById } from '@/app/_lib/data/consultas';
 import { Calendar, ChevronRight, Clock, UserIcon, XIcon } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 type VisitRecordDetailModalProps = {
   id: string;
-  visitRecords: HistorialClinico[];
 };
 
 export default function VisitRecordDetailModal({
   id,
-  visitRecords,
 }: VisitRecordDetailModalProps) {
+  const [data, setData] = useState<Awaited<
+    ReturnType<typeof getVisitDetailById>
+  > | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    // NOTA: idealmente haces un Server Component o un Route Handler; aquí un fetch rápido:
+    // Como alternativa simple, puedes mover la lógica del modal a su propia ruta con 'use client' + route handler.
+    // Por ahora, usaremos window.fetch a una ruta: /api/atenciones/[id] (si la creas).
+    // Si no tienes API, mejor pasa el detalle desde page.tsx vía props server → componentes hijos.
+    fetch(`/api/atenciones/${encodeURIComponent(id)}`)
+      .then((r) => r.json())
+      .then((json) => setData(json.data || null))
+      .catch(() => setData(null))
+      .finally(() => setLoading(false));
+  }, [id]);
+
   useEffect(() => {
     const mainContainer = document.getElementById('main-scroll');
     if (!mainContainer) return;
-
     const scrollbarWidth =
       mainContainer.offsetWidth - mainContainer.clientWidth;
-
     mainContainer.style.overflow = 'hidden';
-
-    if (scrollbarWidth > 0) {
+    if (scrollbarWidth > 0)
       mainContainer.style.paddingRight = `${scrollbarWidth}px`;
-    }
-
     return () => {
       mainContainer.style.overflow = '';
       mainContainer.style.paddingRight = '';
     };
   }, []);
-
-  const data = visitRecords.find((item) => item.id === id);
-
-  const petRecord = todasLasMascotas.find(
-    (item) => item.id === data?.mascotaId
-  );
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -55,126 +53,94 @@ export default function VisitRecordDetailModal({
     router.replace(`?${params.toString()}`, { scroll: false });
   };
 
-  if (!data) return <div>Registro no encontrado</div>;
-
-  const IconoConsulta = tipoIcon[data.tipo];
-  const IconoEspecie = especieIcon[petRecord?.especie || 'otro'];
-  const colors = tipoColors[data.tipo];
-
-  return (
-    <>
-      {/* Overlay */}
+  if (loading) {
+    return (
       <div
-        className="fixed inset-0 z-60 h-full bg-gray-800/70 transition-all"
-        onClick={handleModalClose}
-      />
-      <div
-        key={data.id}
-        className="fixed top-1/2 left-1/2 z-70 w-full max-w-5xl -translate-x-1/2 -translate-y-[80%] overflow-hidden rounded-3xl border border-gray-100 bg-white px-4 py-6 shadow-sm transition-all hover:shadow-md sm:w-[80%] sm:px-4 sm:py-6 lg:px-8 lg:py-10"
+        aria-hidden
+        className="fixed inset-0 z-70 flex items-center justify-center bg-gray-800/70"
       >
-        <div className="relative flex items-start justify-between gap-3 bg-white">
-          {/* Left */}
-          <div className="flex items-center gap-3">
-            <div
-              className={`flex size-10 shrink-0 items-center justify-center rounded-xl ring-1 ${colors.bg} ${colors.text} ${colors.ring}`}
-            >
-              <IconoConsulta className="size-5" />
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm font-semibold">{data.descripcion}</p>
+        <div className="size-12 animate-spin rounded-full border-4 border-white/80 border-t-emerald-600" />
+      </div>
+    );
+  }
 
-              <div className="flex gap-3">
-                <span className="flex items-center rounded-full border border-gray-200 px-2 text-xs font-medium text-gray-700 capitalize">
-                  {data.tipo}
-                </span>
-                <span className="text-sm text-gray-500 capitalize">|</span>
-                <span className="text-sm text-gray-500 capitalize">
-                  <div className="flex items-center gap-1">
-                    <IconoEspecie className="size-3" />
-                    {petRecord?.nombre || 'Mascota'}
-                  </div>
-                </span>
-                <span className="text-sm text-gray-500 capitalize">|</span>
-                <span className="text-sm text-gray-500 capitalize">
-                  <div className="flex items-center gap-1">
-                    <Calendar className="size-3" />
-                    {new Intl.DateTimeFormat('es-CL', {
-                      day: 'numeric',
-                      month: 'short',
-                    }).format(parseLocalDate(data.fecha))}
-                  </div>
-                </span>
-              </div>
-            </div>
-          </div>
-          {/* Right */}
-          <XIcon
-            onClick={() => handleModalClose()}
-            className="size-5 cursor-pointer text-gray-400 transition-transform duration-300"
-          />
-        </div>
-        <div className="mt-4 duration-500 sm:ml-13">
-          <div className="flex flex-col gap-4 rounded-xl bg-gray-50 px-5 py-4">
-            {/* Diagnóstico */}
-            <div className="flex items-center gap-3 text-gray-700">
-              <div>
-                <p className="text-[10px] font-semibold tracking-wider text-gray-400 uppercase">
-                  Diagnóstico
-                </p>
-                <p className="text-sm font-semibold">{data.diagnostico}</p>
-              </div>
-            </div>
-            {/* Tratamiento */}
-            <div className="flex items-center gap-3 text-gray-700">
-              <div>
-                <p className="text-[10px] font-semibold tracking-wider text-gray-400 uppercase">
-                  Tratamiento Recomendado
-                </p>
-                <p className="text-sm font-semibold">
-                  {data.tratamiento || 'Churu de pollito'}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* Detalles footer */}
-        <div className="mt-3 ml-1 flex flex-col gap-4 sm:ml-13">
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-500">
-            <div className="flex items-center gap-2">
-              <UserIcon className="size-4" />
-              <p>{data.veterinario}</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <Calendar className="size-4" />
-              <p>
-                {new Intl.DateTimeFormat('es-CL', {
-                  day: 'numeric',
-                  month: 'long',
-                  year: 'numeric',
-                }).format(parseLocalDate(data.fecha))}
-              </p>
-            </div>
-            {data.proximaVisita && (
-              <div className="flex items-center gap-2 text-emerald-600">
-                <Clock className="size-4" />
-                <p className="font-medium">
-                  Prox. control:{' '}
-                  {new Intl.DateTimeFormat('es-CL', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
-                  }).format(parseLocalDate(data.proximaVisita))}
-                </p>
-              </div>
-            )}
-          </div>
-
-          <button className="group flex cursor-pointer items-center gap-1 text-sm font-medium text-emerald-600 hover:text-emerald-700">
-            Ver perfil de {petRecord?.nombre || 'Mascota'}
-            <ChevronRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+  if (!data) {
+    return (
+      <div className="fixed inset-0 z-70" onClick={handleModalClose}>
+        <div className="absolute top-1/2 left-1/2 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white p-6 text-center shadow-2xl">
+          <p className="text-sm font-semibold text-gray-800">
+            Registro no encontrado
+          </p>
+          <button
+            onClick={handleModalClose}
+            className="mt-3 text-xs text-indigo-600"
+          >
+            Cerrar
           </button>
         </div>
       </div>
-    </>
+    );
+  }
+
+  // ... aquí tu UI actual del modal, pero usando `data` real del schema:
+  // data.peso_actual, data.motivo_atencion, data.anamnesis, data.examen_fisico, data.examenes_solicitados, data.procedimientos_aplicados, data.tratamiento
+  return (
+    <div className="fixed inset-0 z-70" onClick={handleModalClose}>
+      <div className="absolute inset-0 bg-gray-800/70" />
+      <div className="absolute top-1/2 left-1/2 max-h-[90vh] w-[90%] max-w-5xl -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-3xl bg-white p-6 shadow-xl">
+        <div className="flex items-start justify-between">
+          <div>
+            <h3 className="text-xl font-bold text-gray-900">
+              Detalle atención
+            </h3>
+            <p className="mt-1 text-sm text-gray-500">
+              {data.nombre_mascota} ·{' '}
+              {new Date(data.fecha_atencion).toLocaleString('es-CL')}
+            </p>
+          </div>
+          <button
+            onClick={handleModalClose}
+            className="rounded-lg p-2 text-gray-400 hover:bg-gray-100"
+          >
+            <XIcon className="size-5" />
+          </button>
+        </div>
+        {/* TODO: arma aquí el detalle completo usando los campos del schema */}
+        <div className="mt-4 grid gap-4 text-sm sm:grid-cols-2">
+          <div className="rounded-xl bg-gray-50 p-4">
+            <p className="text-[11px] font-bold tracking-wide text-gray-400 uppercase">
+              Motivo
+            </p>
+            <p className="mt-1 font-medium text-gray-800">
+              {data.motivo_atencion || '—'}
+            </p>
+          </div>
+          <div className="rounded-xl bg-gray-50 p-4">
+            <p className="text-[11px] font-bold tracking-wide text-gray-400 uppercase">
+              Peso actual
+            </p>
+            <p className="mt-1 font-medium text-gray-800">
+              {data.peso_actual ? `${data.peso_actual} kg` : '—'}
+            </p>
+          </div>
+          <div className="rounded-xl bg-gray-50 p-4 sm:col-span-2">
+            <p className="text-[11px] font-bold tracking-wide text-gray-400 uppercase">
+              Pre-DX
+            </p>
+            <p className="mt-1 font-medium text-gray-800">
+              {data.pre_dx || '—'}
+            </p>
+          </div>
+          <div className="rounded-xl bg-gray-50 p-4 sm:col-span-2">
+            <p className="text-[11px] font-bold tracking-wide text-gray-400 uppercase">
+              Tratamiento
+            </p>
+            <p className="mt-1 font-medium whitespace-pre-wrap text-gray-800">
+              {data.tratamiento || '—'}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

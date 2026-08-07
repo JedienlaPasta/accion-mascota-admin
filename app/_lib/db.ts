@@ -6,9 +6,13 @@ declare global {
 
 const connectionString = process.env.DATABASE_URL;
 
+if (!connectionString) {
+  throw new Error("DATABASE_URL no está definida");
+}
+
 const sql =
-  globalThis.sql ||
-  postgres(connectionString!, {
+  globalThis.sql ??
+  postgres(connectionString, {
     max: 10, // Máximo de conexiones abiertas
     idle_timeout: 20, // Tiempo de inactividad en segundos
   });
