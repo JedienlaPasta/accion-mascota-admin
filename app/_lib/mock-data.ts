@@ -16,8 +16,8 @@ export const especieIcon: Record<
   string,
   React.ComponentType<{ className?: string }>
 > = {
-  canino: Dog,
-  felino: Cat,
+  perro: Dog,
+  gato: Cat,
   otro: PawPrint,
 };
 

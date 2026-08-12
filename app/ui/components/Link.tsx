@@ -71,7 +71,7 @@ export function BaseMutedLink({ href, className, ...props }: LinkProps) {
   return (
     <Link
       href={href}
-      className={`relative flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 font-medium text-gray-700 shadow-sm transition-shadow duration-300 hover:text-gray-900 hover:shadow-md ${className}`}
+      className={`flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-medium shadow-sm transition-colors hover:border-slate-300 ${className}`}
     >
       <div className="relative flex items-center justify-center gap-2">
         {props.children}

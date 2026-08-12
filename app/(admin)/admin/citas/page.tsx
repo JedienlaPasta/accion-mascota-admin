@@ -3,6 +3,7 @@ import AppointmentDetailsModal from '@/app/ui/admin/citas/AppointmentDetailsModa
 import AppointmentsCalendarTable from '@/app/ui/admin/citas/AppointmentsCalendarTable';
 import SummaryCard from '@/app/ui/admin/SummaryCard';
 import { SecondaryButton } from '@/app/ui/components/Button';
+import { BaseMutedLink } from '@/app/ui/components/Link';
 import { Calendar, Clock, Plus } from 'lucide-react';
 
 type AppointmentsManagementProps = {
@@ -41,10 +42,13 @@ export default async function AppointmentsManagementPageAdmin(
             <Calendar className="h-4 w-4" />0 hoy
           </SecondaryButton>
 
-          <SecondaryButton className="gap-2 bg-white px-4 text-sm">
+          <BaseMutedLink
+            href="/admin/citas/nueva"
+            className="gap-2 bg-white px-4 text-sm"
+          >
             <Plus className="h-4 w-4" />
             Nueva Cita
-          </SecondaryButton>
+          </BaseMutedLink>
         </div>
       </div>
 
