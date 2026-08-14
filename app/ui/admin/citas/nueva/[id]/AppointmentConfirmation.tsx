@@ -4,7 +4,6 @@ import {
   Check,
   CalendarDays,
   PawPrint,
-  CheckCircle2,
   Stethoscope,
   User2,
 } from 'lucide-react';
@@ -24,6 +23,7 @@ export default function AppointmentConfirmation({
   ownerName,
   onBack,
   onConfirm,
+  isSubmitting,
 }: {
   selectedServiceDetails?: ServiceSummary;
   selectedDate: Date;
@@ -31,8 +31,8 @@ export default function AppointmentConfirmation({
   petName: string;
   ownerName?: string;
   onBack: () => void;
-  /** Handler para confirmar la cita. Si no se pasa, el botón es solo UI. */
   onConfirm?: () => void;
+  isSubmitting: boolean;
 }) {
   const isReady = Boolean(selectedServiceDetails && selectedTime && petName);
   return (
@@ -50,7 +50,7 @@ export default function AppointmentConfirmation({
       {/* Card de resumen */}
       <div className="overflow-hidden rounded-3xl border border-gray-100 bg-white p-6 ring-1 ring-gray-50">
         <div className="divide-y divide-gray-100">
-          {/* Row SERVICIO + precio alineado a la derecha */}
+          {/* Row - servicio + valor */}
           <div className="flex items-start justify-between gap-4 py-4 first:pt-0 last:pb-0">
             <div className="flex items-start gap-4">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100">
@@ -80,7 +80,7 @@ export default function AppointmentConfirmation({
             </div>
           </div>
 
-          {/* Row FECHA + HORA */}
+          {/* Row - fecha + hora */}
           <div className="flex items-start justify-between gap-4 py-4 first:pt-0 last:pb-0">
             <div className="flex items-start gap-4">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 ring-1 ring-blue-100">
@@ -112,7 +112,7 @@ export default function AppointmentConfirmation({
             </div>
           </div>
 
-          {/* Row MASCOTA + DUEÑO (NUEVO: info del dueño que faltaba en admin) */}
+          {/* Row - mascota + dueño */}
           <div className="flex items-start justify-between gap-4 py-4 text-gray-700 first:pt-0 last:pb-0">
             <div className="flex items-start gap-4">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-violet-50 text-violet-600 ring-1 ring-violet-100">
@@ -140,7 +140,7 @@ export default function AppointmentConfirmation({
         </div>
       </div>
 
-      {/* Acciones (consistentes con PetSelection) */}
+      {/* Acciones */}
       <div className="flex items-center justify-between border-t border-gray-100 pt-6">
         <button
           onClick={onBack}
@@ -149,13 +149,12 @@ export default function AppointmentConfirmation({
           Volver
         </button>
         <Button
-          type="button"
-          disabled={!isReady}
+          disabled={!isReady || isSubmitting}
           onClick={onConfirm}
-          className="h-11 gap-2 rounded-full bg-emerald-600 px-8 hover:bg-emerald-700 disabled:opacity-50"
+          className={`h-11 gap-2 rounded-full bg-emerald-600 px-8 hover:bg-emerald-700 ${isSubmitting ? 'opacity-50' : ''}`}
         >
           <Check className="h-4 w-4" />
-          Agendar Cita
+          {isSubmitting ? 'Guardando...' : 'Agendar Cita'}
         </Button>
       </div>
     </div>

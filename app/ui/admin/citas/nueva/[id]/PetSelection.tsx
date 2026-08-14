@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { especieIcon } from '@/app/_lib/mock-data';
 import {
-  Check,
   SearchX,
   RotateCcw,
   User2,
@@ -10,6 +9,7 @@ import {
   PawPrint,
   CheckCircle2,
   Loader,
+  Search,
 } from 'lucide-react';
 import { capitalize, capitalizeAll, formatRUT } from '@/app/_lib/utils/format';
 import { Button } from '@/app/ui/components/Button';
@@ -168,7 +168,63 @@ export default function PetSelection({
         <div
           className={`grid gap-3 transition-opacity duration-200 ${isSearching ? 'pointer-events-none opacity-60 select-none' : ''}`}
         >
-          {pets.length === 0 ? (
+          {pets.length === 0 && isSearching ? (
+            // CASO 0: Cargando (transicion de carga cada vez que se ingresa algo en la busqueda)
+            <div className="space-y-3">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="flex animate-pulse items-start gap-4 rounded-2xl border border-gray-100 bg-white px-5 py-4"
+                >
+                  <div className="size-12 shrink-0 rounded-2xl bg-gray-100" />
+                  <div className="mt-2 flex-1 space-y-2">
+                    <div className="h-4 w-1/3 rounded bg-gray-100" />
+                    <div className="h-3 w-2/3 rounded bg-gray-50" />
+                  </div>
+                  <div className="size-6 shrink-0 rounded-full bg-gray-100" />
+                </div>
+              ))}
+            </div>
+          ) : pets.length === 0 && !searchValue.trim() ? (
+            // CASO 1: Estado inicial (nunca se busco nada)
+            <div className="rounded-3xl border border-dashed border-gray-200 bg-gray-50/40 px-6 py-14 text-center">
+              <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-2xl bg-white text-gray-600 shadow-sm ring-1 ring-gray-100">
+                {activeTab === 'owner' ? (
+                  <User2 className="size-8" />
+                ) : (
+                  <Microchip className="size-8" />
+                )}
+              </div>
+              <p className="text-base font-semibold text-gray-800">
+                {activeTab === 'owner'
+                  ? 'Busca el dueño de la mascota'
+                  : 'Busca por número de microchip'}
+              </p>
+              <p className="mx-auto mt-2 max-w-md text-xs text-gray-500">
+                {activeTab === 'owner'
+                  ? 'Escribe el nombre completo o RUT del propietario para encontrar rápidamente a la mascota que necesitas agendar.'
+                  : 'Escribe los primeros dígitos del microchip (15 dígitos) para localizar al paciente en el registro.'}
+              </p>
+            </div>
+          ) : pets.length === 0 && searchValue.trim().length < 3 ? (
+            // CASO 2: Busqueda muy corta (1-2 caracteres)
+            <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50/40 px-6 py-12 text-center">
+              <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-white text-gray-500 ring-1 ring-gray-100">
+                <Search className="size-5" />
+              </div>
+              <p className="text-sm font-semibold text-gray-700">
+                Escribe al menos{' '}
+                <span className="text-emerald-600">3 caracteres</span> para
+                empezar la búsqueda
+              </p>
+              <p className="mt-1 text-xs text-gray-500">
+                {activeTab === 'owner'
+                  ? 'Con el nombre completo del dueño o su RUT encontrarás resultados más precisos.'
+                  : 'Con al menos 4 dígitos del microchip evitamos resultados demasiado generales.'}
+              </p>
+            </div>
+          ) : pets.length === 0 ? (
+            // CASO 3: Busqueda valida (3+ chars) pero 0 resultados
             <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50/60 px-6 py-12 text-center">
               <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-white ring-1 ring-gray-100">
                 <SearchX className="size-6 text-gray-400" />
@@ -191,6 +247,7 @@ export default function PetSelection({
               </button>
             </div>
           ) : (
+            // CASO 4: Busqueda valida (3+ chars) con resultados
             pets.map((mascota) => {
               const Icon = especieIcon[mascota.especie] ?? PawPrint;
               const ownerName = mascota.nombre_propietario || 'Sin propietario';

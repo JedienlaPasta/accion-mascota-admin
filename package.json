@@ -19,6 +19,7 @@
     "postgres": "^3.4.9",
     "react": "19.2.5",
     "react-dom": "19.2.5",
+    "sonner": "^2.0.8",
     "use-debounce": "^10.1.1"
   },
   "devDependencies": {

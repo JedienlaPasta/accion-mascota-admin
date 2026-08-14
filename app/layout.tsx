@@ -3,6 +3,7 @@ import './globals.css';
 import { SessionProvider } from 'next-auth/react';
 import { auth } from '@/auth';
 import { outfit } from './ui/fonts';
+import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {
   title: 'Acción Mascota - Municipalidad de Algarrobo',
@@ -19,7 +20,10 @@ export default async function RootLayout({
   return (
     <html lang="es">
       <body className={`${outfit.className} font-sans antialiased`}>
-        <SessionProvider session={session}>{children}</SessionProvider>
+        <SessionProvider session={session}>
+          <Toaster position="bottom-right" />
+          {children}
+        </SessionProvider>
       </body>
     </html>
   );

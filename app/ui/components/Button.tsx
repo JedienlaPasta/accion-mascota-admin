@@ -4,6 +4,7 @@ import * as React from 'react';
 
 type ButtonProps = React.ComponentProps<'button'> & {
   className?: string;
+  disabled?: boolean;
   hasIcon?: boolean;
 };
 
@@ -119,9 +120,15 @@ export function MutedCTAButtonLogin({
 
 // ===============
 
-export function Button({ className, onClick, ...props }: ButtonProps) {
+export function Button({
+  className,
+  disabled = false,
+  onClick,
+  ...props
+}: ButtonProps) {
   return (
     <button
+      disabled={disabled}
       onClick={onClick}
       className={`group relative flex h-12 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl bg-emerald-800/90 px-8 text-white shadow-md transition-all duration-300 hover:bg-emerald-700 ${className}`}
     >

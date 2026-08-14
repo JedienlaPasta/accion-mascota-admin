@@ -1,6 +1,37 @@
 import { AppointmentPet } from '../data-types/citas';
 import sql from '../db';
 
+export async function getOccupiedSlotsForDateRange(
+  fromIso: string,
+  toIso: string
+): Promise<Set<string>> {
+  try {
+    const fromTs = `${fromIso} 00:00:00`;
+    const toTs = `${toIso}   23:59:59`;
+
+    const rows = await sql`
+      SELECT
+        to_char(hora_agendada, 'YYYY-MM-DD HH24:MI') AS slot_key
+      FROM citas
+      WHERE
+        hora_agendada >= (${fromTs})::text::timestamp
+        AND hora_agendada <= (${toTs})::text::timestamp
+        AND COALESCE(estado, 'pendiente') <> 'cancelada'
+      GROUP BY slot_key
+      ORDER BY slot_key
+    `;
+
+    const occupied = new Set<string>();
+    for (const row of rows as unknown as Array<{ slot_key: string }>) {
+      occupied.add(row.slot_key);
+    }
+    return occupied;
+  } catch (error) {
+    console.error('[getOccupiedSlotsForDateRange] error:', error);
+    return new Set<string>();
+  }
+}
+
 export const getPetsForAppointmentByQuery = async (
   query: string,
   searchBy: 'owner' | 'chip' | '' = 'owner' // searchBy vacío → modo OWNER
