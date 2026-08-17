@@ -8,12 +8,13 @@ type InputProps = {
   type?: string;
   pattern?: string;
   value?: string;
-  min?: string;
   readonly?: boolean;
   required?: boolean;
   showIsRequired?: boolean;
   placeHolder?: string;
   labelStyle?: string;
+  min?: string;
+  minLength?: number;
   maxLength?: number;
   setData?: (prevState: string) => void;
 };
@@ -25,11 +26,12 @@ export default function Input({
   pattern,
   value,
   readonly,
-  placeHolder,
-  labelStyle = 'ml-1 mb-1 flex justify-between text-[10px] font-bold text-slate-500 uppercase',
-  maxLength,
   required,
   showIsRequired = true,
+  placeHolder,
+  labelStyle = 'ml-1 mb-1 flex justify-between text-[10px] font-bold text-slate-500 uppercase',
+  minLength,
+  maxLength,
   setData,
 }: InputProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,10 +75,9 @@ export default function Input({
         value={value}
         onChange={handleChange}
         onWheel={(e) => e.preventDefault()}
-        maxLength={
-          maxLength ? maxLength : label === 'Código Campaña' ? 2 : undefined
-        }
-        className="h-11 w-full rounded-lg border border-slate-200 shadow-gray-200 bg-white px-4 text-sm text-gray-700 shadow-sm transition-all outline-none placeholder:text-[13px] placeholder:text-gray-400 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100"
+        minLength={minLength}
+        maxLength={maxLength}
+        className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm text-gray-700 shadow-sm shadow-gray-200 transition-all outline-none placeholder:text-[13px] placeholder:text-gray-400 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100"
       />
     </div>
   );
@@ -87,13 +88,13 @@ export function SafeNumberInput({
   nombre,
   pattern,
   value,
-  min,
   readonly,
-  placeHolder,
-  labelStyle = 'ml-1 mb-1 flex justify-between text-[10px] font-bold text-slate-500 uppercase',
-  maxLength,
   required,
   showIsRequired = true,
+  placeHolder,
+  labelStyle = 'ml-1 mb-1 flex justify-between text-[10px] font-bold text-slate-500 uppercase',
+  minLength,
+  maxLength,
   setData,
 }: InputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -155,12 +156,10 @@ export function SafeNumberInput({
         placeholder={placeHolder}
         value={value}
         onChange={handleChange}
-        min={min}
+        // min={min}
         // onWheel={(e) => e.preventDefault()}
-        maxLength={
-          maxLength ? maxLength : label === 'Código Campaña' ? 2 : undefined
-        }
-        className="h-11 w-full rounded-lg border border-slate-200 shadow-gray-200 bg-white px-4 text-sm text-gray-700 shadow-sm transition-all outline-none placeholder:text-[13px] placeholder:text-gray-400 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100"
+        maxLength={maxLength}
+        className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm text-gray-700 shadow-sm shadow-gray-200 transition-all outline-none placeholder:text-[13px] placeholder:text-gray-400 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100"
       />
     </div>
   );

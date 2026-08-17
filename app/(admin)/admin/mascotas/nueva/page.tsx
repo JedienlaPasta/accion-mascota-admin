@@ -1,5 +1,7 @@
 'use client';
 
+import { createPet } from '@/app/_lib/actions/mascotas';
+import { formatRUT } from '@/app/_lib/utils/format';
 import { Button, SecondaryButton } from '@/app/ui/components/Button';
 import MascotaSelect from '@/app/ui/components/Dropdown';
 import Input, { SafeNumberInput } from '@/app/ui/components/Input';
@@ -14,10 +16,17 @@ import {
   X,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 export default function NewPetAdminPage() {
-  const [formData, setFormData] = useState({
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const router = useRouter();
+
+  const [petData, setPetData] = useState({
+    rut: '',
     nombre: '',
     especie: '',
     raza: '',
@@ -29,9 +38,92 @@ export default function NewPetAdminPage() {
     esterilizado: '',
   });
 
-  const handleChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  // Microchip: solo 15 digitos maximo (sin letras, sin espacios)
+  const formatChip = (raw: string): string =>
+    raw.replace(/\D/g, '').slice(0, 15);
+
+  // Peso: normalizar input coma chilena o punto decimal a Number
+  const pesoClean = (raw: number | string): number => {
+    const num = Number(String(raw || '').replace(',', '.'));
+    return Number.isFinite(num) ? num : NaN;
   };
+
+  // Formatear valores mientras el usuario escribe (on blur + on change)
+  const handleChange = (field: string, value: string) => {
+    let formatted = value;
+    if (field === 'rut') formatted = formatRUT(value);
+    if (field === 'chip') formatted = formatChip(value);
+    setPetData((prev) => ({ ...prev, [field]: formatted }));
+  };
+
+  const handleSubmit = async () => {
+    if (isSubmitting) return;
+
+    if (petData.chip && petData.chip.length !== 15) {
+      setSubmitError(
+        'El microchip debe tener EXACTAMENTE 15 dígitos. Deja el campo vacío si la mascota no tiene chip.'
+      );
+      return;
+    }
+
+    if (
+      !petData.nombre ||
+      !petData.especie ||
+      !petData.raza ||
+      !petData.sexo ||
+      !petData.color ||
+      !petData.peso ||
+      !petData.esterilizado
+    ) {
+      setSubmitError('Faltan datos obligatorios para registrar la mascota');
+      return;
+    }
+
+    setIsSubmitting(true);
+    const toastId = toast.loading('Guardando mascota...');
+
+    try {
+      const response = await createPet(petData);
+
+      if (!response.success) {
+        toast.error('No se pudo registrar la mascota', {
+          id: toastId,
+          description: response.error || 'Error al registrar la mascota',
+          duration: 5500,
+        });
+        setSubmitError(response.error || 'No se pudo registrar la mascota');
+        return;
+      }
+
+      setTimeout(() => {
+        toast.success('Mascota registrada con exito', {
+          id: toastId,
+          description: response.message,
+          duration: 2800,
+        });
+      }, 500);
+
+      setTimeout(() => {
+        router.push('/admin/mascotas');
+      }, 2800);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Error al registrar la mascota';
+      toast.error('No se pudo registrar la mascota', {
+        id: toastId,
+        description: message,
+        duration: 5500,
+      });
+      setSubmitError(message);
+      setIsSubmitting(false);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const showError = Boolean(submitError);
 
   return (
     <div className="min-h-full bg-gray-50/50 p-6 lg:p-8">
@@ -57,12 +149,28 @@ export default function NewPetAdminPage() {
             <X className="h-4 w-4" />
             Cancelar
           </BaseMutedLink>
-          <Button className="h-10 gap-2 bg-emerald-600 hover:bg-emerald-700">
+          <Button
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            className="h-10 gap-2 bg-emerald-600 hover:bg-emerald-700"
+          >
             <Check className="h-4 w-4" />
             Guardar
           </Button>
         </div>
       </div>
+
+      {showError && (
+        <div
+          role="alert"
+          className="mb-6 flex items-start gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-red-100"
+        >
+          <span className="font-semibold">
+            No se pudo registrar la mascota:
+          </span>
+          <span>{submitError}</span>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Izquierda - Formulario */}
@@ -73,101 +181,299 @@ export default function NewPetAdminPage() {
               Información Básica
             </h2>
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <Input
-                label="Nombre"
-                nombre="nombre"
-                placeHolder="Ej: Luna"
-                value={formData.nombre}
-                setData={(val) => handleChange('nombre', val)}
-                required
-              />
-              <MascotaSelect
-                label="Especie"
-                value={formData.especie}
-                onChange={(val) => handleChange('especie', val)}
-                options={[
-                  { value: 'perro', label: 'Perro' },
-                  { value: 'gato', label: 'Gato' },
-                  { value: 'otro', label: 'Otro' },
-                ]}
-                required
-              />
-              <Input
-                label="Raza"
-                nombre="raza"
-                placeHolder="Ej: Mestizo"
-                value={formData.raza}
-                setData={(val) => handleChange('raza', val)}
-              />
-              <Input
-                label="Fecha de Nacimiento"
-                nombre="fechaNacimiento"
-                type="date"
-                value={formData.fechaNacimiento}
-                setData={(val) => handleChange('fechaNacimiento', val)}
-                required
-              />
+              {/* Nombre */}
+              <div>
+                <Input
+                  label="Nombre"
+                  nombre="nombre"
+                  placeHolder="Ej: Copito"
+                  value={petData.nombre}
+                  setData={(val) => handleChange('nombre', val)}
+                  required
+                />
+                <div className="mt-1.5 flex items-center justify-between px-1 text-[11px]">
+                  <span className="text-gray-500">
+                    {petData.nombre.length === 0
+                      ? 'Nombre o apodo de la mascota.'
+                      : petData.nombre.length < 3
+                        ? 'Mínimo 3 caracteres.'
+                        : petData.nombre.length > 30
+                          ? 'Máximo 30 caracteres.'
+                          : 'Nombre completado.'}
+                  </span>
+                  {petData.nombre.length >= 3 &&
+                    petData.nombre.length <= 30 && (
+                      <span className="inline-flex items-center gap-1 font-semibold text-emerald-600">
+                        <Check className="size-3" /> Listo
+                      </span>
+                    )}
+                </div>
+              </div>
+
+              {/* Especie */}
+              <div>
+                <MascotaSelect
+                  label="Especie"
+                  readOnly={true}
+                  value={petData.especie}
+                  onChange={(val) => handleChange('especie', val)}
+                  options={[
+                    { value: 'perro', label: 'Perro' },
+                    { value: 'gato', label: 'Gato' },
+                    { value: 'otro', label: 'Otro' },
+                  ]}
+                  required
+                />
+                <div className="mt-1.5 flex items-center justify-between px-1 text-[11px]">
+                  <span className="text-gray-500">
+                    {petData.especie
+                      ? 'Especie seleccionada.'
+                      : 'Selecciona Perro / Gato / Otro.'}
+                  </span>
+                  {petData.especie && (
+                    <span className="inline-flex items-center gap-1 font-semibold text-emerald-600">
+                      <Check className="size-3" /> Listo
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Raza */}
+              <div>
+                <Input
+                  label="Raza"
+                  nombre="raza"
+                  placeHolder="Ej: Mestizo"
+                  value={petData.raza}
+                  setData={(val) => handleChange('raza', val)}
+                />
+                <div className="mt-1.5 flex items-center justify-between px-1 text-[11px]">
+                  <span className="text-gray-500">
+                    {petData.raza.length === 0
+                      ? 'Si no sabes puedes dejarlo vacío.'
+                      : petData.raza.length < 3
+                        ? 'Mínimo 3 caracteres.'
+                        : petData.raza.length > 30
+                          ? 'Máximo 30 caracteres.'
+                          : 'Raza ingresada.'}
+                  </span>
+                  {petData.raza.length >= 3 && petData.raza.length <= 30 && (
+                    <span className="inline-flex items-center gap-1 font-semibold text-emerald-600">
+                      <Check className="size-3" /> Listo
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Fecha Nacimiento */}
+              <div>
+                <Input
+                  label="Fecha de Nacimiento"
+                  nombre="fechaNacimiento"
+                  type="date"
+                  value={petData.fechaNacimiento}
+                  setData={(val) => handleChange('fechaNacimiento', val)}
+                  required
+                />
+                <div className="mt-1.5 flex items-center justify-between px-1 text-[11px]">
+                  <span className="text-gray-500">
+                    {petData.fechaNacimiento
+                      ? `${petData.fechaNacimiento} — fecha elegida.`
+                      : 'Usa fecha estimada si no la sabes.'}
+                  </span>
+                  {petData.fechaNacimiento && (
+                    <span className="inline-flex items-center gap-1 font-semibold text-emerald-600">
+                      <Check className="size-3" /> Listo
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Detalles Fisicos */}
           <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
             <h2 className="mb-6 text-lg font-bold text-gray-900">
-              Detalles Físicos
+              Detalles Físicos y Salud
             </h2>
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <MascotaSelect
-                label="Sexo"
-                value={formData.sexo}
-                onChange={(val) => handleChange('sexo', val)}
-                options={[
-                  { value: 'macho', label: 'Macho' },
-                  { value: 'hembra', label: 'Hembra' },
-                ]}
-                required
-              />
-              <Input
-                label="Color"
-                nombre="color"
-                placeHolder="Ej: Negro con manchas"
-                value={formData.color}
-                setData={(val) => handleChange('color', val)}
-                required
-              />
-              <SafeNumberInput
-                label="Peso (kg)"
-                nombre="peso"
-                placeHolder="Ej: 12.5"
-                value={formData.peso}
-                setData={(val) => handleChange('peso', val)}
-              />
+              {/* Sexo */}
+              <div>
+                <MascotaSelect
+                  label="Sexo"
+                  readOnly={true}
+                  value={petData.sexo}
+                  onChange={(val) => handleChange('sexo', val)}
+                  options={[
+                    { value: 'macho', label: 'Macho' },
+                    { value: 'hembra', label: 'Hembra' },
+                  ]}
+                  required
+                />
+                <div className="mt-1.5 flex items-center justify-between px-1 text-[11px]">
+                  <span className="text-gray-500">
+                    {petData.sexo
+                      ? 'Sexo biológico seleccionado.'
+                      : 'Selecciona Macho / Hembra.'}
+                  </span>
+                  {petData.sexo && (
+                    <span className="inline-flex items-center gap-1 font-semibold text-emerald-600">
+                      <Check className="size-3" /> Listo
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Color */}
+              <div>
+                <Input
+                  label="Color / Pelaje"
+                  nombre="color"
+                  placeHolder="Ej: Negro con manchas blancas"
+                  value={petData.color}
+                  setData={(val) => handleChange('color', val)}
+                  required
+                />
+                <div className="mt-1.5 flex items-center justify-between px-1 text-[11px]">
+                  <span className="text-gray-500">
+                    {petData.color.length === 0
+                      ? 'Describe el color y patrón.'
+                      : petData.color.length < 5
+                        ? 'Describe un poco más.'
+                        : 'Descripción de pelaje completada.'}
+                  </span>
+                  {petData.color.length >= 5 && (
+                    <span className="inline-flex items-center gap-1 font-semibold text-emerald-600">
+                      <Check className="size-3" /> Listo
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Peso */}
+              <div>
+                <SafeNumberInput
+                  label="Peso (kg)"
+                  nombre="peso"
+                  placeHolder="Ej: 12,5"
+                  value={petData.peso}
+                  setData={(val) => handleChange('peso', val)}
+                />
+                <div className="mt-1.5 flex items-center justify-between px-1 text-[11px]">
+                  <span className="text-gray-500">
+                    {!petData.peso
+                      ? 'Usa coma o punto para decimales.'
+                      : pesoClean(petData.peso) > 99.99 ||
+                          isNaN(pesoClean(petData.peso))
+                        ? 'Rango válido: 0.1 → 99.99 kg.'
+                        : `${pesoClean(petData.peso).toFixed(2)} kg ingresados.`}
+                  </span>
+                  {petData.peso &&
+                    !isNaN(pesoClean(petData.peso)) &&
+                    pesoClean(petData.peso) > 0 &&
+                    pesoClean(petData.peso) <= 99.99 && (
+                      <span className="inline-flex items-center gap-1 font-semibold text-emerald-600">
+                        <Check className="size-3" /> Listo
+                      </span>
+                    )}
+                </div>
+              </div>
+
+              {/* Esterilizado */}
+              <div>
+                <MascotaSelect
+                  label="Esterilizado"
+                  value={petData.esterilizado}
+                  onChange={(val) => handleChange('esterilizado', val)}
+                  options={[
+                    { value: 'true', label: 'Sí, está castrado/a' },
+                    { value: 'false', label: 'No, aún no' },
+                  ]}
+                  required
+                />
+                <div className="mt-1.5 flex items-center justify-between px-1 text-[11px]">
+                  <span className="text-gray-500">
+                    {petData.esterilizado
+                      ? 'Estatus de castración elegido.'
+                      : 'Marca la opción correcta.'}
+                  </span>
+                  {petData.esterilizado && (
+                    <span className="inline-flex items-center gap-1 font-semibold text-emerald-600">
+                      <Check className="size-3" /> Listo
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Identificacion */}
           <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-            <h2 className="mb-6 text-lg font-bold text-gray-900">
-              Identificación y Salud
-            </h2>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <Input
-                label="N° Microchip"
-                nombre="chip"
-                placeHolder="15 dígitos"
-                maxLength={15}
-                value={formData.chip}
-                setData={(val) => handleChange('chip', val)}
-              />
-              <MascotaSelect
-                label="Esterilizado"
-                value={formData.esterilizado}
-                onChange={(val) => handleChange('esterilizado', val)}
-                options={[
-                  { value: 'si', label: 'Sí' },
-                  { value: 'no', label: 'No' },
-                ]}
-                required
-              />
+            <div className="mb-5 flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">
+                  Identificación
+                </h2>
+                <p className="mt-1 text-xs text-gray-500">
+                  Registros oficiales de la mascota y su vínculo con el
+                  propietario.
+                </p>
+              </div>
+              <span className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-gray-50 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-gray-500 ring-1 ring-gray-200">
+                Campos opcionales
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+              {/* N° Microchip (opcional: mascotas sin chip) */}
+              <div>
+                <Input
+                  label="N° Microchip"
+                  nombre="chip"
+                  placeHolder="15 dígitos del chip"
+                  maxLength={15}
+                  value={petData.chip}
+                  setData={(val) => handleChange('chip', val)}
+                />
+                <div className="mt-1.5 flex items-center justify-between px-1 text-[11px]">
+                  <span className="text-gray-500">
+                    {petData.chip.length === 0
+                      ? 'Sin microchip — puedes dejarlo vacío.'
+                      : petData.chip.length < 15
+                        ? `${petData.chip.length}/15 dígitos`
+                        : 'Formato microchip válido.'}
+                  </span>
+                  {petData.chip.length === 15 && (
+                    <span className="inline-flex items-center gap-1 font-semibold text-emerald-600">
+                      <Check className="size-3" /> Listo
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* RUT Propietario (opcional: mascotas rescatadas) */}
+              <div>
+                <Input
+                  label="RUT Propietario"
+                  nombre="rut"
+                  placeHolder="Ej: 12.345.678-9"
+                  maxLength={12}
+                  value={petData.rut}
+                  setData={(val) => handleChange('rut', val)}
+                />
+                <div className="mt-1.5 flex items-center justify-between px-1 text-[11px]">
+                  <span className="text-gray-500">
+                    {petData.rut
+                      ? 'Se aplicará formato automático al escribir.'
+                      : '¿Mascota rescatada? — puedes dejarlo vacío.'}
+                  </span>
+                  {petData.rut && (
+                    <span className="inline-flex items-center gap-1 font-semibold text-emerald-600">
+                      <Check className="size-3" /> Asociado
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>

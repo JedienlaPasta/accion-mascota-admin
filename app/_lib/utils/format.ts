@@ -59,10 +59,18 @@ export const formatNumber = (num: number | string) => {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 };
 
-export const formatRUT = (rut: string | number) => {
-  if (!rut) return '';
-  const dv = rut.toString().slice(-1);
-  const sub = rut.toString().slice(0, -1);
+export const formatRUT = (raw: string | number) => {
+  if (!raw) return '';
+
+  const clean = raw
+    .toString()
+    .replace(/[^0-9kK]/g, '')
+    .toUpperCase();
+  if (!clean) return '';
+  if (clean.length <= 1) return clean;
+
+  const dv = clean.slice(-1);
+  const sub = clean.slice(0, -1);
   return formatNumber(sub) + '-' + dv;
 };
 
