@@ -10,13 +10,14 @@ import { SmallBaseMutedLink } from '@/app/ui/components/Link';
 import TableWrapper from '@/app/ui/admin/TableWrapper';
 
 type MascotasPageProps = {
-  searchParams?: Promise<{ id?: string; query?: string }>;
+  searchParams?: Promise<{ id?: string; query?: string; page?: number }>;
 };
 
 export default async function MascotasPageAdmin(props: MascotasPageProps) {
   const searchParams = await props.searchParams;
   const id = searchParams?.id ?? '';
   const query = searchParams?.query ?? '';
+  const page = Number(searchParams?.page) || 1;
 
   return (
     <div className="flex min-h-full w-full flex-col space-y-4 bg-gray-50/50 p-6 lg:p-8">
@@ -51,7 +52,7 @@ export default async function MascotasPageAdmin(props: MascotasPageProps) {
         {/* Pets Table */}
         <TableWrapper title="Mascotas">
           <Suspense fallback={<PetsTableSkeleton />}>
-            <PetsTable query={query} />
+            <PetsTable query={query} page={page} />
           </Suspense>
         </TableWrapper>
       </section>

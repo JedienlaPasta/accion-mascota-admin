@@ -24,7 +24,6 @@ import { Button, SecondaryButton } from '@/app/ui/components/Button';
 import {
   citas,
   especieIcon,
-  historialClinico,
   tipoColors,
   tipoIcon,
   tipoLabels,
@@ -73,21 +72,37 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
 
   const EspecieIcon = especieIcon[mascota?.especie.toLowerCase()] || PawPrint;
 
-  const historial = historialClinico
-    .filter((h) => h.mascotaId === mascota.id)
-    .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
-
   const citasMascota = citas.filter(
     (c) =>
       c.mascotaId === mascota.id &&
       (c.estado === 'pendiente' || c.estado === 'confirmada')
   );
 
-  const tratamientoActivo = historial.find((h) => h.tratamiento);
+  // Stats + tratamiento activo
+  const totalConsultas = clinicHistory.filter(
+    (h) => h.tipo_atencion === 'CONSULTA_MEDICA'
+  ).length;
+  const totalVacunas = clinicHistory.filter(
+    (h) => h.tipo_atencion === 'OPERATIVO_SANITARIO'
+  ).length;
+  const totalCirugias = clinicHistory.filter(
+    (h) => h.tipo_atencion === 'OPERATIVO_ESTERILIZACION'
+  ).length;
 
-  const totalVacunas = historial.filter((h) => h.tipo === 'vacuna').length;
-  const totalConsultas = historial.filter((h) => h.tipo === 'consulta').length;
-  const totalCirugias = historial.filter((h) => h.tipo === 'cirugia').length;
+  // Tratamiento vigente: la consulta medica mas reciente que tenga tratamiento NO VACIO
+  // Revisar para definir bien como se establece un tratamiento activo
+  const tratamientoActivo = [...clinicHistory]
+    .filter(
+      (h) =>
+        h.tipo_atencion === 'CONSULTA_MEDICA' &&
+        h.tratamiento &&
+        h.tratamiento.trim().length > 0
+    )
+    .sort(
+      (a, b) =>
+        new Date(b.fecha_atencion).getTime() -
+        new Date(a.fecha_atencion).getTime()
+    )[0];
 
   return (
     <div className="min-h-full bg-gray-50/50 p-6 lg:p-8">
@@ -199,44 +214,55 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
           </div>
 
           {/* Info grid mascota */}
-          <div className="mt-4 grid grid-cols-2 gap-5 border-t border-slate-100 pt-4 sm:grid-cols-4">
+          <div className="mt-4 grid grid-cols-2 gap-5 border-t border-slate-100 pt-4 sm:grid-cols-3 lg:grid-cols-4">
+            {/* Especie */}
             <div className="group flex items-center gap-3 rounded-2xl bg-gray-50 p-4 transition-all hover:bg-slate-50">
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br from-slate-100 to-slate-200 text-slate-700 transition-all group-hover:scale-105">
                 <PawPrint className="h-5 w-5" />
               </div>
-              <div className="space-y-0.5">
+              <div className="min-w-0 space-y-0.5">
                 <p className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase">
                   Especie
                 </p>
-                <p className="text-sm font-bold text-gray-800">
+                <p className="truncate text-sm font-bold text-gray-800">
                   {capitalize(mascota.especie)}
                 </p>
               </div>
             </div>
 
-            <div className="group flex items-center gap-3 rounded-2xl bg-gray-50 p-4 transition-all hover:bg-slate-50">
+            {/* Color + Patron */}
+            <div className="group flex items-center gap-3 rounded-2xl bg-gray-50 p-4 transition-all hover:bg-slate-50 sm:col-span-2 lg:col-span-1">
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br from-slate-100 to-slate-200 text-slate-700 transition-all group-hover:scale-105">
                 <Palette className="h-5 w-5" />
               </div>
-              <div className="space-y-0.5">
+              <div className="min-w-0 space-y-0.5">
                 <p className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase">
-                  Color
+                  Color y Pelaje
                 </p>
-                <p className="text-sm font-bold text-gray-800">
-                  {mascota.color ? capitalizeAll(mascota.color) : '-'}
+                <p className="truncate text-sm font-bold text-gray-800">
+                  {mascota.color
+                    ? capitalizeAll(mascota.color)
+                    : 'Sin color registrado'}
                 </p>
+                {/* Solo se renderiza si existe */}
+                {mascota.patron && mascota.patron.trim().length > 0 && (
+                  <p className="truncate text-xs font-medium text-slate-500">
+                    {capitalize(mascota.patron)}
+                  </p>
+                )}
               </div>
             </div>
 
+            {/* Nacimiento */}
             <div className="group flex items-center gap-3 rounded-2xl bg-gray-50 p-4 transition-all hover:bg-slate-50">
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br from-slate-100 to-slate-200 text-slate-700 transition-all group-hover:scale-105">
                 <Calendar className="h-5 w-5" />
               </div>
-              <div className="space-y-0.5">
+              <div className="min-w-0 space-y-0.5">
                 <p className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase">
                   Nacimiento
                 </p>
-                <p className="text-sm font-bold text-gray-800">
+                <p className="truncate text-sm font-bold text-gray-800 tabular-nums">
                   {formatShortDate(
                     mascota.fecha_nacimiento ? mascota.fecha_nacimiento : '-'
                   )}
@@ -244,16 +270,19 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
               </div>
             </div>
 
+            {/* Peso */}
             <div className="group flex items-center gap-3 rounded-2xl bg-gray-50 p-4 transition-all hover:bg-slate-50">
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br from-slate-100 to-slate-200 text-slate-700 transition-all group-hover:scale-105">
                 <HeartPulse className="h-5 w-5" />
               </div>
-              <div className="space-y-0.5">
+              <div className="min-w-0 space-y-0.5">
                 <p className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase">
-                  Peso
+                  Último peso
                 </p>
-                <p className="text-sm font-bold text-gray-800">
-                  {mascota.peso ? `${mascota.peso} kg` : '-'}
+                <p className="truncate text-sm font-bold text-gray-800 tabular-nums">
+                  {mascota.peso != null
+                    ? `${Number(mascota.peso).toFixed(2)} kg`
+                    : 'Sin pesaje aún'}
                 </p>
               </div>
             </div>
@@ -381,35 +410,47 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
         {/* Columna principal */}
         {/* Historial medico */}
         <div className="space-y-4 lg:col-span-2">
-          {/* Tratamiento activo */}
+          {/* Tratamiento activo (última CONSULTA_MEDICA con tratamiento NO vacío) */}
           {tratamientoActivo && (
             <div className="flex flex-col items-start gap-3 rounded-3xl border border-gray-100 bg-white p-5 shadow-sm transition-shadow">
-              <div className="pb-2">
-                <h3 className="text-lg font-bold text-gray-900">
-                  Tratamiento Vigente
-                </h3>
-                <p className="text-rose-700">
-                  {'Indicado el ' +
-                    formatDate(tratamientoActivo.fecha) +
-                    ' por ' +
-                    tratamientoActivo.veterinario}
-                  .
-                </p>
+              <div className="flex w-full flex-wrap items-center justify-between gap-3 pb-2">
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">
+                    Último Tratamiento Indicado
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    {'Indicado el ' +
+                      formatDate(tratamientoActivo.fecha_atencion) +
+                      ' · por ' +
+                      tratamientoActivo.veterinario +
+                      '.'}
+                  </p>
+                </div>
+                {tratamientoActivo.peso_actual != null && (
+                  <Badge className="border-slate-200 bg-slate-50 px-3 py-1 text-slate-700 tabular-nums shadow-sm">
+                    {Number(tratamientoActivo.peso_actual).toFixed(2)} kg
+                  </Badge>
+                )}
               </div>
-              <span className="w-full">
-                <p className="text-foreground font-medium">
-                  {tratamientoActivo.diagnostico}
-                </p>
-                <p className="text-muted-foreground text-sm">
-                  {tratamientoActivo.tratamiento}
-                </p>
-                {tratamientoActivo.proximaVisita && (
-                  <div className="mt-2 flex items-center gap-2 rounded-md bg-rose-100/50 p-2 text-sm text-rose-700">
-                    <Calendar className="h-4 w-4" />
-                    {'Próximo control: ' +
-                      formatDate(tratamientoActivo.proximaVisita)}
+              <span className="w-full space-y-2">
+                {tratamientoActivo.pre_dx && (
+                  <div>
+                    <p className="text-[10px] font-semibold tracking-wider text-gray-400 uppercase">
+                      Diagnóstico presuntivo
+                    </p>
+                    <p className="text-foreground mt-0.5 font-medium">
+                      {tratamientoActivo.pre_dx}
+                    </p>
                   </div>
                 )}
+                <div>
+                  <p className="text-[10px] font-semibold tracking-wider text-gray-400 uppercase">
+                    Tratamiento
+                  </p>
+                  <p className="text-muted-foreground mt-0.5 text-sm whitespace-pre-line">
+                    {tratamientoActivo.tratamiento}
+                  </p>
+                </div>
               </span>
             </div>
           )}
@@ -436,12 +477,15 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
             <div className="space-y-1.5">
               {clinicHistory.length > 0 ? (
                 clinicHistory.map((registro) => {
-                  const TipoIcon =
-                    tipoIcon[registro.tipo_atencion.toLowerCase()] ||
-                    Stethoscope;
-                  const colors =
-                    tipoColors[registro.tipo_atencion.toLowerCase()] ||
-                    tipoColors.consulta;
+                  const tipoKey = registro.tipo_atencion.toLowerCase();
+                  const TipoIcon = tipoIcon[tipoKey] || Stethoscope;
+                  const colors = tipoColors[tipoKey] || tipoColors.consulta;
+                  const isConsulta =
+                    registro.tipo_atencion === 'CONSULTA_MEDICA';
+                  const isEsterilizacion =
+                    registro.tipo_atencion === 'OPERATIVO_ESTERILIZACION';
+                  const isSanitario =
+                    registro.tipo_atencion === 'OPERATIVO_SANITARIO';
 
                   return (
                     <details
@@ -457,10 +501,7 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                           </div>
                           <div className="min-w-0">
                             <p className="truncate font-semibold text-gray-900">
-                              {registro.tipo_atencion.toLowerCase() ===
-                              'operativo'
-                                ? 'Operativo Sanitario'
-                                : registro.tipo_atencion}
+                              {tipoLabels[tipoKey] || registro.tipo_atencion}
                             </p>
                             <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs">
                               <span className="font-medium text-gray-500 tabular-nums">
@@ -469,13 +510,20 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                               <span
                                 className={`rounded-full px-2 py-0.5 font-medium ${colors.bg} ${colors.text}`}
                               >
-                                {tipoLabels[registro.tipo_atencion] ||
-                                  registro.tipo_atencion}
+                                {tipoLabels[tipoKey] || registro.tipo_atencion}
                               </span>
                               <span className="text-gray-400">·</span>
                               <span className="font-medium text-gray-600">
                                 {registro.veterinario}
                               </span>
+                              {registro.peso_actual != null && (
+                                <>
+                                  <span className="text-gray-400">·</span>
+                                  <span className="font-medium text-slate-600 tabular-nums">
+                                    {Number(registro.peso_actual).toFixed(2)} kg
+                                  </span>
+                                </>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -483,80 +531,178 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                       </summary>
 
                       <div className="border-t border-gray-100 bg-gray-50/50 px-4 py-4 text-sm">
-                        <div className="grid gap-3 sm:grid-cols-2">
-                          <div>
-                            <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
-                              {registro.tipo_atencion.toLowerCase() ===
-                              'operativo'
-                                ? 'Procedimientos'
-                                : 'Diagnóstico'}
-                            </p>
-                            <div className="mt-1 space-y-2">
-                              {registro.tipo_atencion.toLowerCase() ===
-                              'operativo' ? (
-                                <div className="flex flex-wrap gap-2">
-                                  {registro.procedimientos_aplicados ? (
-                                    Object.entries(
-                                      registro.procedimientos_aplicados
-                                    )
-                                      .filter(([_, value]) => value)
-                                      .map(([key, _]) => {
-                                        // Mapear nombres de keys a nombres legibles
-                                        const nombresLegibles: Record<
-                                          string,
-                                          string
-                                        > = {
-                                          octuple: 'Óctuple',
-                                          antirrabica: 'Antirrábica',
-                                          verificacion: 'Verificación',
-                                          triple_felina: 'Triple Felina',
-                                          microchip_implantado:
-                                            'Microchip Implantado',
-                                          desparasitacion_externa:
-                                            'Desparasitación Externa',
-                                          desparasitacion_interna:
-                                            'Desparasitación Interna',
-                                        };
-                                        return (
-                                          <Badge
-                                            key={key}
-                                            className="border-emerald-200 bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700 shadow-sm"
-                                          >
-                                            {nombresLegibles[key] || key}
-                                          </Badge>
-                                        );
-                                      })
-                                  ) : (
-                                    <p className="text-sm text-gray-500">
-                                      Sin procedimientos registrados
-                                    </p>
-                                  )}
-                                </div>
-                              ) : (
-                                <p className="font-medium text-gray-900">
-                                  {'Sin diagnóstico registrado'}
+                        {/* Consultas Medicas */}
+                        {isConsulta && (
+                          <div className="grid gap-4 sm:grid-cols-2">
+                            <div>
+                              <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                                Motivo consulta
+                              </p>
+                              <p className="mt-0.5 font-medium text-gray-900">
+                                {registro.motivo || 'Sin motivo registrado'}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                                Diagnóstico presuntivo
+                              </p>
+                              <p className="mt-0.5 font-medium text-gray-900">
+                                {registro.pre_dx ||
+                                  'Sin diagnóstico registrado'}
+                              </p>
+                            </div>
+
+                            <div className="sm:col-span-2">
+                              <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                                Anamnesis
+                              </p>
+                              <p className="mt-0.5 whitespace-pre-line text-gray-700">
+                                {registro.anamnesis ||
+                                  'Sin antecedentes registrados'}
+                              </p>
+                            </div>
+
+                            {registro.examen_fisico && (
+                              <div className="sm:col-span-2">
+                                <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                                  Examen físico
                                 </p>
+                                <p className="mt-0.5 whitespace-pre-line text-gray-700">
+                                  {registro.examen_fisico}
+                                </p>
+                              </div>
+                            )}
+
+                            {registro.examenes_solicitados && (
+                              <div className="sm:col-span-2">
+                                <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                                  Exámenes solicitados
+                                </p>
+                                <p className="mt-0.5 whitespace-pre-line text-gray-700">
+                                  {registro.examenes_solicitados}
+                                </p>
+                              </div>
+                            )}
+
+                            <div>
+                              <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                                Tratamiento indicado
+                              </p>
+                              <p className="mt-0.5 whitespace-pre-line text-gray-700">
+                                {registro.tratamiento ||
+                                  'Sin tratamiento registrado'}
+                              </p>
+                            </div>
+
+                            <div className="space-y-2">
+                              {registro.derivacion_clinica_privada && (
+                                <div className="inline-flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-amber-800">
+                                  <FileText className="h-4 w-4" />
+                                  <p className="text-xs font-semibold">
+                                    Derivado a especialista
+                                  </p>
+                                </div>
                               )}
                             </div>
                           </div>
-                          <div>
-                            <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
-                              Tratamiento
-                            </p>
-                            <p className="mt-1 text-gray-700">
-                              {registro.tratamiento ||
-                                'Sin tratamiento registrado'}
-                            </p>
-                          </div>
-                        </div>
+                        )}
 
-                        {registro.proximaVisita && (
-                          <div className="mt-4 flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-emerald-700">
-                            <Calendar className="h-4 w-4" />
-                            <p className="text-sm font-semibold">
-                              Próximo control:{' '}
-                              {formatDate(registro.proximaVisita)}
-                            </p>
+                        {/* Operativos Esterilizacion */}
+                        {isEsterilizacion && (
+                          <div className="grid gap-4 sm:grid-cols-2">
+                            <div>
+                              <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                                Resultado cirugía
+                              </p>
+                              <div className="mt-1">
+                                {registro.resultado_esterilizacion ? (
+                                  <Badge className="border-emerald-200 bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-700 shadow-sm">
+                                    {capitalize(
+                                      registro.resultado_esterilizacion
+                                    )}
+                                  </Badge>
+                                ) : (
+                                  <p className="text-sm text-gray-500">
+                                    Sin resultado registrado
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <div>
+                              <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                                Tratamiento post-operatorio
+                              </p>
+                              <p className="mt-0.5 whitespace-pre-line text-gray-700">
+                                {registro.tratamiento ||
+                                  'Sin indicaciones registradas'}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Operativos Sanitarios */}
+                        {isSanitario && (
+                          <div className="space-y-3">
+                            <div>
+                              <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                                Procedimientos aplicados
+                              </p>
+                              <div className="mt-2 flex flex-wrap gap-2">
+                                {registro.procedimientos_aplicados &&
+                                registro.procedimientos_aplicados.length > 0 ? (
+                                  registro.procedimientos_aplicados.map(
+                                    (proc) => (
+                                      <Badge
+                                        key={`${proc.codigo}-${proc.nombre}`}
+                                        className="border-emerald-200 bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-800/90 shadow-sm"
+                                      >
+                                        {proc.nombre}
+                                      </Badge>
+                                    )
+                                  )
+                                ) : (
+                                  <p className="text-sm text-gray-500">
+                                    Sin procedimientos registrados en este
+                                    operativo
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+
+                            {registro.tratamiento && (
+                              <div>
+                                <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                                  Observaciones / indicaciones
+                                </p>
+                                <p className="mt-0.5 whitespace-pre-line text-gray-700">
+                                  {registro.tratamiento}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Fallback atencion de tipo desconocido */}
+                        {!isConsulta && !isEsterilizacion && !isSanitario && (
+                          <div className="grid gap-3 sm:grid-cols-2">
+                            <div>
+                              <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                                Detalle
+                              </p>
+                              <p className="mt-0.5 text-gray-700">
+                                Tipo de atención {registro.tipo_atencion} — sin
+                                campos específicos renderizados.
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                                Notas
+                              </p>
+                              <p className="mt-0.5 whitespace-pre-line text-gray-700">
+                                {registro.tratamiento ||
+                                  'Sin información adicional'}
+                              </p>
+                            </div>
                           </div>
                         )}
                       </div>

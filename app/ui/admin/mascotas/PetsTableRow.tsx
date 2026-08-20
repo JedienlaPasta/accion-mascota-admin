@@ -12,8 +12,6 @@ import {
   Microchip,
   Minus,
   PawPrint,
-  Scissors,
-  User,
   XCircle,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -92,7 +90,7 @@ function PetTableRowInner({
   const hasMicrochipError = microchipErrors.length > 0;
 
   return (
-    <tr className="group grid h-18 cursor-pointer grid-cols-24 items-center gap-4 px-8 text-sm text-gray-600 transition-colors last:mb-2 focus-within:bg-gray-50/80 hover:bg-gray-50/80">
+    <tr className="group grid h-18 cursor-pointer grid-cols-24 items-center gap-4 px-8 text-sm text-gray-600 transition-colors focus-within:bg-gray-50/80 hover:bg-gray-50/80">
       {/* Mascota (nombre + edad) */}
       <td className="col-span-4 min-w-0 lg:col-span-5">
         <Link
@@ -208,7 +206,7 @@ function PetTableRowInner({
         </div>
       </td>
 
-      {/* Columna 5: Esterilizado — badges con texto+icon */}
+      {/* Esterilizado */}
       <td className="col-span-2 flex justify-center">
         {esterilizado === null ? (
           <span
@@ -224,7 +222,6 @@ function PetTableRowInner({
             title="Esterilizado/a"
           >
             <CheckCircle2 className="size-4 text-emerald-500" />
-            <Scissors className="hidden size-3.5 text-emerald-500 sm:inline" />
             <span className="hidden md:inline">Sí</span>
           </span>
         ) : (
@@ -238,7 +235,7 @@ function PetTableRowInner({
         )}
       </td>
 
-      {/* Columna 6: Acciones — flecha con accesibilidad */}
+      {/* Acciones */}
       <td className="relative col-span-2 flex justify-center">
         <Link
           href={`/admin/mascotas/${id}`}

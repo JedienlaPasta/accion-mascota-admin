@@ -1,7 +1,14 @@
+// import { createTestUser } from '@/app/_lib/actions/usuarios';
 import { SecondaryButton } from '@/app/ui/components/Button';
 import { Printer } from 'lucide-react';
 
 export default async function ReportsPage() {
+  // const { success, message } = await createTestUser();
+
+  // if (!success) {
+  //   return <div className="text-red-500">{message}</div>;
+  // }
+
   return (
     <div className="flex min-h-full flex-col space-y-4 bg-gray-50/50 p-6 lg:p-8">
       {/* Header */}

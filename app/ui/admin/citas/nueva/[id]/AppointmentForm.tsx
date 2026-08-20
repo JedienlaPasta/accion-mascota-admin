@@ -139,10 +139,10 @@ export default function AppointmentForm({
       return;
     }
 
-    // if (isWeekend(selectedDate)) {
-    //   setSubmitError('No se puede agendar en fines de semana');
-    //   return;
-    // }
+    if (isWeekend(selectedDate)) {
+      setSubmitError('No se puede agendar en fines de semana');
+      return;
+    }
 
     setIsSubmitting(true);
     const toastId = toast.loading('Guardando consulta...');

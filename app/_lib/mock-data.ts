@@ -30,7 +30,7 @@ export const tipoIcon: Record<
   cirugia: Scissors,
   control: CheckCircle,
   emergencia: AlertCircle,
-  operativo: Ambulance,
+  operativo_sanitario: Ambulance,
 };
 
 export const tipoLabels: Record<string, string> = {
@@ -39,7 +39,7 @@ export const tipoLabels: Record<string, string> = {
   cirugia: 'Cirugía',
   control: 'Control',
   emergencia: 'Emergencia',
-  operativo: 'Operativo Sanitario',
+  operativo_sanitario: 'Operativo Sanitario',
 };
 
 export const tipoColors: Record<
@@ -76,7 +76,7 @@ export const tipoColors: Record<
     ring: 'ring-red-100',
     dot: 'bg-red-500',
   },
-  operativo: {
+  operativo_sanitario: {
     bg: 'bg-emerald-50',
     text: 'text-emerald-700',
     ring: 'ring-emerald-100',

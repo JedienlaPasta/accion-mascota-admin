@@ -48,6 +48,7 @@ export type PetDetails = {
   raza: string;
   sexo: string;
   color: string;
+  patron: string;
   peso: number;
   microchip: string;
   esterilizado: boolean | null;
@@ -57,14 +58,10 @@ export type PetDetails = {
   correo: string | null;
 };
 
-export type AppliedProcedures = {
-  octuple: boolean;
-  antirrabica: boolean;
-  verificacion: boolean;
-  triple_felina: boolean;
-  microchip_implantado: boolean;
-  desparasitacion_externa: boolean;
-  desparasitacion_interna: boolean;
+// Procedimiento individual aplicado en OPERATIVO_SANITARIO
+export type AppliedProcedure = {
+  codigo: string; // procedimientos.codigo varchar(50)
+  nombre: string; // procedimientos.nombre varchar(100)
 };
 
 export type ClinicHistoryItem = {
@@ -72,9 +69,22 @@ export type ClinicHistoryItem = {
   mascota_id: string;
   fecha_atencion: string;
   tipo_atencion: string;
-  pre_dx: string;
-  procedimientos_aplicados: AppliedProcedures | null;
-  tratamiento: string | null;
+  peso_actual: number | null;
   veterinario: string;
-  proximaVisita: string | null;
+
+  // Campos solo cuando tipo_atencion = 'CONSULTA_MEDICA'
+  motivo: string | null;
+  anamnesis: string | null;
+  pre_dx: string | null;
+  examen_fisico: string | null;
+  examenes_solicitados: string | null;
+  tratamiento: string | null;
+  derivacion_clinica_privada: boolean | null;
+
+  // Campos solo cuando tipo_atencion = 'OPERATIVO_ESTERILIZACION'
+  resultado_esterilizacion: string | null;
+
+  // Campos solo cuando tipo_atencion = 'OPERATIVO_SANITARIO'
+  // (array de 1..N procedimientos aplicados en la misma atención)
+  procedimientos_aplicados: AppliedProcedure[] | null;
 };

@@ -46,8 +46,6 @@ export const getPetsForAppointmentByQuery = async (
         SELECT
           m.public_id as id,
           m.microchip,
-          m.inscrito_registro_nacional,
-          m.codigo_registro_nacional,
           m.nombre AS nombre_mascota,
           m.fecha_nacimiento,
           m.raza,
@@ -73,8 +71,6 @@ export const getPetsForAppointmentByQuery = async (
           SELECT
             m.public_id as id,
             m.microchip,
-            m.inscrito_registro_nacional,
-            m.codigo_registro_nacional,
             m.nombre AS nombre_mascota,
             m.fecha_nacimiento,
             m.raza,
@@ -96,8 +92,6 @@ export const getPetsForAppointmentByQuery = async (
           SELECT
             m.public_id as id,
             m.microchip,
-            m.inscrito_registro_nacional,
-            m.codigo_registro_nacional,
             m.nombre AS nombre_mascota,
             m.fecha_nacimiento,
             m.raza,
