@@ -20,3 +20,12 @@ export function validateMicrochip(microchip: string) {
 
   return warnings;
 }
+
+export function queryFilterChecker(query: string): {
+  hasFilter: boolean;
+  term: string;
+} {
+  const q = query?.trim() ?? '';
+  if (q.length === 0) return { hasFilter: false, term: '' };
+  return { hasFilter: true, term: `%${q}%` };
+}

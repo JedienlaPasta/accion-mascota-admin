@@ -1,10 +1,10 @@
-import { getVisitsSummary } from '@/app/_lib/data/consultas';
-import VisitRecordDetailModal from '@/app/ui/admin/atenciones/VisitRecordDetailModal';
+import { getVisitsSummary } from '@/app/_lib/data/atenciones';
+import VisitRecordDetail from '@/app/ui/admin/atenciones/VisitRecordDetail';
 import VisitsTable from '@/app/ui/admin/atenciones/VisitsTable';
 import VisitsTableSkeleton from '@/app/ui/admin/atenciones/VisitsTableSkeleton';
 import SummaryCard from '@/app/ui/admin/SummaryCard';
 import TableWrapper from '@/app/ui/admin/TableWrapper';
-import { Button, SecondaryButton } from '@/app/ui/components/Button';
+import { Button } from '@/app/ui/components/Button';
 import {
   ClipboardList,
   Plus,
@@ -19,10 +19,8 @@ import { Suspense } from 'react';
 type VisitsRecordsPageAdmin = {
   searchParams?: Promise<{
     visitId?: string;
-    q?: string;
-    tipo?: string;
-    desde?: string;
-    hasta?: string;
+    query?: string;
+    page?: number;
   }>;
 };
 
@@ -37,8 +35,8 @@ export default async function AtencionesPageAdmin(
 
   return (
     <div className="flex min-h-full flex-col space-y-4 bg-gray-50/50 p-6 lg:p-8">
-      {/* Modal detalle (ahora el modal consulta la BD internamente, no usa mock) */}
-      {/* {id && <VisitRecordDetailModal id={id} />} */}
+      {/* Modal detalle atención: Server Component hace fetch + Client renderiza modal */}
+      {id && <VisitRecordDetail id={id} />}
 
       {/* Header */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-baseline">

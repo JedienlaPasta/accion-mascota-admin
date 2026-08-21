@@ -12,7 +12,7 @@ export async function getDailyAttentionCountByYear(year: string) {
       SELECT
         DATE(fecha_atencion) AS fecha,
         COUNT(*) AS cantidad_atenciones
-      FROM consultas
+      FROM atenciones
       WHERE fecha_atencion BETWEEN ${startDate} AND ${endDate}
       GROUP BY fecha
       ORDER BY fecha;
@@ -27,7 +27,7 @@ export async function getDailyAttentionCountByYear(year: string) {
 
     return attentionsPerDay;
   } catch (error) {
-    console.error('Error al obtener el conteo diario de entregas:', error);
+    console.error('Error al obtener el conteo diario de atenciones:', error);
     return {};
   }
 }
@@ -43,9 +43,9 @@ export async function getTotalAttentionCountByYearAndPetType(year: string) {
         COUNT(*) AS cantidad_atenciones,
         COUNT(*) FILTER (WHERE m.especie = 'CANINO') AS cantidad_perros,
         COUNT(*) FILTER (WHERE m.especie = 'FELINO') AS cantidad_gatos
-      FROM consultas c
-      JOIN mascotas m ON c.mascota_id = m.id
-      WHERE c.fecha_atencion BETWEEN ${startDate} AND ${endDate}
+      FROM atenciones a
+      JOIN mascotas m ON a.mascota_id = m.id
+      WHERE a.fecha_atencion BETWEEN ${startDate} AND ${endDate}
     `;
 
     return result[0];

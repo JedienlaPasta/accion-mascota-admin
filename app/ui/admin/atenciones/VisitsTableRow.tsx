@@ -20,10 +20,9 @@ import {
   capitalizeAll,
   formatRUT,
   formatShortDate,
-  formatPhone,
 } from '@/app/_lib/utils/format';
 import { ComponentType, memo } from 'react';
-import { VisitsTableRealData } from '@/app/_lib/data/consultas';
+import { Visits } from '@/app/_lib/data-types/atenciones';
 
 type TipoStyle = {
   Icon: ComponentType<{ className?: string }>;
@@ -95,7 +94,7 @@ function getEspecieIcon(especieRaw: string): {
   return { Icon: PawPrint, label: capitalize(especieRaw) };
 }
 
-function VisitsTableRowInner(props: VisitsTableRealData) {
+function VisitsTableRowInner(props: Visits) {
   const {
     id,
     fecha_atencion,
@@ -142,7 +141,7 @@ function VisitsTableRowInner(props: VisitsTableRealData) {
     .join(' · ');
 
   return (
-    <tr className="grid cursor-pointer grid-cols-24 items-center gap-4 px-8 py-4 text-sm text-zinc-600 transition-colors last:mb-2 focus-within:bg-zinc-50/80 hover:bg-zinc-50/80">
+    <tr className="grid grid-cols-24 items-center gap-4 px-8 py-4 text-sm text-zinc-600 transition-colors focus-within:bg-zinc-50/80 hover:bg-zinc-50/80">
       {/* 1. Fecha + hora (formato) */}
       <td className="col-span-3">
         <div className="flex flex-col gap-0.5">
@@ -202,7 +201,7 @@ function VisitsTableRowInner(props: VisitsTableRealData) {
       </td>
 
       {/* 4. Propietario + Motivo (ahora ocupamos las 5 cols) */}
-      <td className="col-span-5 min-w-0">
+      <td className="col-span-6 min-w-0">
         <Link
           href={`/admin/propietarios/${public_id_propietario}`}
           className="block min-w-0"
@@ -262,7 +261,7 @@ function VisitsTableRowInner(props: VisitsTableRealData) {
       </td>
 
       {/* 7. Acciones (ampliamos de 2 → 4 cols para 2 botones: VER + EDITAR) */}
-      <td className="relative col-span-4 flex items-center justify-center gap-2">
+      <td className="relative col-span-3 flex items-center justify-center gap-2">
         <Link
           href={`/admin/mascotas/${public_id_mascota}`}
           title="Ficha mascota"
@@ -275,7 +274,7 @@ function VisitsTableRowInner(props: VisitsTableRealData) {
           onClick={() => openVisitModal(id)}
           title="Ver detalle atención"
           aria-label="Ver detalle atención"
-          className="peer inline-flex size-8 items-center justify-center rounded-lg text-zinc-500/80 transition-all hover:bg-zinc-200/40 hover:text-zinc-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-1"
+          className="peer inline-flex size-8 cursor-pointer items-center justify-center rounded-lg text-zinc-500/80 transition-all hover:bg-zinc-200/40 hover:text-zinc-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-1"
         >
           <AppWindow className="size-4.5" />
         </button>

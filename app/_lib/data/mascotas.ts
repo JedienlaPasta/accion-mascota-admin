@@ -5,21 +5,13 @@ import type {
   ClinicHistoryItem,
 } from '../data-types/mascotas';
 import sql from '../db';
+import { queryFilterChecker } from '../utils/check-values';
 
 export type PaginatedPetsResult = {
   pets: PetsTableData[];
   totalCount: number;
   totalPages: number;
 };
-
-function queryChecker(query: string): {
-  hasFilter: boolean;
-  term: string;
-} {
-  const q = query?.trim() ?? '';
-  if (q.length === 0) return { hasFilter: false, term: '' };
-  return { hasFilter: true, term: `%${q}%` };
-}
 
 export const getAllPetsWithQuery = async (
   query: string,
@@ -29,7 +21,7 @@ export const getAllPetsWithQuery = async (
   try {
     const safePage = Math.max(1, Number(page) || 1);
     const offset = (safePage - 1) * pageSize;
-    const { hasFilter, term } = queryChecker(query);
+    const { hasFilter, term } = queryFilterChecker(query);
 
     // Count total filas para paginador
     const countRows = hasFilter

@@ -1,32 +1,26 @@
-import {
-  getAllVisitsWithFilters,
-  VisitsQueryFilters,
-} from '@/app/_lib/data/consultas';
+import { getAllVisitsWithFilters } from '@/app/_lib/data/atenciones';
 import VisitTableRow from './VisitsTableRow';
 import { ClipboardList } from 'lucide-react';
+import Pagination from '../../components/Pagination';
 
 type VisitsTableProps = {
   searchParams?: Partial<{
     query?: string;
-    tipo?: string;
-    desde?: string;
-    hasta?: string;
+    page?: number;
   }>;
 };
 
 export default async function VisitsTable({
   searchParams,
 }: VisitsTableProps = {}) {
-  const filters: VisitsQueryFilters = {
-    query: searchParams?.query,
-    tipo: searchParams?.tipo,
-    desde: searchParams?.desde,
-    hasta: searchParams?.hasta,
-    limit: 10,
-    offset: 0,
-  };
+  const query = searchParams?.query || '';
+  const page = searchParams?.page || 1;
 
-  const items = await getAllVisitsWithFilters(filters);
+  const { visits, totalPages, totalCount } = await getAllVisitsWithFilters(
+    query,
+    page,
+    10
+  );
 
   return (
     <div className="borders overflow-hidden border-gray-200/80">
@@ -37,21 +31,21 @@ export default async function VisitsTable({
               <th className="col-span-3 text-xs font-normal">Fecha</th>
               <th className="col-span-4 text-xs font-normal">Mascota</th>
               <th className="col-span-3 text-xs font-normal">Tipo</th>
-              <th className="col-span-5 text-xs font-normal">
+              <th className="col-span-6 text-xs font-normal">
                 Propietario / Motivo
               </th>
               <th className="col-span-3 text-xs font-normal">Veterinario</th>
               <th className="col-span-2 text-center text-xs font-normal">
                 Peso
               </th>
-              <th className="col-span-4 text-center text-xs font-normal">
+              <th className="col-span-3 text-center text-xs font-normal">
                 Acciones
               </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200/70 bg-white">
-            {items.length > 0 ? (
-              items.map((item) => <VisitTableRow key={item.id} {...item} />)
+            {visits.length > 0 ? (
+              visits.map((item) => <VisitTableRow key={item.id} {...item} />)
             ) : (
               <tr>
                 <td
@@ -72,6 +66,21 @@ export default async function VisitsTable({
             )}
           </tbody>
         </table>
+        {/* Contador de resultados + Paginacion */}
+        <footer className="flex flex-col-reverse items-center justify-between gap-3 border-t border-gray-200/70 bg-white px-4 py-2 sm:flex-row">
+          <div className="flex items-center gap-2 text-sm">
+            <p className="tabular-numss font-medium text-gray-700">
+              Mostrando{' '}
+              <span className="text-slate-900">
+                {totalCount === 0 ? 0 : (page - 1) * 10 + 1}
+                {'-'}
+                {Math.min(page * 10, Math.max(0, totalCount))}
+              </span>{' '}
+              de <span className="text-slate-900">{totalCount}</span>
+            </p>
+          </div>
+          <Pagination pages={totalPages} />
+        </footer>
       </div>
     </div>
   );

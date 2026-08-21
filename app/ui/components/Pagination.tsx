@@ -4,8 +4,10 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  MoreHorizontal,
 } from 'lucide-react';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
+import { useMemo } from 'react';
 
 export default function Pagination({
   pages,
@@ -19,9 +21,15 @@ export default function Pagination({
   const router = useRouter();
   const currentPage = Number(searchParams.get('page')) || 1;
 
+  const totalPages = Math.max(1, pages || 1);
+  const atFirst = currentPage <= 1;
+  const atLast = currentPage >= totalPages;
+
   const navigateToPage = (pageNumber: number | string) => {
+    const target = Number(pageNumber);
+    if (Number.isNaN(target) || target < 1 || target > totalPages) return;
     const params = new URLSearchParams(searchParams);
-    params.set('page', pageNumber?.toString());
+    params.set('page', String(target));
     const url = `${pathname}?${params.toString()}`;
 
     if (preserveScroll) {
@@ -31,104 +39,137 @@ export default function Pagination({
     }
   };
 
-  const pageNumber: number[] = [];
-  for (let i = 1; i <= pages; i++) {
-    pageNumber.push(i);
-  }
+  // Calcular paginas visibles + ellipsis
+  type PageDisplayItem =
+    | { type: 'page'; value: number }
+    | { type: 'ellipsis'; value?: never };
 
-  const visiblePagesArray = pageNumber.filter((numero) => {
-    if ((currentPage === 1 || currentPage === 2) && numero < 6) {
-      return true;
-    }
-    if (
-      (currentPage === pages - 1 || currentPage === pages) &&
-      numero > pages - 5
+  const displayItems = useMemo<PageDisplayItem[]>(() => {
+    const delta = 1; // paginas vecinas a cada lado de current (1 = 3 visible)
+    const range: number[] = [];
+
+    // Siempre mostramos 1 y ultima pagina.
+    const withLeftEllipsis = currentPage - delta > 3;
+    const withRightEllipsis = currentPage + delta < totalPages - 2;
+
+    for (
+      let i = Math.max(2, currentPage - delta);
+      i <= Math.min(totalPages - 1, currentPage + delta);
+      i++
     ) {
-      return true;
+      range.push(i);
     }
-    if (
-      numero === currentPage ||
-      (numero < currentPage && numero > currentPage - 3) ||
-      (numero > currentPage && numero < currentPage + 3)
-    ) {
-      return true;
-    } else {
-      return false;
-    }
-  });
 
-  const arrayPaginas = visiblePagesArray.map((numero, index) => (
-    <li key={index}>
-      <button
-        onClick={() => navigateToPage(numero)}
-        className={`${numero === currentPage ? 'bg-linear-to-r from-slate-700 to-slate-800 text-white' : 'bg-white hover:bg-slate-200'} text-slate-600" flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-slate-200 text-xs`}
-      >
-        {numero}
-      </button>
-    </li>
-  ));
+    const items: PageDisplayItem[] = [{ type: 'page', value: 1 }];
+    if (withLeftEllipsis) items.push({ type: 'ellipsis' });
 
-  const calcularCambioPagina = (direction: 'right' | 'left') => {
-    if (direction === 'left') {
-      if (currentPage > 1) {
-        return currentPage - 1;
-      } else {
-        return 1;
-      }
-    } else {
-      if (currentPage < pages) {
-        return currentPage + 1;
-      } else {
-        return pages || 1;
-      }
+    for (const n of range) {
+      if (n > 1 && n < totalPages) items.push({ type: 'page', value: n });
     }
-  };
+
+    if (withRightEllipsis) items.push({ type: 'ellipsis' });
+    if (totalPages > 1) items.push({ type: 'page', value: totalPages });
+    return items;
+  }, [currentPage, totalPages]);
+
+  // ==========================================================
+  // 🔧 Helpers UI (evita duplicar className strings)
+  // ==========================================================
+  const btnBase =
+    'flex h-9 w-9 items-center justify-center rounded-lg border text-xs font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-1';
+  const btnEnabled =
+    'cursor-pointer border-slate-200 bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900';
+  const btnDisabled =
+    'pointer-events-none cursor-not-allowed border-slate-100 bg-slate-50/50 text-slate-300 opacity-60';
+  const btnActive =
+    'cursor-pointer border-slate-700 bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-sm';
 
   return (
     <nav
-      className="flex items-center justify-end border-t border-gray-200/70 bg-white px-4 sm:px-0"
+      className="flex items-center justify-center bg-white"
       aria-label="Pagination"
     >
-      <ul className="flex gap-2 p-2">
-        {/* First Page */}
+      <ul className="flex flex-wrap items-center gap-1.5 py-2 sm:gap-2">
+        {/* ⏮ First Page */}
         <li>
           <button
+            type="button"
             onClick={() => navigateToPage(1)}
-            className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-200 hover:text-slate-600"
+            disabled={atFirst}
+            aria-disabled={atFirst}
+            aria-label="Ir a la primera página"
+            className={`${btnBase} ${atFirst ? btnDisabled : btnEnabled}`}
           >
-            <ChevronsLeft className="size-4" />
+            <ChevronsLeft className="h-4 w-4" />
           </button>
         </li>
-        {/* Arrow Left */}
-        <li>
-          <button
-            onClick={() => navigateToPage(calcularCambioPagina('left'))}
-            className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-200 hover:text-slate-600"
-          >
-            <ChevronLeft className="size-4" />
-          </button>
-        </li>
-        {/* Visible Pages */}
-        {arrayPaginas}
 
-        {/* Arrow Right */}
+        {/* ◀ Prev Page */}
         <li>
           <button
-            onClick={() => navigateToPage(calcularCambioPagina('right'))}
-            className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-200 hover:text-slate-600"
+            type="button"
+            onClick={() => navigateToPage(currentPage - 1)}
+            disabled={atFirst}
+            aria-disabled={atFirst}
+            aria-label="Ir a la página anterior"
+            className={`${btnBase} ${atFirst ? btnDisabled : btnEnabled}`}
           >
-            <ChevronRight className="size-4" />
+            <ChevronLeft className="h-4 w-4" />
           </button>
         </li>
-        {/* Last Page */}
+
+        {/* 📄 Páginas visibles + … ellipsis */}
+        {displayItems.map((item, idx) =>
+          item.type === 'ellipsis' ? (
+            <li key={`ellipsis-${idx}`} aria-hidden="true">
+              <span
+                className={`${btnBase} ${btnDisabled} border-transparent bg-transparent`}
+              >
+                <MoreHorizontal className="h-4 w-4" />
+              </span>
+            </li>
+          ) : (
+            <li key={`page-${item.value}`}>
+              <button
+                type="button"
+                onClick={() => navigateToPage(item.value!)}
+                aria-current={item.value === currentPage ? 'page' : undefined}
+                aria-label={`Ir a la página ${item.value}`}
+                className={`${btnBase} ${
+                  item.value === currentPage ? btnActive : btnEnabled
+                }`}
+              >
+                {item.value}
+              </button>
+            </li>
+          )
+        )}
+
+        {/* ▶ Next Page */}
         <li>
           <button
-            onClick={() =>
-              navigateToPage(pageNumber[pageNumber.length - 1] || 1)
-            }
-            className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-200 hover:text-slate-600"
+            type="button"
+            onClick={() => navigateToPage(currentPage + 1)}
+            disabled={atLast}
+            aria-disabled={atLast}
+            aria-label="Ir a la página siguiente"
+            className={`${btnBase} ${atLast ? btnDisabled : btnEnabled}`}
           >
-            <ChevronsRight className="size-4" />
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </li>
+
+        {/* ⏭ Last Page */}
+        <li>
+          <button
+            type="button"
+            onClick={() => navigateToPage(totalPages)}
+            disabled={atLast}
+            aria-disabled={atLast}
+            aria-label="Ir a la última página"
+            className={`${btnBase} ${atLast ? btnDisabled : btnEnabled}`}
+          >
+            <ChevronsRight className="h-4 w-4" />
           </button>
         </li>
       </ul>
