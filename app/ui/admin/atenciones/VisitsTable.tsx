@@ -2,6 +2,7 @@ import { getAllVisitsWithFilters } from '@/app/_lib/data/atenciones';
 import VisitTableRow from './VisitsTableRow';
 import { ClipboardList } from 'lucide-react';
 import Pagination from '../../components/Pagination';
+import { OptimisticModalShell } from './VisitRecordDetailModal';
 
 type VisitsTableProps = {
   searchParams?: Partial<{
@@ -30,7 +31,7 @@ export default async function VisitsTable({
             <tr className="grid grid-cols-24 items-center gap-4 px-8 py-3 text-left text-gray-500">
               <th className="col-span-3 text-xs font-normal">Fecha</th>
               <th className="col-span-4 text-xs font-normal">Mascota</th>
-              <th className="col-span-3 text-xs font-normal">Tipo</th>
+              <th className="col-span-4 text-xs font-normal">Tipo</th>
               <th className="col-span-6 text-xs font-normal">
                 Propietario / Motivo
               </th>
@@ -38,7 +39,7 @@ export default async function VisitsTable({
               <th className="col-span-2 text-center text-xs font-normal">
                 Peso
               </th>
-              <th className="col-span-3 text-center text-xs font-normal">
+              <th className="col-span-2 text-center text-xs font-normal">
                 Acciones
               </th>
             </tr>
@@ -82,6 +83,8 @@ export default async function VisitsTable({
           <Pagination pages={totalPages} />
         </footer>
       </div>
+
+      <OptimisticModalShell />
     </div>
   );
 }

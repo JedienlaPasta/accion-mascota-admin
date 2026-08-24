@@ -1,16 +1,26 @@
+import { Suspense } from 'react';
 import {
   type VisitDetails,
   getVisitDetailById,
 } from '@/app/_lib/data/atenciones';
-import VisitRecordDetailModal from './VisitRecordDetailModal';
+import VisitRecordDetailModal, {
+  LoadingContent,
+  ContentRenderer,
+} from './VisitRecordDetailModal';
 
-export default async function VisitRecordDetail({ id }: { id: string }) {
+// No es async, por lo que no hace await bloqueante. El fetch real se hace DENTRO de <Suspense>.
+export default function VisitRecordDetail({ id }: { id: string }) {
+  return (
+    <VisitRecordDetailModal>
+      <Suspense fallback={<LoadingContent />}>
+        <DetalleAsync id={id} />
+      </Suspense>
+    </VisitRecordDetailModal>
+  );
+}
+
+// Server Child ASYNC (vive DENTRO de <Suspense>)
+async function DetalleAsync({ id }: { id: string }) {
   const visit: VisitDetails | null = await getVisitDetailById(id);
-  //   console.log(visit);
-  // Si no existe -> modal 404
-  if (!visit) {
-    return <VisitRecordDetailModal visit={null} notFound />;
-  }
-
-  return <VisitRecordDetailModal visit={visit} notFound={false} />;
+  return <ContentRenderer visit={visit} />;
 }

@@ -82,6 +82,20 @@ export const formatDate = (dateString: string) => {
   });
 };
 
+export const formatDateWithTime = (dateString: string) => {
+  if (!dateString) return '—';
+  const d = new Date(dateString);
+  if (Number.isNaN(d.getTime())) return dateString;
+  return d.toLocaleString('es-CL', {
+    year: 'numeric',
+    month: 'short',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+};
+
 export const formatShortDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString('es-CL', {
     day: 'numeric',

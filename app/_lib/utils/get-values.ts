@@ -29,6 +29,7 @@ export const getYearsBetween = (start: string, end: string) => {
 
 export const getAge = (fechaNacimiento: string) => {
   const nacimiento = new Date(fechaNacimiento);
+  if (Number.isNaN(nacimiento.getTime())) return 'Edad desconocida';
   const hoy = new Date();
   const diff = hoy.getTime() - nacimiento.getTime();
   const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));

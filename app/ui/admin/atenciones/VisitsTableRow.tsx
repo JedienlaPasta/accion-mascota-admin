@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  Ambulance,
   AppWindow,
   CalendarDays,
   Cat,
@@ -56,7 +57,7 @@ const getTipoStyle = (tipoRaw: string): TipoStyle => {
     };
   if (t.includes('cirugia') || t.includes('operativ'))
     return {
-      Icon: FileCheck,
+      Icon: Ambulance,
       bg: 'bg-rose-50',
       text: 'text-rose-700',
       ring: 'ring-rose-200/60',
@@ -119,12 +120,36 @@ function VisitsTableRowInner(props: Visits) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // ⚡⚡ VERSIÓN OPTIMISTA (0ms de latencia percibida)
+  //
+  // ¿Por qué era lento antes?
+  // router.replace() NEXT BLOQUEA UI hasta re-renderizar page.tsx en Server → 80-150ms "pegado".
+  //
+  // Orden nuevo (no hay await → todo instantáneo para el usuario):
   const openVisitModal = (id: string) => {
     if (!id) return;
     const params = new URLSearchParams(searchParams);
     params.set('visitId', id);
     const qs = params.toString();
-    router.replace(qs ? `?${qs}` : '', { scroll: false });
+    const nextUrl = qs ? `?${qs}` : window.location.pathname;
+
+    // Paso 1) [0ms] Avisar shell optimista (ClientShell: abrir YA el modal shimmer
+    window.dispatchEvent(
+      new CustomEvent('visit:open', { detail: id })
+    );
+
+    // Paso 2) [0ms] Actualizar URL navegador NATIVO síncrono
+    window.history.replaceState(
+      { ...window.history.state },
+      document.title,
+      nextUrl
+    );
+
+    // Paso 3) [background non-blocking] Actualizar router Next en paralelo.
+    // Cuando Next re-valide page.tsx server → monta Server VisitRecordDetail REAL
+    // y el shell optimista se desmonta solo (coinciden optimisticVisitId == url).
+    // No usamos await intencionalmente: NO BLOQUEARÍA UI.
+    void router.replace(nextUrl, { scroll: false });
   };
 
   const textoCorto =
@@ -190,7 +215,7 @@ function VisitsTableRowInner(props: Visits) {
       </td>
 
       {/* 3. Tipo atención (coloreado por tipo) */}
-      <td className="col-span-3 flex tabular-nums">
+      <td className="col-span-4 flex tabular-nums">
         <span
           className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-semibold capitalize ring-1 ${tipoStyle.bg} ${tipoStyle.text} ${tipoStyle.ring}`}
           title={capitalizeAll(tipo_atencion)}
@@ -261,7 +286,7 @@ function VisitsTableRowInner(props: Visits) {
       </td>
 
       {/* 7. Acciones (ampliamos de 2 → 4 cols para 2 botones: VER + EDITAR) */}
-      <td className="relative col-span-3 flex items-center justify-center gap-2">
+      <td className="relative col-span-2 flex items-center justify-center gap-2">
         <Link
           href={`/admin/mascotas/${public_id_mascota}`}
           title="Ficha mascota"
