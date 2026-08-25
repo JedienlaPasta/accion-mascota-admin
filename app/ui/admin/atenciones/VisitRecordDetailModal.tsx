@@ -211,7 +211,7 @@ export function ContentRenderer({ visit }: { visit: VisitDetails | null }) {
         <button
           type="button"
           onClick={close}
-          className="mt-7 inline-flex h-10 items-center justify-center rounded-xl bg-slate-900 px-6 text-sm font-medium text-white transition-colors hover:bg-slate-800"
+          className="mt-7 inline-flex h-10 cursor-pointer items-center justify-center rounded-xl bg-slate-900 px-6 text-sm font-medium text-white transition-colors hover:bg-slate-800"
         >
           Volver al listado
         </button>
@@ -248,7 +248,7 @@ export function ContentRenderer({ visit }: { visit: VisitDetails | null }) {
               title={
                 copied ? '¡Copiado al portapapeles!' : 'Copiar ID atención'
               }
-              className={`inline-flex h-9 w-9 items-center justify-center rounded-xl border transition-all duration-150 ${
+              className={`inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border transition-all duration-150 ${
                 copied
                   ? 'border-emerald-200 bg-emerald-50 text-emerald-600'
                   : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800'
@@ -265,7 +265,7 @@ export function ContentRenderer({ visit }: { visit: VisitDetails | null }) {
               type="button"
               onClick={close}
               aria-label="Cerrar detalle atención"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 transition-colors hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800"
+              className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-500 transition-colors hover:border-gray-300 hover:bg-gray-50 hover:text-gray-800"
             >
               <XIcon className="sw-4 h-4" />
             </button>
@@ -482,7 +482,7 @@ export function ContentRenderer({ visit }: { visit: VisitDetails | null }) {
           <button
             type="button"
             onClick={close}
-            className="inline-flex h-10 items-center justify-center rounded-xl bg-slate-900 px-5 text-sm font-medium text-white transition-colors hover:bg-slate-800"
+            className="inline-flex h-10 cursor-pointer items-center justify-center rounded-xl bg-slate-900 px-5 text-sm font-medium text-white transition-colors hover:bg-slate-800"
           >
             Cerrar
           </button>
