@@ -92,7 +92,7 @@ function VisitsTableRowInner(props: Visits) {
     .join(' · ');
 
   return (
-    <tr className="grid grid-cols-24 items-center gap-4 px-8 py-4 text-sm text-zinc-600 transition-colors focus-within:bg-zinc-50/80 hover:bg-zinc-50/80">
+    <tr className="grid h-17 grid-cols-24 items-center gap-4 px-8 py-4 text-sm text-gray-600 transition-colors focus-within:bg-gray-50/80 hover:bg-gray-50/80">
       {/* 1. Fecha + hora (formato) */}
       <td className="col-span-3">
         <div className="flex flex-col gap-0.5">
@@ -101,11 +101,11 @@ function VisitsTableRowInner(props: Visits) {
               className="size-3.5 shrink-0 text-gray-400"
               aria-hidden="true"
             />
-            <span className="text-xs font-medium text-zinc-800 tabular-nums">
+            <span className="text-xs font-medium text-gray-800 tabular-nums">
               {formatShortDate(fecha_atencion)}
             </span>
           </div>
-          <span className="pl-5.5 text-[11px] text-zinc-400 tabular-nums">
+          <span className="pl-5.5 text-[11px] text-gray-400 tabular-nums">
             {/* hora si la tuvieras en timestamp — si quieres la extraes: */}
             {new Date(fecha_atencion).toLocaleTimeString('es-CL', {
               hour: '2-digit',
@@ -128,13 +128,13 @@ function VisitsTableRowInner(props: Visits) {
           </span>
           <div className="min-w-0 flex-1">
             <p
-              className="truncate font-semibold text-zinc-900 transition-colors hover:text-indigo-700"
+              className="truncate font-semibold text-gray-900 transition-colors hover:text-indigo-700"
               title={capitalize(nombre_mascota)}
             >
               {capitalize(nombre_mascota)}
             </p>
-            <p className="truncate text-[11px] text-zinc-400 tabular-nums">
-              µchip: {microchip || 'Sin registrar'}
+            <p className="truncate text-[11px] text-gray-400 tabular-nums">
+              chip: {microchip || 'Sin registrar'}
             </p>
           </div>
         </Link>
@@ -158,20 +158,20 @@ function VisitsTableRowInner(props: Visits) {
           className="block min-w-0"
         >
           <div className="flex items-center gap-1.5">
-            <User className="size-3.5 shrink-0 text-zinc-400" />
+            <User className="size-3.5 shrink-0 text-gray-400" />
             <p
-              className="truncate text-xs font-semibold text-zinc-700 hover:text-indigo-700"
+              className="truncate text-xs font-semibold text-gray-700 hover:text-indigo-700"
               title={capitalizeAll(nombre_propietario)}
             >
               {capitalizeAll(nombre_propietario)}
             </p>
-            <span className="shrink-0 text-[10px] text-zinc-400 tabular-nums">
+            <span className="shrink-0 text-[10px] text-gray-400 tabular-nums">
               ({formatRUT(rut_propietario)})
             </span>
           </div>
         </Link>
         <p
-          className="mt-0.5 truncate text-xs text-zinc-500"
+          className="mt-0.5 truncate text-xs text-gray-500"
           title={tooltipCompleto || textoCorto}
         >
           {textoCorto || '—'}
@@ -181,9 +181,9 @@ function VisitsTableRowInner(props: Visits) {
       {/* 5. Veterinario */}
       <td className="col-span-3 truncate tabular-nums">
         <div className="flex items-center gap-1.5">
-          <User className="size-3.5 shrink-0 text-zinc-400" />
+          <User className="size-3.5 shrink-0 text-gray-400" />
           <span
-            className="truncate text-xs text-zinc-700"
+            className="truncate text-xs text-gray-700"
             title={capitalizeAll(veterinario)}
           >
             {capitalizeAll(veterinario)}
@@ -203,7 +203,7 @@ function VisitsTableRowInner(props: Visits) {
           </span>
         ) : (
           <span
-            className="text-[10px] text-nowrap text-zinc-400"
+            className="text-[10px] text-nowrap text-gray-400"
             title="Sin peso registrado"
           >
             No registrado
@@ -216,7 +216,7 @@ function VisitsTableRowInner(props: Visits) {
         <Link
           href={`/admin/mascotas/${public_id_mascota}`}
           title="Ficha mascota"
-          className="peer inline-flex size-8 items-center justify-center rounded-lg text-zinc-500/80 transition-all hover:bg-zinc-200/40 hover:text-zinc-700"
+          className="peer inline-flex size-8 items-center justify-center rounded-lg text-gray-500/80 transition-all hover:bg-gray-200/40 hover:text-gray-700"
         >
           <PawPrint className="size-4" />
         </Link>
@@ -225,7 +225,7 @@ function VisitsTableRowInner(props: Visits) {
           onClick={() => openVisitModal(id)}
           title="Ver detalle atención"
           aria-label="Ver detalle atención"
-          className="peer inline-flex size-8 cursor-pointer items-center justify-center rounded-lg text-zinc-500/80 transition-all hover:bg-zinc-200/40 hover:text-zinc-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-1"
+          className="peer inline-flex size-8 cursor-pointer items-center justify-center rounded-lg text-gray-500/80 transition-all hover:bg-gray-200/40 hover:text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-1"
         >
           <AppWindow className="size-4.5" />
         </button>

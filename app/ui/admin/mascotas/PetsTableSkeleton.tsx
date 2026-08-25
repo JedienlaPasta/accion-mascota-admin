@@ -33,6 +33,7 @@ export default function PetsTableSkeleton() {
             <TableRowSkeleton />
             <TableRowSkeleton />
             <TableRowSkeleton />
+            <TableRowSkeleton />
           </tbody>
         </table>
         <PaginationSkeleton />
@@ -43,7 +44,7 @@ export default function PetsTableSkeleton() {
 
 function TableRowSkeleton() {
   return (
-    <tr className="grid h-18 cursor-pointer grid-cols-24 items-center gap-4 px-8 text-sm text-gray-600 transition-colors last:mb-2 hover:bg-gray-50/80">
+    <tr className="grid h-17 grid-cols-24 items-center gap-4 px-8 text-sm text-gray-600 transition-colors hover:bg-gray-50/80">
       {/* Nombre Mascota */}
       <td className="col-span-4 flex items-center justify-start gap-2.5 lg:col-span-5">
         <div className="size-10 animate-pulse rounded-xl bg-gray-200"></div>

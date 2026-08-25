@@ -1,51 +1,80 @@
 import { PetsTableData } from '../data-types/mascotas';
 import { OwnersSummaryData, OwnersTableData } from '../data-types/propietarios';
 import sql from '../db';
+import { queryFilterChecker } from '../utils/check-values';
+
+type PaginatedOwnersResult = {
+  owners: OwnersTableData[];
+  totalCount: number;
+  totalPages: number;
+};
 
 export const getAllOwnersWithQuery = async (
-  query: string
-): Promise<OwnersTableData[]> => {
+  query: string,
+  page: number,
+  pageSize: number
+): Promise<PaginatedOwnersResult> => {
   try {
-    const searchTerm = `%${query}%`;
-    const owners = await sql`
-      SELECT
-        p.public_id as id,
-        p.nombre AS nombre_propietario,
-        p.rut,
-        p.correo_personal,
-        p.correo_contacto,
-        p.direccion,
-        p.comuna,
-        p.region,
-        p.telefono,
-        COUNT(m.id) AS total_mascotas
-      FROM propietarios p
-      LEFT JOIN mascotas m ON m.propietario_id = p.id
-      WHERE p.nombre ILIKE ${searchTerm}
-        OR p.rut ILIKE ${searchTerm}
-        OR p.telefono ILIKE ${searchTerm}
-        OR p.correo_personal ILIKE ${searchTerm}
-        OR p.direccion ILIKE ${searchTerm}
-        OR p.comuna ILIKE ${searchTerm}
-      GROUP BY
-        p.id,
-        p.public_id,
-        p.nombre,
-        p.rut,
-        p.correo_personal,
-        p.correo_contacto,
-        p.direccion,
-        p.comuna,
-        p.region,
-        p.telefono
-      ORDER BY p.id
-      LIMIT 10
+    const safePage = Math.max(1, Number(page) || 1);
+    const offset = (safePage - 1) * pageSize;
+    const { hasFilter, term } = queryFilterChecker(query);
+
+    const whereClause = hasFilter
+      ? sql`
+        WHERE nombre ILIKE ${term}
+          OR rut ILIKE ${term}
+          OR telefono ILIKE ${term}
+          OR correo_personal ILIKE ${term}
+          OR direccion ILIKE ${term}
+          OR comuna ILIKE ${term}
+      `
+      : sql``;
+
+    const countRows = await sql`
+      SELECT COUNT(*)::int AS total
+      FROM propietarios
+      ${whereClause}
     `;
 
-    return owners.map((owner) => owner as OwnersTableData);
+    const totalCount = countRows[0].total ?? 0;
+    const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+
+    const owners = await sql`
+        SELECT
+          p.public_id AS id,
+          p.nombre AS nombre_propietario,
+          p.rut,
+          p.correo_personal,
+          p.correo_contacto,
+          p.direccion,
+          p.comuna,
+          p.region,
+          p.telefono,
+          COALESCE(pet_count.total, 0)::int AS total_mascotas
+        FROM propietarios p
+        LEFT JOIN LATERAL (
+          SELECT COUNT(*) AS total
+          FROM mascotas m
+          WHERE m.propietario_id = p.id
+        ) pet_count ON true
+        ${whereClause}
+        ORDER BY p.id DESC
+        LIMIT ${pageSize}
+        OFFSET ${offset}
+    `;
+
+    return {
+      owners: owners.map((owner) => owner as OwnersTableData),
+      totalCount,
+      totalPages,
+    };
   } catch (error) {
     console.error('Error al obtener propietarios:', error);
-    return [] as OwnersTableData[];
+    return {
+      owners: [],
+      totalCount: 0,
+      totalPages: 1,
+    };
   }
 };
 
@@ -82,7 +111,9 @@ export type OwnerDetails = {
   creado_en: string | null;
 };
 
-export const getOwnerDetailsById = async (id: string): Promise<OwnerDetails | null> => {
+export const getOwnerDetailsById = async (
+  id: string
+): Promise<OwnerDetails | null> => {
   try {
     const owners = await sql`
       SELECT
@@ -109,7 +140,9 @@ export const getOwnerDetailsById = async (id: string): Promise<OwnerDetails | nu
   }
 };
 
-export const getPetsByOwnerId = async (ownerId: string): Promise<PetsTableData[]> => {
+export const getPetsByOwnerId = async (
+  ownerId: string
+): Promise<PetsTableData[]> => {
   try {
     const pets = await sql`
       SELECT

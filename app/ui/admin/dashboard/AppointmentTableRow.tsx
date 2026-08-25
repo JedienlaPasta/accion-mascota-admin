@@ -39,7 +39,7 @@ export function AppointmentTableRow({ appointment }: AppointmentTableRowProps) {
   } = appointment;
 
   return (
-    <tr className="grid h-16 grid-cols-24 items-center gap-4 px-8 text-sm text-gray-600 transition-colors last:mb-2 focus-within:bg-gray-50/80 hover:bg-gray-50/80">
+    <tr className="grid h-16 grid-cols-24 items-center gap-4 px-8 text-sm text-gray-600 transition-colors focus-within:bg-gray-50/80 hover:bg-gray-50/80">
       <td className="col-span-4">
         <div className="flex items-center gap-1">
           <CalendarDays

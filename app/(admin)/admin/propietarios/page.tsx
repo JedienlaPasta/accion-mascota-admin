@@ -8,12 +8,13 @@ import TableWrapper from '@/app/ui/admin/TableWrapper';
 import { BaseLink } from '@/app/ui/components/Link';
 
 type OwnersTableProps = {
-  searchParams?: Promise<{ query?: string }>;
+  searchParams?: Promise<{ query?: string; page?: number }>;
 };
 
 export default async function PropietariosPageAdmin(props: OwnersTableProps) {
   const searchParams = await props.searchParams;
   const query = searchParams?.query ?? '';
+  const page = searchParams?.page ?? 1;
 
   return (
     <div className="flex min-h-full flex-col space-y-4 bg-gray-50/50 p-6 lg:p-8">
@@ -43,7 +44,7 @@ export default async function PropietariosPageAdmin(props: OwnersTableProps) {
         {/* Owners Table */}
         <TableWrapper title="Propietarios">
           <Suspense fallback={<OwnersTableSkeleton />}>
-            <OwnersTable query={query} />
+            <OwnersTable query={query} page={page} />
           </Suspense>
         </TableWrapper>
       </section>

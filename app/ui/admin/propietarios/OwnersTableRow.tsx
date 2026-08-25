@@ -19,32 +19,34 @@ function getInitials(name: string): string {
   return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
 }
 
-function OwnerTableRowInner({
-  id,
-  nombre_propietario,
-  rut,
-  correo_personal,
-  correo_contacto,
-  direccion,
-  comuna,
-  region,
-  telefono,
-  total_mascotas,
-}: OwnersTableData) {
+function OwnerTableRowInner(props: OwnersTableData) {
+  const {
+    id,
+    nombre_propietario,
+    rut,
+    correo_personal,
+    correo_contacto,
+    direccion,
+    comuna,
+    region,
+    telefono,
+    total_mascotas,
+  } = props;
+
   const correo = correo_personal || correo_contacto || '';
   const direccionCompleta = [direccion, comuna, region]
     .filter(Boolean)
     .map((s) => capitalizeAll(String(s)))
     .join(', ');
-  // "Es usuario" = SI cuando SÍ tiene correo_personal (cuenta registrada en el portal)
+  // "Es usuario" = SI cuando SI tiene correo_personal (cuenta registrada en el portal)
   const esUsuarioRegistrado = Boolean(
     correo_personal && correo_personal.trim().length > 0
   );
 
   return (
-    <tr className="group grid h-18 cursor-pointer grid-cols-24 items-center gap-4 px-8 text-sm text-gray-600 transition-colors last:mb-2 focus-within:bg-gray-50/80 hover:bg-gray-50/80">
+    <tr className="grid h-17 grid-cols-24 items-center gap-4 px-8 text-sm text-gray-600 transition-colors focus-within:bg-gray-50/80 hover:bg-gray-50/80">
       {/* Propietario: avatar + nombre + RUT */}
-      <td className="col-span-5 min-w-0">
+      <td className="group col-span-7 min-w-0">
         <Link
           href={`/admin/propietarios/${id}`}
           className="flex items-center gap-2.5"
@@ -57,7 +59,7 @@ function OwnerTableRowInner({
           </span>
           <div className="min-w-0 flex-1">
             <p
-              className="truncate font-semibold text-gray-900 transition-colors group-hover:text-indigo-700"
+              className="truncate font-semibold text-gray-900 transition-colors group-hover:text-indigo-700 group-hover:underline"
               title={capitalizeAll(nombre_propietario)}
             >
               {capitalizeAll(nombre_propietario)}
@@ -69,18 +71,18 @@ function OwnerTableRowInner({
         </Link>
       </td>
 
-      {/* teléfono + email */}
+      {/* telefono + email */}
       <td className="col-span-5 min-w-0 space-y-1">
         <p
           className="flex items-center gap-1.5 text-gray-700 tabular-nums"
           title={telefono || 'Sin teléfono'}
         >
           <Phone className="size-3 shrink-0 text-gray-400" aria-hidden="true" />
-          <span className="truncate text-xs">
+          <span className="truncate text-xs font-semibold text-gray-700">
             {telefono ? (
               formatPhone(telefono)
             ) : (
-              <span className="text-gray-400">Sin teléfono</span>
+              <span className="font-normal text-gray-400">Sin teléfono</span>
             )}
           </span>
         </p>
@@ -99,17 +101,17 @@ function OwnerTableRowInner({
         </p>
       </td>
 
-      {/* Dirección: con ícono MapPin y comuna/region inline */}
-      <td className="col-span-7 min-w-0">
+      {/* Direccion */}
+      <td className="col-span-6 min-w-0">
         <p
-          className="flex items-start gap-1.5 truncate text-gray-700"
+          className="flex items-center gap-1.5 truncate text-gray-700"
           title={direccionCompleta || 'Sin dirección'}
         >
           <MapPin
-            className="mt-0.5 size-3.5 shrink-0 text-gray-400"
+            className="size-3.5 shrink-0 text-gray-400"
             aria-hidden="true"
           />
-          <span className="truncate text-sm">
+          <span className="truncate text-xs">
             {direccionCompleta || (
               <span className="text-gray-400">Sin dirección</span>
             )}
@@ -117,8 +119,8 @@ function OwnerTableRowInner({
         </p>
       </td>
 
-      {/* Cantidad de mascotas: badge con ícono huella */}
-      <td className="col-span-3 flex justify-center tabular-nums">
+      {/* Cantidad de mascotas */}
+      <td className="col-span-2 flex justify-center tabular-nums">
         <span
           className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold ring-1 ${
             total_mascotas > 0
@@ -143,7 +145,7 @@ function OwnerTableRowInner({
           </span>
         ) : (
           <span
-            className="inline-flex shrink-0 items-center gap-1 rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500 ring-1 ring-gray-200/70"
+            className="flex shrink-0 items-center gap-1 rounded-md bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-500 ring-1 ring-gray-200/70"
             title="No tiene cuenta registrada en el portal"
           >
             <XCircle className="size-3.5 text-gray-400" aria-hidden="true" />
@@ -152,7 +154,7 @@ function OwnerTableRowInner({
         )}
       </td>
 
-      {/* Acciones: botón flecha */}
+      {/* Acciones */}
       <td className="relative col-span-2 flex justify-center">
         <Link
           href={`/admin/propietarios/${id}`}

@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { Cat, Dog, LucideIcon, PawPrint } from 'lucide-react';
 
 export const getDaysBetween = (start: string, end: string) => {
   const startDate = dayjs(start).startOf('day');
@@ -38,4 +39,15 @@ export const getAge = (fechaNacimiento: string) => {
   );
   if (years === 0) return `${months} meses`;
   return `${years} año${years > 1 ? 's' : ''} y ${months} mes${months > 1 ? 'es' : ''}`;
+};
+
+export const getPetIcon = (especieRaw: string): LucideIcon => {
+  const especie = especieRaw.trim().toUpperCase();
+  if (especie === 'CANINO') {
+    return Dog;
+  }
+  if (especie === 'FELINO') {
+    return Cat;
+  }
+  return PawPrint;
 };

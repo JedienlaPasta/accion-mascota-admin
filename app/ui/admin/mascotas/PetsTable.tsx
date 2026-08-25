@@ -10,7 +10,11 @@ export default async function PetsTable({
   page: number;
 }) {
   const pageSize = 10;
-  const { pets, totalPages } = await getAllPetsWithQuery(query, page, pageSize);
+  const { pets, totalPages, totalCount } = await getAllPetsWithQuery(
+    query,
+    page,
+    pageSize
+  );
 
   return (
     <div className="overflow-hidden border-gray-200/80">
@@ -37,18 +41,7 @@ export default async function PetsTable({
           <tbody className="divide-y divide-gray-200/70 bg-white">
             {pets.length > 0 ? (
               pets.map((item) => (
-                <PetTableRow
-                  key={`${item.id + item.microchip}`}
-                  id={item.id}
-                  nombre_mascota={item.nombre_mascota}
-                  especie={item.especie}
-                  raza={item.raza}
-                  fecha_nacimiento={item.fecha_nacimiento}
-                  microchip={item.microchip}
-                  esterilizado={item.esterilizado}
-                  nombre_propietario={item.nombre_propietario}
-                  rut={item.rut}
-                />
+                <PetTableRow key={`${item.id + item.microchip}`} {...item} />
               ))
             ) : (
               <tr>
@@ -84,7 +77,21 @@ export default async function PetsTable({
             )}
           </tbody>
         </table>
-        <Pagination pages={totalPages} />
+        {/* Contador de resultados + Paginacion */}
+        <footer className="flex flex-col-reverse items-center justify-between gap-3 border-t border-gray-200/70 bg-white px-4 py-2 sm:flex-row">
+          <div className="flex items-center gap-2 text-sm">
+            <p className="tabular-numss font-medium text-gray-700">
+              Mostrando{' '}
+              <span className="text-slate-900">
+                {totalCount === 0 ? 0 : (page - 1) * 10 + 1}
+                {'-'}
+                {Math.min(page * 10, Math.max(0, totalCount))}
+              </span>{' '}
+              de <span className="text-slate-900">{totalCount}</span>
+            </p>
+          </div>
+          <Pagination pages={totalPages} />
+        </footer>
       </div>
     </div>
   );

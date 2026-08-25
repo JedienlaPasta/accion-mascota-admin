@@ -1,96 +1,40 @@
 import { PetsTableData } from '@/app/_lib/data-types/mascotas';
 import { validateMicrochip } from '@/app/_lib/utils/check-values';
 import { capitalize, capitalizeAll, formatRUT } from '@/app/_lib/utils/format';
-import { getAge } from '@/app/_lib/utils/get-values';
+import { getAge, getPetIcon } from '@/app/_lib/utils/get-values';
 import {
   ArrowRight,
   CalendarDays,
-  Cat,
   CheckCircle2,
   CircleAlert,
-  Dog,
   Microchip,
   Minus,
-  PawPrint,
   XCircle,
 } from 'lucide-react';
 import Link from 'next/link';
 import { memo } from 'react';
 
-type EspecieInfo = {
-  label: string;
-  Icon: typeof PawPrint;
-  avatarBg: string;
-  avatarText: string;
-  avatarRing: string;
-  badgeBg: string;
-  badgeText: string;
-  badgeRing: string;
-};
+function PetTableRowInner(props: PetsTableData) {
+  const {
+    id,
+    nombre_mascota,
+    especie,
+    raza,
+    fecha_nacimiento,
+    microchip,
+    esterilizado,
+    nombre_propietario,
+    rut,
+  } = props;
 
-const DEFAULT_ESPECIE: EspecieInfo = {
-  label: 'Mascota',
-  Icon: PawPrint,
-  avatarBg: 'from-slate-100 to-gray-200',
-  avatarText: 'text-gray-700',
-  avatarRing: 'ring-gray-200',
-  badgeBg: 'bg-gray-100',
-  badgeText: 'text-gray-700',
-  badgeRing: 'ring-gray-200/70',
-};
-
-const getEspecieInfo = (especieRaw: string): EspecieInfo => {
-  const especie = especieRaw.trim().toUpperCase();
-  if (especie.includes('CANIN') || especie === 'PERRO' || especie === 'PERRA') {
-    return {
-      label: 'Canino',
-      Icon: Dog,
-      avatarBg: 'from-blue-50/30 to-blue-100',
-      avatarText: 'text-sky-700',
-      avatarRing: 'ring-sky-200',
-      badgeBg: 'bg-sky-50',
-      badgeText: 'text-sky-700',
-      badgeRing: 'ring-sky-200/60',
-    };
-  }
-  if (especie.includes('FELIN') || especie === 'GATO' || especie === 'GATA') {
-    return {
-      label: 'Felino',
-      Icon: Cat,
-      avatarBg: 'from-pinks-50 to-pink-100',
-      avatarText: 'text-fuchsia-700',
-      avatarRing: 'ring-fuchsia-200',
-      badgeBg: 'bg-fuchsia-50',
-      badgeText: 'text-fuchsia-700',
-      badgeRing: 'ring-fuchsia-200/60',
-    };
-  }
-  return {
-    ...DEFAULT_ESPECIE,
-    label: capitalize(especieRaw) || DEFAULT_ESPECIE.label,
-  };
-};
-
-function PetTableRowInner({
-  id,
-  nombre_mascota,
-  especie,
-  raza,
-  fecha_nacimiento,
-  microchip,
-  esterilizado,
-  nombre_propietario,
-  rut,
-}: PetsTableData) {
-  const especieInfo = getEspecieInfo(especie);
-  const EspecieIcon = especieInfo.Icon;
+  const PetIcon = getPetIcon(especie);
 
   const edad = getAge(fecha_nacimiento);
   const microchipErrors = validateMicrochip(microchip);
   const hasMicrochipError = microchipErrors.length > 0;
 
   return (
-    <tr className="group grid h-18 cursor-pointer grid-cols-24 items-center gap-4 px-8 text-sm text-gray-600 transition-colors focus-within:bg-gray-50/80 hover:bg-gray-50/80">
+    <tr className="group grid h-17 grid-cols-24 items-center gap-4 px-8 text-sm text-gray-600 transition-colors focus-within:bg-gray-50/80 hover:bg-gray-50/80">
       {/* Mascota (nombre + edad) */}
       <td className="col-span-4 min-w-0 lg:col-span-5">
         <Link
@@ -102,7 +46,7 @@ function PetTableRowInner({
             aria-hidden="true"
           >
             <span className="flex items-center group-hover:text-emerald-700">
-              <EspecieIcon className="size-4" />
+              <PetIcon className="size-4" />
             </span>
           </span>
           <div className="min-w-0 flex-1">
@@ -130,9 +74,9 @@ function PetTableRowInner({
       <td className="col-span-4 min-w-0">
         <span
           className={`inline-flex items-center text-xs font-semibold text-slate-900 capitalize`}
-          title={especieInfo.label}
+          title={capitalize(especie)}
         >
-          {especieInfo.label}
+          {capitalize(especie)}
         </span>
         <p
           className="truncate text-xs text-gray-600"
@@ -150,7 +94,7 @@ function PetTableRowInner({
       <td className="col-span-7 min-w-0 truncate lg:col-span-6">
         <div className="min-w-0 flex-1">
           <p
-            className="truncate font-medium text-gray-900"
+            className="truncate text-xs font-semibold text-gray-700"
             title={capitalizeAll(nombre_propietario)}
           >
             {capitalizeAll(nombre_propietario)}
