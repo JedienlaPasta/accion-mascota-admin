@@ -123,11 +123,9 @@ export const getVisitsSummary = async (): Promise<VisitsSummary> => {
     const rows = await sql`
       SELECT
         COUNT(*)::int AS total_atenciones,
-        COUNT(*) FILTER (WHERE LOWER(tipo_atencion) LIKE '%consulta%')::int AS total_consultas,
-        COUNT(*) FILTER (WHERE LOWER(tipo_atencion) LIKE '%vacuna%' OR LOWER(tipo_atencion) LIKE '%vacunacion%' OR LOWER(tipo_atencion) LIKE '%vacunación%')::int AS total_vacunaciones,
-        COUNT(*) FILTER (WHERE LOWER(tipo_atencion) LIKE '%cirugia%' OR LOWER(tipo_atencion) LIKE '%cirugía%' OR LOWER(tipo_atencion) LIKE '%operativ%')::int AS total_cirugias,
-        COUNT(*) FILTER (WHERE LOWER(tipo_atencion) LIKE '%control%' OR LOWER(tipo_atencion) LIKE '%post-opera%')::int AS total_controles,
-        COUNT(*) FILTER (WHERE LOWER(tipo_atencion) LIKE '%emergencia%' OR LOWER(tipo_atencion) LIKE '%urgencia%')::int AS total_emergencias
+        COUNT(*) FILTER (WHERE LOWER(tipo_atencion) = 'operativo_sanitario')::int AS total_operativos_sanitarios,
+        COUNT(*) FILTER (WHERE LOWER(tipo_atencion) = 'operativo_esterilizacion')::int AS total_operativos_esterilizacion,
+        COUNT(*) FILTER (WHERE LOWER(tipo_atencion) = 'consulta_medica')::int AS total_consultas_medicas
       FROM atenciones
     `;
     return rows[0] as unknown as VisitsSummary;
@@ -135,16 +133,14 @@ export const getVisitsSummary = async (): Promise<VisitsSummary> => {
     console.error('Error al obtener summary atenciones:', error);
     return {
       total_atenciones: 0,
-      total_consultas: 0,
-      total_vacunaciones: 0,
-      total_cirugias: 0,
-      total_controles: 0,
-      total_emergencias: 0,
+      total_operativos_sanitarios: 0,
+      total_operativos_esterilizacion: 0,
+      total_consultas_medicas: 0,
     };
   }
 };
 
-// ============ DETALLE ATENCIÓN (para modal) ============
+// Detalle Atencion (para modal)
 export type ProcedimientoItem = {
   codigo: string;
   nombre: string;
@@ -158,7 +154,7 @@ export type VisitDetails = {
   veterinario: string;
   created_at: string | null;
 
-  // ============ MASCOTA ============
+  // Mascota
   public_id_mascota: string;
   nombre_mascota: string;
   especie: string | null;
@@ -166,12 +162,12 @@ export type VisitDetails = {
   fecha_nacimiento: string | null;
   microchip: string | null;
 
-  // ============ PROPIETARIO ============
+  // Propietario
   public_id_propietario: string | null;
   nombre_propietario: string;
   rut_propietario: string;
 
-  // ============ TABLA CONSULTAS_MEDICAS ============
+  // Tabla consultas_medicas
   motivo_atencion: string | null;
   anamnesis: string | null;
   examen_fisico: string | null;
@@ -179,19 +175,12 @@ export type VisitDetails = {
   examenes_solicitados: string | null;
   tratamiento: string | null;
 
-  // ============ TABLA OPERATIVOS_ESTERILIZACION ============
+  // Tabla operativos_esterilizacion
   resultado_esterilizacion: string | null;
   observaciones_esterilizacion: string | null;
 
-  // ============ TABLA ATENCION_PROCEDIMIENTOS -> PROCEDIMIENTOS ============
-  // Array JSON desde el LATERAL JOIN: [{codigo:'OCT',nombre:'Octuple'}, ...]
+  // Tabla procedimientos
   procedimientos_aplicados: ProcedimientoItem[] | null;
-};
-
-// Antiguo wrapper (se mantiene backwards-compat hasta que el refactor este listo en todo el proyecto)
-export type VisitDetailsResult = {
-  visits: Visits;
-  success: boolean;
 };
 
 export const getVisitDetailById = async (
@@ -217,7 +206,7 @@ export const getVisitDetailById = async (
         m.fecha_nacimiento,
         m.microchip,
 
-        -- Propietario (LEFT JOIN: mascota rescatada muestra '-' )
+        -- Propietario
         p.public_id AS public_id_propietario,
         COALESCE(p.nombre, 'Sin propietario') AS nombre_propietario,
         COALESCE(p.rut, '—') AS rut_propietario,
@@ -233,7 +222,7 @@ export const getVisitDetailById = async (
         -- Esterilización (solo si tipo = OPERATIVO_ESTERILIZACION)
         oe.resultado              AS resultado_esterilizacion,
 
-        -- Procedimientos (solo si tipo = OPERATIVO_SANITARIO. LATERAL = array JSON, no filas duplicadas)
+        -- Procedimientos (solo si tipo = OPERATIVO_SANITARIO)
         proc.procedimientos_jsonb AS procedimientos_aplicados
 
       FROM atenciones a
@@ -243,7 +232,7 @@ export const getVisitDetailById = async (
       LEFT  JOIN consultas_medicas cm ON cm.atencion_id = a.id
       LEFT  JOIN operativos_esterilizacion oe ON oe.atencion_id = a.id
 
-      -- LATERAL: todos los procedimientos en 1 ARRAY JSON (evita N*M filas repetidas)
+      -- todos los procedimientos en 1 ARRAY JSON
       LEFT  JOIN LATERAL (
         SELECT JSONB_AGG(JSONB_BUILD_OBJECT(
           'codigo', pr.codigo,

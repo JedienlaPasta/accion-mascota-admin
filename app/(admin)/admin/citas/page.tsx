@@ -2,9 +2,8 @@ import { adminAppointments } from '@/app/_lib/mock-data';
 import AppointmentDetailsModal from '@/app/ui/admin/citas/AppointmentDetailsModal';
 import AppointmentsCalendarTable from '@/app/ui/admin/citas/AppointmentsCalendarTable';
 import SummaryCard from '@/app/ui/admin/SummaryCard';
-import { SecondaryButton } from '@/app/ui/components/Button';
-import { BaseMutedLink } from '@/app/ui/components/Link';
-import { Calendar, Clock, Plus } from 'lucide-react';
+import { BaseLink } from '@/app/ui/components/Link';
+import { Plus } from 'lucide-react';
 
 type AppointmentsManagementProps = {
   searchParams?: Promise<{ appointmentId?: string }>;
@@ -32,24 +31,13 @@ export default async function AppointmentsManagementPageAdmin(
             Administra y confirma las citas agendadas.
           </p>
         </div>
-        {/* Top Content Buttons */}
-        <div className="flex flex-wrap gap-2">
-          <SecondaryButton className="gap-2 bg-white px-4 text-sm">
-            <Clock className="h-4 w-4" />2 pendientes
-          </SecondaryButton>
-
-          <SecondaryButton className="gap-2 bg-white px-4 text-sm">
-            <Calendar className="h-4 w-4" />0 hoy
-          </SecondaryButton>
-
-          <BaseMutedLink
-            href="/admin/citas/nueva"
-            className="gap-2 bg-white px-4 text-sm"
-          >
-            <Plus className="h-4 w-4" />
-            Nueva Cita
-          </BaseMutedLink>
-        </div>
+        <BaseLink
+          href="/admin/citas/nueva"
+          className="h-11 gap-2 text-sm shadow-md transition-all hover:shadow-lg"
+        >
+          <Plus className="h-4 w-4" />
+          Nueva Cita
+        </BaseLink>
       </div>
 
       <section className="flex flex-col gap-4 xl:col-span-5">

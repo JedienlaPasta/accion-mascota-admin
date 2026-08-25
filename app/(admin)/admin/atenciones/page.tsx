@@ -4,16 +4,8 @@ import VisitsTable from '@/app/ui/admin/atenciones/VisitsTable';
 import VisitsTableSkeleton from '@/app/ui/admin/atenciones/VisitsTableSkeleton';
 import SummaryCard from '@/app/ui/admin/SummaryCard';
 import TableWrapper from '@/app/ui/admin/TableWrapper';
-import { Button } from '@/app/ui/components/Button';
-import {
-  ClipboardList,
-  Plus,
-  Stethoscope,
-  Syringe,
-  Scissors,
-  Activity,
-} from 'lucide-react';
-import Link from 'next/link';
+import { BaseLink } from '@/app/ui/components/Link';
+import { Plus } from 'lucide-react';
 import { Suspense } from 'react';
 
 type VisitsRecordsPageAdmin = {
@@ -30,12 +22,11 @@ export default async function AtencionesPageAdmin(
   const searchParams = await props.searchParams;
   const id = searchParams?.visitId || '';
 
-  // Stats reales desde la BD (no hardcodeados)
   const summary = await getVisitsSummary();
 
   return (
     <div className="flex min-h-full flex-col space-y-4 bg-gray-50/50 p-6 lg:p-8">
-      {/* Modal detalle atención: Server Component hace fetch + Client renderiza modal */}
+      {/* Modal detalle atención */}
       {id && <VisitRecordDetail id={id} />}
 
       {/* Header */}
@@ -48,64 +39,38 @@ export default async function AtencionesPageAdmin(
             Administra los datos de las atenciones clínicas.
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Link href="/admin/atenciones/nueva">
-            <Button className="h-11 gap-2 px-5 text-sm shadow-md transition-all hover:shadow-lg">
-              <Plus className="h-4 w-4" />
-              Nueva Atención
-            </Button>
-          </Link>
-        </div>
+        <BaseLink
+          href="/admin/atenciones/nueva"
+          className="h-11 gap-2 text-sm shadow-md transition-all hover:shadow-lg"
+        >
+          <Plus className="h-4 w-4" />
+          Nueva Atención
+        </BaseLink>
       </div>
 
-      {/* ===== Summary Cards con datos REALES + íconos correctos ===== */}
+      {/* Summary Cards */}
       <section className="flex flex-col gap-4 xl:col-span-5">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <SummaryCard
             title="Total Atenciones"
             value={summary.total_atenciones}
             icon="report"
           />
           <SummaryCard
-            title="Consultas"
-            value={summary.total_consultas}
+            title="Consultas Médicas"
+            value={summary.total_consultas_medicas}
             icon="user"
           />
           <SummaryCard
-            title="Vacunaciones"
-            value={summary.total_vacunaciones}
+            title="Operativos Sanitarios"
+            value={summary.total_operativos_sanitarios}
             icon="calendar"
           />
           <SummaryCard
-            title="Cirugías / Operativos"
-            value={summary.total_cirugias}
+            title="Operativos Esterilización"
+            value={summary.total_operativos_esterilizacion}
             icon="paw"
           />
-          <SummaryCard
-            title="Controles / Seguimientos"
-            value={summary.total_controles + summary.total_emergencias}
-            icon="month"
-          />
-        </div>
-
-        {/* ===== Leyenda íconos rápida ===== */}
-        <div className="hidden flex-wrap items-center gap-3 rounded-2xl border border-gray-100 bg-white/60 px-4 py-3 text-xs text-gray-500 sm:flex">
-          <span className="font-semibold text-gray-600">Tipos:</span>
-          <span className="inline-flex items-center gap-1.5 rounded-md bg-sky-50 px-2 py-1 text-sky-700 ring-1 ring-sky-200/60">
-            <Stethoscope className="size-3.5" /> Consulta
-          </span>
-          <span className="inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2 py-1 text-emerald-700 ring-1 ring-emerald-200/60">
-            <Syringe className="size-3.5" /> Vacunación
-          </span>
-          <span className="inline-flex items-center gap-1.5 rounded-md bg-rose-50 px-2 py-1 text-rose-700 ring-1 ring-rose-200/60">
-            <Scissors className="size-3.5" /> Cirugía
-          </span>
-          <span className="inline-flex items-center gap-1.5 rounded-md bg-violet-50 px-2 py-1 text-violet-700 ring-1 ring-violet-200/60">
-            <ClipboardList className="size-3.5" /> Control
-          </span>
-          <span className="inline-flex items-center gap-1.5 rounded-md bg-orange-50 px-2 py-1 text-orange-700 ring-1 ring-orange-200/60">
-            <Activity className="size-3.5" /> Emergencia
-          </span>
         </div>
 
         {/* Tabla atenciones (ahora con searchParams para filtros reales) */}

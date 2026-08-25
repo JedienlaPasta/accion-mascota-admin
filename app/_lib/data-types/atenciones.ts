@@ -32,9 +32,7 @@ export type VisitsTableData = {
 
 export type VisitsSummary = {
   total_atenciones: number;
-  total_consultas: number;
-  total_vacunaciones: number;
-  total_cirugias: number;
-  total_controles: number;
-  total_emergencias: number;
+  total_operativos_sanitarios: number;
+  total_operativos_esterilizacion: number;
+  total_consultas_medicas: number;
 };

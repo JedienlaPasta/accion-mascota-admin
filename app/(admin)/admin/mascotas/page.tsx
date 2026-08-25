@@ -6,7 +6,7 @@ import { Plus } from 'lucide-react';
 import { Suspense } from 'react';
 import PetsSummary from '@/app/ui/admin/mascotas/PetsSummary';
 import PetsSummarySkeleton from '@/app/ui/admin/mascotas/PetsSummarySkeleton';
-import { SmallBaseMutedLink } from '@/app/ui/components/Link';
+import { BaseLink } from '@/app/ui/components/Link';
 import TableWrapper from '@/app/ui/admin/TableWrapper';
 
 type MascotasPageProps = {
@@ -33,16 +33,13 @@ export default async function MascotasPageAdmin(props: MascotasPageProps) {
             Administra los datos de las mascotas registradas.
           </p>
         </div>
-        {/* Top Content Buttons */}
-        <div className="flex flex-wrap gap-2">
-          <SmallBaseMutedLink
-            href="/admin/mascotas/nueva"
-            className="gap-2 bg-white px-4 text-sm"
-          >
-            <Plus className="h-4 w-4" />
-            Nueva Mascota
-          </SmallBaseMutedLink>
-        </div>
+        <BaseLink
+          href="/admin/mascotas/nueva"
+          className="h-11 gap-2 text-sm shadow-md transition-all hover:shadow-lg"
+        >
+          <Plus className="h-4 w-4" />
+          Nueva Mascota
+        </BaseLink>
       </div>
       <section className="flex flex-col gap-4 xl:col-span-5">
         <Suspense fallback={<PetsSummarySkeleton />}>

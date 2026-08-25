@@ -1,5 +1,5 @@
 // import { createTestUser } from '@/app/_lib/actions/usuarios';
-import { SecondaryButton } from '@/app/ui/components/Button';
+import { Button } from '@/app/ui/components/Button';
 import { Printer } from 'lucide-react';
 
 export default async function ReportsPage() {
@@ -23,12 +23,10 @@ export default async function ReportsPage() {
           </p>
         </div>
         {/* Top Content Buttons */}
-        <div className="flex flex-wrap gap-2">
-          <SecondaryButton className="gap-2 bg-white px-4 text-sm">
-            <Printer className="size-4" />
-            Generar PDF
-          </SecondaryButton>
-        </div>
+        <Button className="h-11 gap-2 text-sm shadow-md transition-all hover:shadow-lg">
+          <Printer className="h-4 w-4" />
+          Generar PDF
+        </Button>
       </div>
 
       <section className="flex flex-col gap-4 xl:col-span-5"></section>

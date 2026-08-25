@@ -56,7 +56,7 @@ export function BaseLink({ href, className, ...props }: LinkProps) {
   return (
     <Link
       href={href}
-      className={`group relative flex h-12 min-w-48 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl bg-emerald-800/90 px-8 text-white shadow-lg transition-all duration-300 hover:bg-emerald-700 ${className}`}
+      className={`group relative flex h-12 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl bg-emerald-800/90 px-8 text-white shadow-lg transition-all duration-300 hover:bg-emerald-700 ${className}`}
     >
       {/* Overlay gradiente para hover con transición suave */}
       <div className="absolute inset-0 bg-linear-to-br from-emerald-600 via-emerald-700 to-emerald-800 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />

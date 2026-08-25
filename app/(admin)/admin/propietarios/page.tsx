@@ -1,11 +1,11 @@
 import OwnersTable from '@/app/ui/admin/propietarios/OwnersTable';
 import OwnersTableSkeleton from '@/app/ui/admin/propietarios/OwnersTableSkeleton';
-import { SecondaryButton } from '@/app/ui/components/Button';
 import { Plus } from 'lucide-react';
 import { Suspense } from 'react';
 import OwnersSummary from '@/app/ui/admin/propietarios/OwnersSummary';
 import OwnersSummarySkeleton from '@/app/ui/admin/propietarios/OwnersSummarySkeleton';
 import TableWrapper from '@/app/ui/admin/TableWrapper';
+import { BaseLink } from '@/app/ui/components/Link';
 
 type OwnersTableProps = {
   searchParams?: Promise<{ query?: string }>;
@@ -27,13 +27,13 @@ export default async function PropietariosPageAdmin(props: OwnersTableProps) {
             Administra los datos de los propietarios registrados.
           </p>
         </div>
-        {/* Top Content Buttons */}
-        <div className="flex flex-wrap gap-2">
-          <SecondaryButton className="gap-2 bg-white px-4 text-sm">
-            <Plus className="h-4 w-4" />
-            Nuevo Propietario
-          </SecondaryButton>
-        </div>
+        <BaseLink
+          href="/admin/propietarios/nuevo"
+          className="h-11 gap-2 text-sm shadow-md transition-all hover:shadow-lg"
+        >
+          <Plus className="h-4 w-4" />
+          Nuevo Propietario
+        </BaseLink>
       </div>
       <section className="flex flex-col gap-4 xl:col-span-5">
         <Suspense fallback={<OwnersSummarySkeleton />}>

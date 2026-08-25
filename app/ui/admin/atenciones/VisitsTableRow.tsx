@@ -1,17 +1,12 @@
 'use client';
 
 import {
-  Ambulance,
   AppWindow,
   CalendarDays,
   Cat,
-  ClipboardList,
   Dog,
-  FileCheck,
   PawPrint,
   Scale,
-  Stethoscope,
-  Syringe,
   User,
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -24,64 +19,7 @@ import {
 } from '@/app/_lib/utils/format';
 import { ComponentType, memo } from 'react';
 import { Visits } from '@/app/_lib/data-types/atenciones';
-
-type TipoStyle = {
-  Icon: ComponentType<{ className?: string }>;
-  bg: string;
-  text: string;
-  ring: string;
-};
-
-const DEFAULT_TIPO: TipoStyle = {
-  Icon: ClipboardList,
-  bg: 'bg-slate-50',
-  text: 'text-slate-700',
-  ring: 'ring-slate-200/70',
-};
-
-const getTipoStyle = (tipoRaw: string): TipoStyle => {
-  const t = tipoRaw.trim().toLowerCase();
-  if (t.includes('consulta'))
-    return {
-      Icon: Stethoscope,
-      bg: 'bg-sky-50',
-      text: 'text-sky-700',
-      ring: 'ring-sky-200/60',
-    };
-  if (t.includes('vacuna') || t.includes('vacunacion'))
-    return {
-      Icon: Syringe,
-      bg: 'bg-emerald-50',
-      text: 'text-emerald-700',
-      ring: 'ring-emerald-200/60',
-    };
-  if (t.includes('cirugia') || t.includes('operativ'))
-    return {
-      Icon: Ambulance,
-      bg: 'bg-rose-50',
-      text: 'text-rose-700',
-      ring: 'ring-rose-200/60',
-    };
-  if (
-    t.includes('control') ||
-    t.includes('seguimient') ||
-    t.includes('post-opera')
-  )
-    return {
-      Icon: ClipboardList,
-      bg: 'bg-violet-50',
-      text: 'text-violet-700',
-      ring: 'ring-violet-200/60',
-    };
-  if (t.includes('emergencia') || t.includes('urgencia'))
-    return {
-      Icon: PawPrint,
-      bg: 'bg-orange-50',
-      text: 'text-orange-700',
-      ring: 'ring-orange-200/60',
-    };
-  return DEFAULT_TIPO;
-};
+import { TIPO_STYLES } from '@/app/_lib/static-data/tipos-atencion';
 
 function getEspecieIcon(especieRaw: string): {
   Icon: ComponentType<{ className?: string }>;
@@ -113,19 +51,12 @@ function VisitsTableRowInner(props: Visits) {
     peso_actual,
   } = props;
 
-  const tipoStyle = getTipoStyle(tipo_atencion);
-  const TipoIcon = tipoStyle.Icon;
+  const tipoStyle = TIPO_STYLES[tipo_atencion.toLowerCase()];
   const { Icon: EspecieIcon } = getEspecieIcon(especie);
 
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // ⚡⚡ VERSIÓN OPTIMISTA (0ms de latencia percibida)
-  //
-  // ¿Por qué era lento antes?
-  // router.replace() NEXT BLOQUEA UI hasta re-renderizar page.tsx en Server → 80-150ms "pegado".
-  //
-  // Orden nuevo (no hay await → todo instantáneo para el usuario):
   const openVisitModal = (id: string) => {
     if (!id) return;
     const params = new URLSearchParams(searchParams);
@@ -133,22 +64,17 @@ function VisitsTableRowInner(props: Visits) {
     const qs = params.toString();
     const nextUrl = qs ? `?${qs}` : window.location.pathname;
 
-    // Paso 1) [0ms] Avisar shell optimista (ClientShell: abrir YA el modal shimmer
-    window.dispatchEvent(
-      new CustomEvent('visit:open', { detail: id })
-    );
+    // 1) [0ms] Avisar shell optimista (ClientShell: abrir YA el modal shimmer
+    window.dispatchEvent(new CustomEvent('visit:open', { detail: id }));
 
-    // Paso 2) [0ms] Actualizar URL navegador NATIVO síncrono
+    // 2) [0ms] Actualizar URL navegador NATIVO síncrono
     window.history.replaceState(
       { ...window.history.state },
       document.title,
       nextUrl
     );
 
-    // Paso 3) [background non-blocking] Actualizar router Next en paralelo.
-    // Cuando Next re-valide page.tsx server → monta Server VisitRecordDetail REAL
-    // y el shell optimista se desmonta solo (coinciden optimisticVisitId == url).
-    // No usamos await intencionalmente: NO BLOQUEARÍA UI.
+    // 3) [background non-blocking] Actualizar router Next en paralelo
     void router.replace(nextUrl, { scroll: false });
   };
 
@@ -220,8 +146,8 @@ function VisitsTableRowInner(props: Visits) {
           className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-semibold capitalize ring-1 ${tipoStyle.bg} ${tipoStyle.text} ${tipoStyle.ring}`}
           title={capitalizeAll(tipo_atencion)}
         >
-          <TipoIcon className="size-3" />
-          {capitalize(tipo_atencion)}
+          <tipoStyle.Icon className="size-3" />
+          {tipoStyle.displayName}
         </span>
       </td>
 
@@ -265,7 +191,7 @@ function VisitsTableRowInner(props: Visits) {
         </div>
       </td>
 
-      {/* 6. Peso (NUEVA COLUMNA compacta) */}
+      {/* 6. Peso */}
       <td className="col-span-2 flex justify-center tabular-nums">
         {peso_actual ? (
           <span
@@ -280,12 +206,12 @@ function VisitsTableRowInner(props: Visits) {
             className="text-[10px] text-nowrap text-zinc-400"
             title="Sin peso registrado"
           >
-            — kg
+            No registrado
           </span>
         )}
       </td>
 
-      {/* 7. Acciones (ampliamos de 2 → 4 cols para 2 botones: VER + EDITAR) */}
+      {/* 7. Acciones */}
       <td className="relative col-span-2 flex items-center justify-center gap-2">
         <Link
           href={`/admin/mascotas/${public_id_mascota}`}

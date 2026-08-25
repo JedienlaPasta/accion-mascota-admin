@@ -2,8 +2,8 @@ import TableWrapper from '@/app/ui/admin/TableWrapper';
 import SummaryCard from '@/app/ui/admin/SummaryCard';
 import AppointmentTable from '@/app/ui/admin/dashboard/TodayAppointments';
 import HeatMap from '@/app/ui/admin/dashboard/heatmap/Heatmap';
-import { SecondaryButton } from '@/app/ui/components/Button';
-import { Download, ListFilter } from 'lucide-react';
+// import { SecondaryButton } from '@/app/ui/components/Button';
+// import { Download, ListFilter } from 'lucide-react';
 
 type PortalAdminProps = {
   searchParams?: Promise<{
@@ -20,7 +20,7 @@ export default async function PortalAdmin(props: PortalAdminProps) {
     <div className="flex min-h-full flex-col space-y-4 bg-gray-50/50 p-6 lg:p-8">
       {/* Header */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-baseline">
-        <div>
+        <div className="mt-3">
           <h2 className="text-foreground text-lg font-bold">
             Tabla de resumen
           </h2>
@@ -28,7 +28,7 @@ export default async function PortalAdmin(props: PortalAdminProps) {
             Selecciona una opcion para ver los datos
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        {/* <div className="flex flex-wrap gap-2">
           <SecondaryButton className="gap-2 bg-white px-4 text-sm">
             <ListFilter className="h-4 w-4" />
             Filtrar
@@ -38,7 +38,7 @@ export default async function PortalAdmin(props: PortalAdminProps) {
             <Download className="h-4 w-4" />
             Exportar
           </SecondaryButton>
-        </div>
+        </div> */}
       </div>
 
       <section className="flex flex-col gap-4">
