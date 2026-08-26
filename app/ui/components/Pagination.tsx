@@ -48,7 +48,7 @@ export default function Pagination({
     const delta = 1; // paginas vecinas a cada lado de current (1 = 3 visible)
     const range: number[] = [];
 
-    // Siempre mostramos 1 y ultima pagina.
+    // Siempre se muestra 1 y la ultima pagina.
     const withLeftEllipsis = currentPage - delta > 3;
     const withRightEllipsis = currentPage + delta < totalPages - 2;
 
@@ -72,9 +72,7 @@ export default function Pagination({
     return items;
   }, [currentPage, totalPages]);
 
-  // ==========================================================
-  // 🔧 Helpers UI (evita duplicar className strings)
-  // ==========================================================
+  // Helpers (evita duplicar className strings)
   const btnBase =
     'flex h-9 w-9 items-center justify-center rounded-lg border text-xs font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-1';
   const btnEnabled =
@@ -90,7 +88,7 @@ export default function Pagination({
       aria-label="Pagination"
     >
       <ul className="flex flex-wrap items-center gap-1.5 py-2 sm:gap-2">
-        {/* ⏮ First Page */}
+        {/* << */}
         <li>
           <button
             type="button"
@@ -104,7 +102,7 @@ export default function Pagination({
           </button>
         </li>
 
-        {/* ◀ Prev Page */}
+        {/* < */}
         <li>
           <button
             type="button"
@@ -118,7 +116,7 @@ export default function Pagination({
           </button>
         </li>
 
-        {/* 📄 Páginas visibles + … ellipsis */}
+        {/* 📄 Paginas visibles + … ellipsis */}
         {displayItems.map((item, idx) =>
           item.type === 'ellipsis' ? (
             <li key={`ellipsis-${idx}`} aria-hidden="true">
@@ -145,7 +143,7 @@ export default function Pagination({
           )
         )}
 
-        {/* ▶ Next Page */}
+        {/* > */}
         <li>
           <button
             type="button"
@@ -159,7 +157,7 @@ export default function Pagination({
           </button>
         </li>
 
-        {/* ⏭ Last Page */}
+        {/* >> */}
         <li>
           <button
             type="button"

@@ -50,18 +50,18 @@ function TableRowSkeleton() {
         <div className="size-10 animate-pulse rounded-xl bg-gray-200"></div>
         <span className="flex flex-col gap-1">
           <div className="h-4 w-32 animate-pulse rounded-md bg-gray-200"></div>
-          <div className="h-3 w-20 animate-pulse rounded bg-gray-200"></div>
+          <div className="h-3 w-20 animate-pulse rounded bg-gray-200/70"></div>
         </span>
       </td>
       {/* Especie/Raza */}
       <td className="col-span-4 flex flex-col gap-1">
-        <div className="h-4 max-w-18 grow animate-pulse rounded-md bg-gray-200"></div>
-        <div className="h-3 max-w-28 grow animate-pulse rounded bg-gray-200"></div>
+        <div className="h-3 max-w-18 grow animate-pulse rounded bg-gray-200"></div>
+        <div className="h-3 max-w-28 grow animate-pulse rounded bg-gray-200/70"></div>
       </td>
-      {/* Nombre Propietario */}
+      {/* Propietario */}
       <td className="col-span-7 flex flex-col gap-1 py-4 lg:col-span-6">
-        <div className="h-5 max-w-56 grow animate-pulse rounded-md bg-gray-200"></div>
-        <div className="h-3 max-w-28 grow animate-pulse rounded bg-gray-200"></div>
+        <div className="h-4 max-w-56 grow animate-pulse rounded-md bg-gray-200"></div>
+        <div className="h-3 max-w-28 grow animate-pulse rounded bg-gray-200/70"></div>
       </td>
       {/* Microchip */}
       <td className="relative col-span-5 flex items-center justify-start gap-2">
@@ -70,7 +70,7 @@ function TableRowSkeleton() {
       </td>
       {/* Esterilizado */}
       <td className="col-span-2 flex items-center justify-center py-5">
-        <div className="h-5 w-20 animate-pulse rounded-md bg-gray-200"></div>
+        <div className="h-5 w-12 animate-pulse rounded-md bg-gray-200"></div>
       </td>
       {/* Acciones */}
       <td className="col-span-2 flex justify-center gap-1 py-5 text-right">

@@ -47,7 +47,7 @@ function TableRowSkeleton() {
       <td className="col-span-7 flex items-center justify-start gap-2.5">
         <div className="size-10 animate-pulse rounded-xl bg-gray-200"></div>
         <span className="flex flex-col gap-1">
-          <div className="h-4 w-32 animate-pulse rounded-md bg-gray-200"></div>
+          <div className="h-4 w-48 animate-pulse rounded-md bg-gray-200"></div>
           <div className="h-3 w-20 animate-pulse rounded bg-gray-200"></div>
         </span>
       </td>

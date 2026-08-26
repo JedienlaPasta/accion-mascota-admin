@@ -1,37 +1,44 @@
 export default function PaginationSkeleton({}) {
   return (
     <nav
-      className="flex items-center justify-end border-t border-gray-200/70 bg-white px-4 sm:px-0"
+      className="flex items-center justify-between border-t border-gray-200/70 bg-white p-4"
       aria-label="Pagination"
     >
-      <ul className="flex gap-2 p-2">
-        {/* First Page */}
+      <div className="h-3 w-40 animate-pulse rounded bg-gray-200/80"></div>
+      <ul className="flex gap-2">
+        {/* << */}
         <li>
-          <div className="size-7 animate-pulse rounded-md bg-gray-200"></div>
+          <div className="size-9 animate-pulse rounded-md bg-gray-100"></div>
         </li>
-        {/* Arrow Left */}
+        {/* < */}
         <li>
-          <div className="size-7 animate-pulse rounded-md bg-gray-200"></div>
-        </li>
-        {/* Visible Pages */}
-
-        <li>
-          <div className="size-7 animate-pulse rounded-md bg-gray-200"></div>
-        </li>
-        <li>
-          <div className="size-7 animate-pulse rounded-md bg-gray-200"></div>
-        </li>
-        <li>
-          <div className="size-7 animate-pulse rounded-md bg-gray-200"></div>
+          <div className="size-9 animate-pulse rounded-md bg-gray-100"></div>
         </li>
 
-        {/* Arrow Right */}
+        {/* page */}
         <li>
-          <div className="size-7 animate-pulse rounded-md bg-gray-200"></div>
+          <div className="size-9 animate-pulse rounded-md bg-gray-200"></div>
         </li>
-        {/* Last Page */}
+        {/* page */}
         <li>
-          <div className="size-7 animate-pulse rounded-md bg-gray-200"></div>
+          <div className="size-9 animate-pulse rounded-md bg-gray-100"></div>
+        </li>
+        {/* page */}
+        <li>
+          <div className="size-9 animate-pulse rounded-md bg-gray-100"></div>
+        </li>
+        {/* page */}
+        <li>
+          <div className="size-9 animate-pulse rounded-md bg-gray-200"></div>
+        </li>
+
+        {/* > */}
+        <li>
+          <div className="size-9 animate-pulse rounded-md bg-gray-200"></div>
+        </li>
+        {/* >> */}
+        <li>
+          <div className="size-9 animate-pulse rounded-md bg-gray-100"></div>
         </li>
       </ul>
     </nav>

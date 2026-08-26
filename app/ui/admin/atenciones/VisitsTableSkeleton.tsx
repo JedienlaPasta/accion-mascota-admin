@@ -45,18 +45,18 @@ function TableRowSkeleton() {
   return (
     <tr className="grid h-17 grid-cols-24 items-center gap-4 px-8 text-sm text-gray-600 transition-colors hover:bg-gray-50/80">
       {/* Fecha */}
-      <td className="col-span-3 flex flex-col gap-1 py-4">
-        <div className="h-5 max-w-20 grow animate-pulse rounded-md bg-gray-200"></div>
-        <div className="h-3 max-w-28 grow animate-pulse rounded bg-gray-200"></div>
+      <td className="col-span-3 flex gap-1">
+        <div className="size-3.5 animate-pulse rounded bg-gray-200"></div>
+        <div className="flex flex-1 flex-col gap-1">
+          <div className="h-3.5 max-w-20 grow animate-pulse rounded bg-gray-200"></div>
+          <div className="h-3 max-w-16 grow animate-pulse rounded bg-gray-200"></div>
+        </div>
       </td>
       {/* Mascota */}
-      {/* <td className="col-span-4 flex flex-col gap-1 py-4">
-        <div className="h-5 max-w-28 grow animate-pulse rounded-md bg-gray-200"></div>
-      </td> */}
       <td className="col-span-4 flex items-center justify-start gap-2.5">
         <div className="size-8 animate-pulse rounded-lg bg-gray-200"></div>
         <span className="flex flex-col gap-1">
-          <div className="h-4 w-16 animate-pulse rounded-md bg-gray-200"></div>
+          <div className="h-3.5 w-16 animate-pulse rounded bg-gray-200"></div>
           <div className="h-3 w-32 animate-pulse rounded bg-gray-200"></div>
         </span>
       </td>
@@ -67,7 +67,7 @@ function TableRowSkeleton() {
       {/* Propietario / Motivo */}
       <td className="col-span-6 flex flex-col gap-1">
         <div className="h-4 w-56 animate-pulse rounded-md bg-gray-200"></div>
-        <div className="h-3 w-32 animate-pulse rounded bg-gray-200"></div>
+        <div className="h-3 w-32 animate-pulse rounded bg-gray-200/80"></div>
       </td>
       {/* Veterinario */}
       <td className="col-span-3 flex gap-1 py-5">
