@@ -23,29 +23,28 @@ export const getAllPetsWithQuery = async (
     const offset = (safePage - 1) * pageSize;
     const { hasFilter, term } = queryFilterChecker(query);
 
-    // Count total filas para paginador
-    const countRows = hasFilter
-      ? await sql`
-          SELECT COUNT(*)::int AS total
-          FROM mascotas m
-          LEFT JOIN propietarios p ON m.propietario_id = p.id
-          WHERE m.especie ILIKE ${term}
+    const whereClause = hasFilter
+      ? sql`
+        WHERE m.especie ILIKE ${term}
              OR m.raza ILIKE ${term}
              OR m.nombre ILIKE ${term}
              OR m.microchip ILIKE ${term}
              OR p.nombre ILIKE ${term}
+             OR p.rut ILIKE ${term}
         `
-      : await sql`
-          SELECT COUNT(*)::int AS total
-          FROM mascotas m
-        `;
+      : sql``;
+
+    const countRows = await sql`
+      SELECT COUNT(*)::int AS total
+      FROM mascotas m
+      LEFT JOIN propietarios p ON m.propietario_id = p.id
+      ${whereClause}
+    `;
 
     const totalCount = Number(countRows[0]?.total ?? 0);
     const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
 
-    // Select pagina actual para paginador
-    const pets = hasFilter
-      ? await sql`
+    const pets = await sql`
           SELECT
             m.id as index,
             m.public_id as id,
@@ -59,28 +58,7 @@ export const getAllPetsWithQuery = async (
             p.rut
           FROM mascotas m
           LEFT JOIN propietarios p ON m.propietario_id = p.id
-          WHERE m.nombre ILIKE ${term}
-             OR m.microchip ILIKE ${term}
-             OR p.nombre ILIKE ${term}
-             OR p.rut ILIKE ${term}
-          ORDER BY m.id DESC
-          LIMIT ${pageSize}
-          OFFSET ${offset}
-        `
-      : await sql`
-          SELECT
-            m.id as index,
-            m.public_id as id,
-            m.nombre AS nombre_mascota,
-            m.especie,
-            m.fecha_nacimiento,
-            m.raza,
-            m.microchip,
-            m.esterilizado,
-            p.nombre AS nombre_propietario,
-            p.rut
-          FROM mascotas m
-          LEFT JOIN propietarios p ON m.propietario_id = p.id
+          ${whereClause}
           ORDER BY m.id DESC
           LIMIT ${pageSize}
           OFFSET ${offset}

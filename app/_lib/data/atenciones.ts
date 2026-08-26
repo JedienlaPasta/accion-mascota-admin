@@ -19,28 +19,28 @@ export const getAllVisitsWithFilters = async (
     const offset = (safePage - 1) * pageSize;
     const { hasFilter, term } = queryFilterChecker(query);
 
-    const countRows = hasFilter
-      ? await sql`
-          SELECT COUNT (*)::int AS total
-          FROM atenciones a
-          INNER JOIN mascotas m ON m.id = a.mascota_id
-          LEFT JOIN propietarios p ON p.id = m.propietario_id
-          WHERE a.tipo_atencion ILIKE ${term}
+    const whereClause = hasFilter
+      ? sql`
+        WHERE a.tipo_atencion ILIKE ${term}
             OR m.microchip ILIKE ${term}
             OR m.nombre ILIKE ${term}
             OR p.nombre ILIKE ${term}
             OR p.rut ILIKE ${term}
         `
-      : await sql`
-          SELECT COUNT (*)::int AS total
-          FROM atenciones a
-        `;
+      : sql``;
+
+    const countRows = await sql`
+        SELECT COUNT (*)::int AS total
+        FROM atenciones a
+        INNER JOIN mascotas m ON m.id = a.mascota_id
+        LEFT JOIN propietarios p ON p.id = m.propietario_id
+        ${whereClause}
+      `;
 
     const totalCount = Number(countRows[0]?.total ?? 0);
     const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
 
-    const visits = hasFilter
-      ? await sql`
+    const visits = await sql`
           SELECT
             a.public_id AS id,
             a.public_id AS public_id_registro,
@@ -64,43 +64,11 @@ export const getAllVisitsWithFilters = async (
           LEFT JOIN propietarios p ON p.id = m.propietario_id
           JOIN usuarios u ON u.id = a.usuario_id
           LEFT JOIN consultas_medicas cm ON cm.atencion_id = a.id
-          WHERE a.tipo_atencion ILIKE ${term}
-            OR m.microchip ILIKE ${term}
-            OR m.nombre ILIKE ${term}
-            OR p.nombre ILIKE ${term}
-            OR p.rut ILIKE ${term}
+          ${whereClause}
           ORDER BY a.fecha_atencion DESC
           LIMIT ${pageSize}
           OFFSET ${offset}
-        `
-      : await sql`
-          SELECT
-              a.public_id AS id,
-              a.public_id AS public_id_registro,
-              a.fecha_atencion,
-              m.nombre AS nombre_mascota,
-              m.especie,
-              m.public_id AS public_id_mascota,
-              COALESCE(p.nombre, 'Sin propietario') AS nombre_propietario,
-              COALESCE(p.rut, '—') AS rut_propietario,
-              p.public_id AS public_id_propietario,
-              a.tipo_atencion,
-              cm.motivo AS motivo_atencion,
-              COALESCE(cm.anamnesis, cm.diagnostico_predx) AS pre_dx,
-              u.nombre AS veterinario,
-              m.microchip,
-              a.peso_actual,
-              NULL::text AS proxima_visita,
-              cm.tratamiento
-            FROM atenciones a
-            JOIN mascotas m ON m.id = a.mascota_id
-            LEFT JOIN propietarios p ON p.id = m.propietario_id
-            JOIN usuarios u ON u.id = a.usuario_id
-            LEFT JOIN consultas_medicas cm ON cm.atencion_id = a.id
-            ORDER BY a.fecha_atencion DESC
-            LIMIT ${pageSize}
-            OFFSET ${offset}
-          `;
+        `;
 
     return {
       visits: visits.map((row) => row as Visits),
