@@ -43,14 +43,6 @@ export const formatPhone = (phone: string | null) => {
   if (!phone) return '';
   // Eliminar cualquier caracter no numérico excepto el +
   phone = phone.replace(/[^+\d]/g, '');
-  // Agregar +56 si no tiene código de país
-  if (!phone.startsWith('+')) {
-    // Si empieza con 0, quitarlo primero
-    if (phone.startsWith('0')) {
-      phone = phone.slice(1);
-    }
-    phone = '+56' + phone;
-  }
   // Formatear con espacios
   return phone.replace(/\B(?=(\d{4})+(?!\d))/g, ' ');
 };

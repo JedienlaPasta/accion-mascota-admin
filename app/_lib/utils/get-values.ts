@@ -51,3 +51,11 @@ export const getPetIcon = (especieRaw: string): LucideIcon => {
   }
   return PawPrint;
 };
+
+export const getInitials = (nombre: string): string => {
+  const clean = nombre.trim();
+  if (!clean) return '';
+  const parts = clean.split(/\s+/).filter(Boolean);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+};

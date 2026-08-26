@@ -21,6 +21,27 @@ export function validateMicrochip(microchip: string) {
   return warnings;
 }
 
+export const validateRutDv = (rut: string) => {
+  const clean = rut.replace(/[.\-\s]/g, '').toUpperCase();
+  if (clean.length < 2)
+    return { valid: null as null | boolean, expectedDv: '-', actualDv: '-' };
+  const dv = clean.slice(-1);
+  const body = clean.slice(0, -1);
+  if (!/^\d+$/.test(body))
+    return { valid: false, expectedDv: '-', actualDv: dv };
+
+  let sum = 0;
+  let mul = 2;
+  for (let i = body.length - 1; i >= 0; i--) {
+    sum += Number(body[i]) * mul;
+    mul = mul === 7 ? 2 : mul + 1;
+  }
+  const remainder = 11 - (sum % 11);
+  const expected =
+    remainder === 11 ? '0' : remainder === 10 ? 'K' : String(remainder);
+  return { valid: expected === dv, expectedDv: expected, actualDv: dv };
+};
+
 export function queryFilterChecker(query: string): {
   hasFilter: boolean;
   term: string;
