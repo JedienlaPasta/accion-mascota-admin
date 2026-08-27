@@ -222,3 +222,21 @@ export const getVisitDetailById = async (
     return null;
   }
 };
+
+export const getProceduresList = async (): Promise<ProcedimientoItem[]> => {
+  try {
+    const rows = await sql`
+      SELECT
+        codigo,
+        nombre
+      FROM procedimientos
+    `;
+    return rows.map((row) => ({
+      codigo: row.codigo,
+      nombre: row.nombre,
+    }));
+  } catch (error) {
+    console.error('Error al obtener lista de procedimientos:', error);
+    return [];
+  }
+};

@@ -36,7 +36,7 @@ import {
   formatPhone,
   formatShortDate,
 } from '@/app/_lib/utils/format';
-import { BaseLink } from '@/app/ui/components/Link';
+import { BaseLink, BaseMutedLink } from '@/app/ui/components/Link';
 import { getAge } from '@/app/_lib/utils/get-values';
 import {
   getPetClinicHistoryById,
@@ -727,12 +727,13 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
               Acciones Administrativas
             </h3>
             <div className="flex flex-col space-y-2">
-              <Link href="#">
-                <SecondaryButton className="w-full justify-start gap-2 border-gray-200 hover:bg-gray-50 hover:text-gray-900">
-                  <Plus className="h-4 w-4 text-gray-500" />
-                  Registrar nueva atención
-                </SecondaryButton>
-              </Link>
+              <BaseMutedLink
+                href={`/admin/mascotas/${id}/nueva-atencion`}
+                className="w-full justify-start gap-2 border-gray-200 hover:bg-gray-50 hover:text-gray-900"
+              >
+                <Plus className="h-4 w-4 text-gray-500" />
+                Registrar nueva atención
+              </BaseMutedLink>
               <Link href="#">
                 <SecondaryButton className="w-full justify-start gap-2 border-gray-200 hover:bg-gray-50 hover:text-gray-900">
                   <Pencil className="h-4 w-4 text-gray-500" />

@@ -6,6 +6,12 @@ import {
   Syringe,
 } from 'lucide-react';
 
+export const TIPOS_ATENCION_VALIDOS: string[] = [
+  'consulta_medica',
+  'operativo_sanitario',
+  'operativo_esterilizacion',
+];
+
 export const TIPO_STYLES: Record<
   string,
   {
