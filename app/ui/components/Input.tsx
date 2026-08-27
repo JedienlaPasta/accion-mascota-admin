@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 type InputProps = {
   label?: string;
@@ -18,20 +18,6 @@ type InputProps = {
   maxLength?: number;
   onBlurCapture?: () => void;
   setData?: (prevState: string) => void;
-  /**
-   * Función de formateo EN VIVO anti-saltos.
-   * Recibe el valor raw sin formatear y la posición del cursor ANTES de cambiar.
-   * Debe devolver { value: (string formateada), cursor: (posición del caret calculada) }.
-   * Si se provee, el input preserva la posición relativa del caret para que no
-   * haya "efecto de números que se corren" al insertar espacios/puntos/guiones.
-   *
-   * No usar para formatting pesado que agrega prefijos enteros mientras el usuario escribe;
-   * eso debe quedar para blur/submit.
-   */
-  formatLiveValue?: (
-    raw: string,
-    cursorBefore: number
-  ) => { value: string; cursor: number };
 };
 
 export default function Input({
@@ -49,45 +35,14 @@ export default function Input({
   maxLength,
   onBlurCapture,
   setData,
-  formatLiveValue,
 }: InputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  // En la próxima pintura, forzamos esta posición de caret (anti-saltos)
-  const pendingCursorRef = useRef<number | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!setData) return;
-    const raw = e.target.value;
-
-    // Sin formateador live: comportamiento clásico (100% backward compat)
-    if (!formatLiveValue) {
-      setData(raw);
-      return;
+    if (setData) {
+      setData(e.target.value);
     }
-
-    // Con formateador: calculamos valor + cursor ANTES del setState.
-    const cursorBefore =
-      typeof e.target.selectionStart === 'number'
-        ? e.target.selectionStart
-        : raw.length;
-    const { value: formatted, cursor } = formatLiveValue(raw, cursorBefore);
-    pendingCursorRef.current = cursor;
-    setData(formatted);
   };
-
-  // Pintamos el cursor justo después de que React aplique el nuevo value.
-  useLayoutEffect(() => {
-    const el = inputRef.current;
-    if (el && pendingCursorRef.current !== null) {
-      const pos = Math.min(pendingCursorRef.current, el.value.length);
-      try {
-        el.setSelectionRange(pos, pos);
-      } catch {
-        // input types number/email no soportan setSelectionRange en algunos browsers; ignorar.
-      }
-      pendingCursorRef.current = null;
-    }
-  }, [value]);
 
   return (
     <div className="flex grow flex-col">

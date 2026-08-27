@@ -29,7 +29,6 @@ export async function createOwner(
   input: CreateOwnerInput
 ): Promise<CreateOwnerResult> {
   try {
-    // 1. Normalización
     const rutRaw = input.rut?.trim() ?? '';
     const nombre = input.nombre?.trim() ?? '';
     const correoPersonal = input.correoPersonal?.trim() || null;
@@ -42,7 +41,7 @@ export async function createOwner(
     const rshRaw = input.rsh;
     const profesionOficio = input.profesionOficio?.trim() || null;
 
-    // 2. Campos obligatorios (NOT NULL en la tabla: rut + nombre)
+    // Campos obligatorios
     if (!rutRaw)
       return fail('VALIDATION', 'No se ingresó el RUT del propietario');
     if (!nombre)
@@ -51,7 +50,7 @@ export async function createOwner(
         'No se ingresó el nombre completo del propietario'
       );
 
-    // 3. RUT — normalizar y validar unicidad (mismo criterio que createPet)
+    // RUT — normalizar y validar unicidad
     const rutNormalized = rutRaw.replace(/[^0-9kK]/g, '').toUpperCase();
     if (rutNormalized.length < 7)
       return fail(
@@ -68,10 +67,10 @@ export async function createOwner(
     if ((existingByRut as unknown as unknown[]).length > 0)
       return fail(
         'CONFLICT',
-        'Ya existe un propietario registrado con este RUT. Usa el buscador para abrir su ficha existente.'
+        'Ya existe un propietario registrado con este RUT. Usa el buscador para abrir su registro.'
       );
 
-    // 4. Fecha de nacimiento (opcional). Si viene: validar rango y formato
+    // Fecha de nacimiento (opcional). Si viene: validar rango y formato
     let fechaNacimiento: string | null = null;
     if (fechaNacimientoRaw) {
       if (!/^\d{4}-\d{2}-\d{2}$/.test(fechaNacimientoRaw))
@@ -85,7 +84,7 @@ export async function createOwner(
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const maxDob = new Date(today);
-      maxDob.setFullYear(today.getFullYear() - 120);
+      maxDob.setFullYear(today.getFullYear() - 30);
       if (fnDate > today)
         return fail(
           'VALIDATION',
@@ -94,12 +93,12 @@ export async function createOwner(
       if (fnDate < maxDob)
         return fail(
           'VALIDATION',
-          'Fecha de nacimiento no puede ser mayor a 120 años atrás'
+          'Fecha de nacimiento no puede ser mayor a 30 años atrás'
         );
       fechaNacimiento = fechaNacimientoRaw;
     }
 
-    // 5. Emails (regex básico si vienen)
+    // Emails (regex básico si vienen)
     if (correoPersonal && !EMAIL_REGEX.test(correoPersonal))
       return fail(
         'VALIDATION',
@@ -111,17 +110,14 @@ export async function createOwner(
         'El correo de contacto no tiene un formato de email válido'
       );
 
-    // 6. Teléfono: al menos 9 dígitos después de limpiar caracteres
+    // Teléfono: debe tener 9 dígitos
     if (telefono) {
       const digits = telefono.replace(/\D/g, '');
-      if (digits.length < 9)
-        return fail(
-          'VALIDATION',
-          'El teléfono debe tener al menos 9 dígitos (cód. área + número)'
-        );
+      if (digits.length !== 9)
+        return fail('VALIDATION', 'El teléfono debe tener 9 dígitos');
     }
 
-    // 7. RSH: entero positivo o null (Registro Social de Hogares)
+    // RSH: entero positivo o null (Registro Social de Hogares) (rango: 40-100, multiplos de 10)
     let rsh: number | null = null;
     if (
       rshRaw !== undefined &&
@@ -131,16 +127,29 @@ export async function createOwner(
       const rshNum =
         typeof rshRaw === 'number'
           ? rshRaw
-          : Number(String(rshRaw).replace(',', '.'));
-      if (!Number.isFinite(rshNum) || !Number.isInteger(rshNum) || rshNum < 0)
+          : Number(String(rshRaw).replace(/[,\.]/g, ''));
+      if (!Number.isFinite(rshNum) || !Number.isInteger(rshNum)) {
         return fail(
           'VALIDATION',
-          'RSH debe ser un número entero positivo o dejarse vacío'
+          'RSH debe ser un número entero o dejarse vacío'
         );
+      }
+      if (rshNum < 40 || rshNum > 100) {
+        return fail(
+          'VALIDATION',
+          'RSH fuera de rango: el valor debe estar entre 40 y 100 (tramos oficiales)'
+        );
+      }
+      if (rshNum % 10 !== 0) {
+        return fail(
+          'VALIDATION',
+          'RSH inválido: solo se aceptan tramos oficiales múltiplos de 10 (40, 50, 60, 70, 80, 90, 100)'
+        );
+      }
       rsh = rshNum;
     }
 
-    // 8. Insert
+    // Insert
     const publicId = crypto.randomUUID();
 
     await sql`

@@ -149,7 +149,7 @@ export default function NewOwnerAdminPage() {
   const showError = Boolean(submitError);
 
   // ----- Helpers visuales -----
-  const reqHint = (
+  const requirementsHint = (
     len: number,
     min: number,
     max: number,
@@ -194,8 +194,7 @@ export default function NewOwnerAdminPage() {
               Volver
             </Link>
           </div>
-          <h1 className="text-foreground flex items-center gap-2 text-3xl font-bold">
-            <UserPlus2 className="h-7 w-7 text-emerald-700" />
+          <h1 className="text-foreground text-3xl font-bold">
             Registrar Propietario
           </h1>
           <p className="text-muted-foreground mt-1 text-sm">
@@ -221,7 +220,7 @@ export default function NewOwnerAdminPage() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* IZQUIERDA - FORMULARIO */}
         <div className="space-y-6 lg:col-span-2">
-          {/* INFORMACIÓN PERSONAL */}
+          {/* Informacion Personal */}
           <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
             <div className="mb-6 flex items-center gap-2">
               <span className="inline-flex size-9 items-center justify-center rounded-xl bg-indigo-50 text-indigo-700 ring-1 ring-indigo-100">
@@ -270,7 +269,7 @@ export default function NewOwnerAdminPage() {
                 />
                 <div className="mt-1.5 flex items-center justify-between px-1 text-[11px]">
                   <span className="text-gray-500">
-                    {reqHint(
+                    {requirementsHint(
                       ownerData.nombre.length,
                       3,
                       120,
@@ -310,7 +309,7 @@ export default function NewOwnerAdminPage() {
                   <Input
                     label="Teléfono / Celular"
                     nombre="telefono"
-                    placeHolder="Ej: +56 9 1234 5678"
+                    placeHolder="Ej: 9 1234 5678"
                     maxLength={9}
                     value={ownerData.telefono}
                     setData={(val) => handleChange('telefono', val)}
@@ -328,7 +327,7 @@ export default function NewOwnerAdminPage() {
             </div>
           </section>
 
-          {/* CONTACTO */}
+          {/* Contacto */}
           <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
             <div className="mb-5 flex items-start justify-between gap-4">
               <div className="flex items-center gap-2">
@@ -402,7 +401,7 @@ export default function NewOwnerAdminPage() {
             </div>
           </section>
 
-          {/* DOMICILIO */}
+          {/* Domicilio */}
           <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
             <div className="mb-5 flex items-center gap-2">
               <span className="inline-flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
@@ -427,7 +426,7 @@ export default function NewOwnerAdminPage() {
                 />
                 <div className="mt-1.5 flex items-center justify-between px-1 text-[11px]">
                   <span className="text-gray-500">
-                    {reqHint(
+                    {requirementsHint(
                       ownerData.direccion.length,
                       5,
                       100,
@@ -452,12 +451,16 @@ export default function NewOwnerAdminPage() {
                 />
                 <div className="mt-1.5 flex items-center justify-between px-1 text-[11px]">
                   <span className="text-gray-500">
-                    {ownerData.comuna.length === 0
-                      ? 'Comuna de residencia.'
-                      : `${ownerData.comuna.length}/80 caracteres.`}
+                    {requirementsHint(
+                      ownerData.comuna.length,
+                      3,
+                      80,
+                      'Comuna de residencia.',
+                      'Comuna registrada.'
+                    )}
                   </span>
                   {ok(
-                    ownerData.comuna.length >= 2 &&
+                    ownerData.comuna.length >= 3 &&
                       ownerData.comuna.length <= 80
                   )}
                 </div>
@@ -473,9 +476,13 @@ export default function NewOwnerAdminPage() {
                 />
                 <div className="mt-1.5 flex items-center justify-between px-1 text-[11px]">
                   <span className="text-gray-500">
-                    {ownerData.region.length === 0
-                      ? 'Región a la que pertenece la comuna.'
-                      : `${ownerData.region.length}/80 caracteres.`}
+                    {requirementsHint(
+                      ownerData.region.length,
+                      3,
+                      80,
+                      'Región de residencia.',
+                      'Región registrada.'
+                    )}
                   </span>
                   {ok(
                     ownerData.region.length >= 3 &&
@@ -486,7 +493,7 @@ export default function NewOwnerAdminPage() {
             </div>
           </section>
 
-          {/* SOCIOECONOMICO */}
+          {/* Socioeconómico y Laboral */}
           <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
             <div className="mb-5 flex items-start justify-between gap-4">
               <div className="flex items-center gap-2">
@@ -509,28 +516,25 @@ export default function NewOwnerAdminPage() {
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               {/* RSH */}
               <div>
-                <SafeNumberInput
-                  label="N° RSH"
+                <Input
+                  label="Tramo RSH"
                   nombre="rsh"
-                  placeHolder="Ej: 1842217 (solo números)"
+                  placeHolder="Ej: 40 (solo números)"
                   value={ownerData.rsh}
+                  maxLength={3}
                   setData={(val) => handleChange('rsh', val)}
                 />
                 <div className="mt-1.5 flex items-center justify-between px-1 text-[11px]">
-                  <span className="flex items-center gap-1 text-gray-500">
-                    <Hash className="size-3 text-gray-400" />
-                    {!ownerData.rsh
-                      ? 'Número del Registro Social de Hogares (si se conoce).'
-                      : rshClean(ownerData.rsh) !== null &&
-                          Number.isFinite(Number(rshClean(ownerData.rsh)))
-                        ? `RSH ingresado: ${rshClean(ownerData.rsh)}.`
-                        : 'Sólo números enteros positivos.'}
+                  <span className="text-gray-500">
+                    {requirementsHint(
+                      ownerData.rsh.length,
+                      2,
+                      3,
+                      'Tramo del Registro Social de Hogares.',
+                      'Tramo RSH registrado.'
+                    )}
                   </span>
-                  {ok(
-                    rshClean(ownerData.rsh) !== null &&
-                      Number.isInteger(Number(rshClean(ownerData.rsh))) &&
-                      Number(rshClean(ownerData.rsh) ?? -1) >= 0
-                  )}
+                  {ok(ownerData.rsh.length >= 2 && ownerData.rsh.length <= 3)}
                 </div>
               </div>
 
@@ -540,13 +544,13 @@ export default function NewOwnerAdminPage() {
                   label="Profesión u Oficio"
                   nombre="profesionOficio"
                   placeHolder="Ej: Docente, Jubilado, Empleada Doméstica"
-                  maxLength={80}
+                  maxLength={10}
                   value={ownerData.profesionOficio}
                   setData={(val) => handleChange('profesionOficio', val)}
                 />
                 <div className="mt-1.5 flex items-center justify-between px-1 text-[11px]">
                   <span className="text-gray-500">
-                    {reqHint(
+                    {requirementsHint(
                       ownerData.profesionOficio.length,
                       2,
                       80,
@@ -685,7 +689,7 @@ export default function NewOwnerAdminPage() {
             </div>
           </aside>
 
-          {/* Widget 2: VALIDADOR DE DÍGITO VERIFICADOR (RUT en vivo) */}
+          {/* Validador de Digito Verificador (RUT en vivo) */}
           <aside className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
             <h2 className="mb-3 flex items-center gap-2 text-sm font-bold text-gray-900">
               <ShieldCheck className="size-4 text-slate-600" />
@@ -746,7 +750,7 @@ export default function NewOwnerAdminPage() {
             })()}
           </aside>
 
-          {/* Widget 3: PROGRESO + ACCIONES STICKY */}
+          {/* Progreso + Acciones */}
           <aside className="sticky bottom-0 z-10 space-y-4">
             <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
               <h2 className="mb-3 flex items-center justify-between text-sm font-bold text-gray-900">
@@ -782,11 +786,11 @@ export default function NewOwnerAdminPage() {
               </div>
             </div>
 
-            {/* Acciones (sticky ya por el padre) */}
+            {/* Acciones */}
             <div className="hidden rounded-2xl border border-gray-100 bg-white p-4 shadow-md lg:block">
-              <div className="flex flex-col items-stretch gap-3">
+              <div className="flex-cols flex items-stretch justify-evenly gap-3">
                 <SecondaryButton
-                  className="justify-center border-gray-200 hover:bg-gray-50"
+                  className="w-full justify-center rounded-xl border-gray-200 hover:bg-gray-50"
                   onClick={() => router.back()}
                 >
                   <X className="h-4 w-4" />
@@ -795,7 +799,7 @@ export default function NewOwnerAdminPage() {
                 <Button
                   onClick={handleSubmit}
                   disabled={isSubmitting}
-                  className="h-10 gap-2 bg-emerald-600 hover:bg-emerald-700"
+                  className="h-10 w-full gap-2 bg-emerald-600 text-sm hover:bg-emerald-700"
                 >
                   <Check className="h-4 w-4" />
                   {isSubmitting ? 'Guardando…' : 'Guardar Propietario'}
