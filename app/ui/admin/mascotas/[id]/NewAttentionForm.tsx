@@ -213,14 +213,18 @@ export default function NewAttentionForm(props: NewAttentionFormProps) {
       <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
         {/* Cabecera stepper */}
         <div className="mb-5 flex items-start justify-between gap-4 border-b border-slate-100 pb-4">
-          <div className="flex items-center gap-3">
-            <span className="inline-flex size-9 items-center justify-center rounded-xl bg-emerald-600 text-xs font-black text-white shadow-sm">
-              1
+          <div className="mb-1 flex items-center gap-2.5">
+            <span className="inline-flex size-10 items-center justify-center rounded-xl bg-sky-50 text-sky-700 ring-1 ring-sky-200/60">
+              <TipoIcon className="size-5" />
             </span>
             <div>
-              <h2 className="-mt-1 text-lg font-bold text-gray-900">
+              <h2 className="text-lg font-bold text-gray-900">
                 Datos Generales
               </h2>
+              <p className="text-xs text-gray-500">
+                Indicar el tipo de atención que deseas registrar y sus datos
+                generales.
+              </p>
             </div>
           </div>
           <Badge
@@ -247,14 +251,14 @@ export default function NewAttentionForm(props: NewAttentionFormProps) {
                   key={tipo_atencion}
                   type="button"
                   onClick={() => setTipo(tipo_atencion)}
-                  className={`relative flex flex-col items-start gap-2 rounded-2xl border p-4 text-left transition-all ${
+                  className={`relative flex cursor-pointer flex-col items-start gap-2 rounded-2xl border p-4 text-left transition-all ${
                     active
                       ? `${c.bg} ${c.text} ${c.ring} scale-[1.01] border-transparent shadow-md ring-2`
-                      : 'border-gray-200 bg-white text-gray-700 hover:-translate-y-0.5 hover:border-gray-300 hover:bg-gray-50 hover:shadow-md'
+                      : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50 hover:shadow-md'
                   }`}
                 >
                   <div
-                    className={`flex size-10 items-center justify-center rounded-xl ${active ? 'bg-white/70 shadow-sm ring-1 ring-white' : 'bg-gray-50 text-gray-600 ring-1 ring-gray-200'}`}
+                    className={`flex size-10 items-center justify-center rounded-xl ${active ? 'bg-white/80 shadow-sm ring-1 ring-white' : 'bg-gray-50 text-gray-600 ring-1 ring-gray-200'}`}
                   >
                     <Icon className="size-5 shrink-0" />
                   </div>
