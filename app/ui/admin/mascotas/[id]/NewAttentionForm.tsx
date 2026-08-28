@@ -39,19 +39,13 @@ export type NewAttentionFormProps = {
 
 const RESULTADOS_ESTERILIZACION = [
   {
-    value: 'EXITOSO_SIN_COMPLICACIONES',
-    label: '✅ Exitoso sin complicaciones',
+    value: 'APROBADO',
+    label: 'Aprobado',
   },
   {
-    value: 'EXITOSO_CON_COMPLICACIONES_MENORES',
-    label: '⚠️ Exitoso con complicaciones menores',
+    value: 'SUSPENDIDO',
+    label: 'Suspendido',
   },
-  {
-    value: 'COMPLICACIONES_GRAVES',
-    label: '🚨 Complicaciones graves',
-  },
-  { value: 'FALLIDO', label: '❌ Fallido / Reintervención' },
-  { value: 'EN_PROGRESO', label: '⏳ En curso / Ingresado' },
 ];
 
 // Helper: valor por default YYYY-MM-DDThh:mm (datetime-local en hora de Chile (no importa offset, sólo la hora local)
@@ -93,7 +87,7 @@ export default function NewAttentionForm(props: NewAttentionFormProps) {
   );
 
   // Subtipo 3: OPERATIVO_SANITARIO
-  const [procedimientoIds, setProcedimientoIds] = useState<string[]>([]);
+  const [procedimientoCodes, setProcedimientoCodes] = useState<string[]>([]);
 
   // Subtipo 4: IMPLANTE_MICROCHIP
   const [numeroMicrochip, setNumeroMicrochip] = useState('');
@@ -104,207 +98,118 @@ export default function NewAttentionForm(props: NewAttentionFormProps) {
 
   const TipoConf = TIPO_STYLES[tipo];
   const TipoIcon = TipoConf.Icon;
-  const esConsultaLike =
-    tipo === 'consulta_medica' || tipo === 'control' || tipo === 'emergencia';
 
-  const handleSubmit = async (event?: React.FormEvent) => {
-    event?.preventDefault();
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (isSubmitting) return;
     setSubmitError('');
 
+    if (tipo === 'consulta_medica' && !motivo.trim()) {
+      toast.error('Ingrese el motivo de la consulta', {
+        description: 'Revisa los datos e intenta nuevamente.',
+        duration: 5000,
+      });
+      setSubmitError('Ingrese el motivo de la consulta');
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (
+      tipo === 'operativo_esterilizacion' &&
+      !resultadoEsterilizacion.trim()
+    ) {
+      toast.error('Ingrese el resultado de la esterilización', {
+        description: 'Revisa los datos e intenta nuevamente.',
+        duration: 5000,
+      });
+      setSubmitError('Ingrese el resultado de la esterilización');
+      setIsSubmitting(false);
+      return;
+    }
+
     setIsSubmitting(true);
     const toastId = toast.loading('Registrando atención...');
-    createAttention({
-      petPublicId,
-      tipoAtencion: tipo,
-      fechaAtencion: fecha,
-      pesoAtencion: peso,
-      observaciones,
 
-      // Consulta-like
-      motivo: esConsultaLike ? motivo : null,
-      anamnesis: esConsultaLike ? anamnesis : null,
-      examenFisico: esConsultaLike ? examenFisico : null,
-      diagnosticoPredx: esConsultaLike ? diagnosticoPredx : null,
-      examenesSolicitados: esConsultaLike ? examenesSolicitados : null,
-      tratamiento: esConsultaLike ? tratamiento : null,
-      derivacionClinica: esConsultaLike ? derivacionClinica : null,
+    try {
+      const response = await createAttention({
+        petPublicId,
+        usuarioPublicId: '213ac5be-3c2a-4447-8339-2373657f90c5',
+        tipoAtencion: tipo,
+        fechaAtencion: fecha,
+        pesoAtencion: peso,
+        observaciones,
 
-      // Esterilización
-      resultadoEsterilizacion:
-        tipo === 'operativo_esterilizacion' ? resultadoEsterilizacion : null,
-      marcarEsterilizado:
-        tipo === 'operativo_esterilizacion' ? marcarEsterilizado : null,
+        // Consulta-like
+        motivo: tipo === 'consulta_medica' ? motivo : null,
+        anamnesis: tipo === 'consulta_medica' ? anamnesis : null,
+        examenFisico: tipo === 'consulta_medica' ? examenFisico : null,
+        diagnosticoPredx: tipo === 'consulta_medica' ? diagnosticoPredx : null,
+        examenesSolicitados:
+          tipo === 'consulta_medica' ? examenesSolicitados : null,
+        tratamiento: tipo === 'consulta_medica' ? tratamiento : null,
+        derivacionClinica:
+          tipo === 'consulta_medica' ? derivacionClinica : null,
 
-      // Operativo Sanitario
-      procedimientoIds: procedimientoIds,
+        // Esterilización
+        resultadoEsterilizacion:
+          tipo === 'operativo_esterilizacion' ? resultadoEsterilizacion : null,
+        marcarEsterilizado:
+          tipo === 'operativo_esterilizacion' ? marcarEsterilizado : null,
 
-      // Implante
-      numeroMicrochip: numeroMicrochip.trim() ? numeroMicrochip.trim() : null,
-    })
-      .then((res) => {
-        if (!res.success) {
-          toast.error('No se pudo registrar la atención', {
-            id: toastId,
-            description: res.error,
-            duration: 5200,
-          });
-          setSubmitError(res.error);
-          setIsSubmitting(false);
-          return;
-        }
+        // Operativo Sanitario
+        procedimientoCodes: procedimientoCodes,
 
+        // Implante
+        numeroMicrochip: numeroMicrochip.trim() ? numeroMicrochip.trim() : null,
+      });
+
+      if (!response.success) {
+        toast.error('No se pudo registrar la atención', {
+          id: toastId,
+          description: response.error,
+          duration: 5500,
+        });
+        setSubmitError(response.error);
+        setIsSubmitting(false);
+        return;
+      }
+
+      setTimeout(() => {
         toast.success('Atención registrada con éxito', {
           id: toastId,
-          description: res.message,
+          description: response.message,
           duration: 2600,
         });
-
-        setTimeout(() => {
-          router.push(`/admin/mascotas/${petPublicId}`);
-          router.refresh();
-        }, 850);
-      })
-      .catch((err: unknown) => {
-        const mensaje =
-          err instanceof Error ? err.message : 'Error al registrar atención.';
-        toast.error('Error inesperado', {
-          id: toastId,
-          description: mensaje,
-          duration: 5200,
-        });
-        setSubmitError(mensaje);
-      })
-      .finally(() => setIsSubmitting(false));
+      });
+      setTimeout(() => {
+        router.push(`/admin/mascotas/${petPublicId}`);
+      }, 1000);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Error al registrar la atención';
+      toast.error(message, {
+        id: toastId,
+        description: 'Revisa los datos e intenta nuevamente.',
+        duration: 5000,
+      });
+      setSubmitError(message);
+      return;
+    } finally {
+      setTimeout(() => setIsSubmitting(false), 500);
+    }
   };
 
-  const toggleProcedimientoId = (id: string) => {
-    setProcedimientoIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+  const toggleProcedimientoCode = (code: string) => {
+    setProcedimientoCodes((prev) =>
+      prev.includes(code) ? prev.filter((x) => x !== code) : [...prev, code]
     );
   };
 
-  // Calcular porcentaje de completitud simple
-  const progressPct = useMemo(() => {
-    const checks: boolean[] = [
-      Boolean(tipo),
-      Boolean(fecha),
-      // Obligatorios por tipo:
-      esConsultaLike ? Boolean(motivo.trim()) : true,
-      tipo === 'operativo_esterilizacion'
-        ? Boolean(resultadoEsterilizacion)
-        : true,
-      tipo === 'operativo_sanitario' ? procedimientoIds.length > 0 : true,
-      // Importantes pero no obligatorios: contar 0.25 pts cada uno
-      Boolean(peso.trim()) ? true : false,
-    ];
-    const okCount = checks.filter(Boolean).length;
-    return Math.round((okCount / checks.length) * 100);
-  }, [
-    tipo,
-    fecha,
-    motivo,
-    resultadoEsterilizacion,
-    procedimientoIds.length,
-    peso,
-    esConsultaLike,
-  ]);
-
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-      {/* Error top */}
-      {submitError ? (
-        <div
-          role="alert"
-          className="flex items-start gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-red-100"
-        >
-          <AlertTriangle className="mt-0.5 size-4 shrink-0" />
-          <div className="flex flex-col">
-            <span className="font-semibold">
-              No se pudo registrar la atención:
-            </span>
-            <span>{submitError}</span>
-          </div>
-        </div>
-      ) : null}
-      {/* SECCIÓN 1: DATOS BASE DE LA ATENCIÓN */}
-      {/* <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-        <div className="mb-5 flex items-start justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <span className="inline-flex size-10 items-center justify-center rounded-xl bg-slate-50 text-slate-700 ring-1 ring-slate-200">
-              <TipoIcon className="size-5" />
-            </span>
-            <div>
-              <h2 className="text-lg font-bold text-gray-900">
-                Datos Generales
-              </h2>
-              <p className="text-xs text-gray-500">
-                Tipo, fecha y datos básicos de la atención
-              </p>
-            </div>
-          </div>
-          <div className="hidden items-end">
-            <Badge
-              className={`${TipoConf.bg} ${TipoConf.text} ${TipoConf.ring} px-3 py-1 text-xs font-bold tracking-wider uppercase shadow-sm ring-1`}
-            >
-              <TipoIcon className="mr-1 h-3.5 w-3.5" />
-              {TipoConf.displayName}
-            </Badge>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-12">
-          <div className="md:col-span-12">
-            <label className="mb-2 block text-xs font-bold text-gray-700">
-              Tipo de atención <span className="text-rose-500">*</span>
-            </label>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {TIPOS_ATENCION_VALIDOS.map((tipo_atencion) => {
-                const c = TIPO_STYLES[tipo_atencion];
-                const Icon = c.Icon;
-                const active = tipo === tipo_atencion;
-                return (
-                  <button
-                    key={tipo_atencion}
-                    type="button"
-                    onClick={() => setTipo(tipo_atencion)}
-                    className={`flex items-center gap-2 rounded-xl border px-4 py-3 text-xs font-semibold transition-all ${
-                      active
-                        ? `${c.bg} ${c.text} ${c.ring} scale-[1.01] border-transparent shadow-sm ring-2`
-                        : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50'
-                    }`}
-                  >
-                    <Icon className="h-4 w-4 shrink-0" />
-                    <span className="truncate text-left">{c.displayName}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="md:col-span-6">
-            <Input
-              label="Fecha y hora"
-              nombre="fechaAtencion"
-              type="datetime-local"
-              value={fecha}
-              setData={setFecha}
-              required
-            />
-          </div>
-
-          <div className="md:col-span-6">
-            <SafeNumberInput
-              label="Peso (kg)"
-              nombre="pesoAtencion"
-              placeHolder="Ej: 12.5"
-              value={peso}
-              setData={setPeso}
-              required={false}
-            />
-          </div>
-        </div>
-      </section> */}
-      {/* SECCIÓN 1: DATOS BASE DE LA ATENCIÓN - V2 */}
+      {/* Seccion 1: Datos generales de la atencion */}
       <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
         {/* Cabecera stepper */}
         <div className="mb-5 flex items-start justify-between gap-4 border-b border-slate-100 pb-4">
@@ -313,9 +218,6 @@ export default function NewAttentionForm(props: NewAttentionFormProps) {
               1
             </span>
             <div>
-              <p className="text-[10px] font-bold tracking-[0.1rem] text-slate-400 uppercase">
-                Paso 1 de 6
-              </p>
               <h2 className="-mt-1 text-lg font-bold text-gray-900">
                 Datos Generales
               </h2>
@@ -329,7 +231,7 @@ export default function NewAttentionForm(props: NewAttentionFormProps) {
           </Badge>
         </div>
 
-        {/* Tipo: botones grandes (stack vertical 2 filas x3 / 2x2 en mobile) */}
+        {/* Tipo de atencion */}
         <div className="mb-6">
           <label className="mb-3 block text-xs font-bold text-gray-700">
             ¿Qué tipo de atención deseas registrar?{' '}
@@ -382,7 +284,7 @@ export default function NewAttentionForm(props: NewAttentionFormProps) {
           </div>
         </div>
 
-        {/* Fecha + Peso: 66/33 */}
+        {/* Fecha + Peso */}
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-12">
           <div className="sm:col-span-8">
             <Input
@@ -407,8 +309,8 @@ export default function NewAttentionForm(props: NewAttentionFormProps) {
         </div>
       </section>
 
-      {/* SECCIÓN 2: CONSULTA MÉDICA / CONTROL / EMERGENCIA */}
-      {esConsultaLike ? (
+      {/* Seccion 2: Consulta medica */}
+      {tipo === 'consulta_medica' ? (
         <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
           <div className="mb-5 flex items-center gap-2.5">
             <span className="inline-flex size-10 items-center justify-center rounded-xl bg-sky-50 text-sky-700 ring-1 ring-sky-200/60">
@@ -496,9 +398,11 @@ export default function NewAttentionForm(props: NewAttentionFormProps) {
           </div>
         </section>
       ) : null}
-      {/* SECCIÓN 3: OPERATIVO ESTERILIZACIÓN */}
+      {/* Seccion 3: Operativo esterilizacion */}
       {tipo === 'operativo_esterilizacion' ? (
-        <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+        <section
+          className={`rounded-2xl border border-gray-100 bg-white p-6 shadow-sm ${props.esterilizado === true ? 'opacity-60' : ''}`}
+        >
           <div className="mb-5 flex items-start justify-between gap-4">
             <div className="flex items-center gap-2.5">
               <span className="inline-flex size-10 items-center justify-center rounded-xl bg-rose-50 text-rose-700 ring-1 ring-rose-200/60">
@@ -526,6 +430,7 @@ export default function NewAttentionForm(props: NewAttentionFormProps) {
               <Select
                 label="Resultado del procedimiento"
                 nombre="resultado"
+                disabled={props.esterilizado === true}
                 value={resultadoEsterilizacion}
                 setData={setResultadoEsterilizacion}
                 options={[
@@ -535,21 +440,10 @@ export default function NewAttentionForm(props: NewAttentionFormProps) {
                 required
               />
             </div>
-            <CheckboxCard
-              label="Actualizar estado de esterilización en la ficha de la mascota"
-              description={
-                props.esterilizado === true
-                  ? 'La mascota ya figura esterilizada en su ficha. Esta opción se desactiva automáticamente.'
-                  : 'Marca la mascota como “esterilizado = TRUE” en la base de datos. Se aplica dentro de la misma transacción SQL.'
-              }
-              checked={marcarEsterilizado}
-              onChange={setMarcarEsterilizado}
-              disabled={props.esterilizado === true}
-            />
           </div>
         </section>
       ) : null}
-      {/* SECCIÓN 4: OPERATIVO SANITARIO */}
+      {/* Seccion 4: Operativo sanitario */}
       {tipo === 'operativo_sanitario' ? (
         <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
           <div className="mb-5 flex items-start justify-between gap-4">
@@ -567,7 +461,7 @@ export default function NewAttentionForm(props: NewAttentionFormProps) {
               </div>
             </div>
             <div className="rounded-xl bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-600 tabular-nums ring-1 ring-slate-200">
-              {procedimientoIds.length} seleccionados
+              {procedimientoCodes.length} seleccionados
             </div>
           </div>
 
@@ -583,12 +477,12 @@ export default function NewAttentionForm(props: NewAttentionFormProps) {
           ) : (
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-2">
               {props.procedimientosDisponibles.map((p) => {
-                const active = procedimientoIds.includes(p.codigo);
+                const active = procedimientoCodes.includes(p.codigo);
                 return (
                   <button
                     key={p.codigo}
                     type="button"
-                    onClick={() => toggleProcedimientoId(p.codigo)}
+                    onClick={() => toggleProcedimientoCode(p.codigo)}
                     className={`group flex w-full items-start gap-3 rounded-xl border p-3.5 text-left transition-all ${
                       active
                         ? 'border-emerald-200 bg-emerald-50 shadow-sm ring-1 ring-emerald-100'
@@ -619,7 +513,7 @@ export default function NewAttentionForm(props: NewAttentionFormProps) {
           )}
         </section>
       ) : null}
-      {/* SECCIÓN 5: IMPLANTE DE MICROCHIP (OPCIONAL, cualquier tipo) */}
+      {/* Seccion 5: Implante de microchip (opcional, cualquier tipo) */}
       <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
         <div className="mb-4 flex items-start justify-between gap-3">
           <div className="flex items-center gap-2.5">
@@ -644,37 +538,22 @@ export default function NewAttentionForm(props: NewAttentionFormProps) {
             </Badge>
           ) : null}
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-12">
-          <div className="md:col-span-8">
-            <Input
-              label="Número de microchip (ISO 11784/11785: 15 dígitos)"
-              nombre="numeroMicrochip"
-              placeHolder={
-                props.tieneMicrochipRegistrado
-                  ? 'La mascota ya tiene chip — desactiva ese flag antes'
-                  : 'Ej: 956000012345678 (sólo números)'
-              }
-              maxLength={15}
-              value={numeroMicrochip}
-              setData={setNumeroMicrochip}
-              //   disabled={props.tieneMicrochipRegistrado}
-            />
-          </div>
-          <div className="flex items-end md:col-span-4">
-            {/* <CheckboxCard
-              label="Actualizar ficha de la mascota"
-              description="Actualizar microchip y marcar inscrito_registro_nacional en tabla mascotas."
-              checked={actualizarMicrochipMascota}
-              onChange={setActualizarMicrochipMascota}
-              disabled={
-                props.tieneMicrochipRegistrado || !numeroMicrochip.trim()
-              }
-              className="h-full"
-            /> */}
-          </div>
+        <div>
+          <Input
+            label="Número de microchip (ISO 11784/11785: 15 dígitos)"
+            nombre="numeroMicrochip"
+            placeHolder={
+              props.tieneMicrochipRegistrado
+                ? 'La mascota ya tiene chip — desactiva ese flag antes'
+                : 'Ej: 956000012345678 (sólo números)'
+            }
+            maxLength={15}
+            value={numeroMicrochip}
+            setData={setNumeroMicrochip}
+          />
         </div>
       </section>
-      {/* SECCIÓN 6: OBSERVACIONES GENERALES */}
+      {/* Seccion 6: Observaciones generales */}
       <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
         <div className="mb-5 flex items-center gap-2.5">
           <span className="inline-flex size-10 items-center justify-center rounded-xl bg-slate-50 text-slate-700 ring-1 ring-slate-200">
@@ -699,7 +578,22 @@ export default function NewAttentionForm(props: NewAttentionFormProps) {
           maxLength={1200}
         />
       </section>
-      {/* FOOTER: PROGRESO + ACCIONES STICKY */}
+      {/* Error top */}
+      {submitError ? (
+        <div
+          role="alert"
+          className="flex items-start gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-red-100"
+        >
+          <AlertTriangle className="mt-0.5 size-4 shrink-0" />
+          <div className="flex flex-col">
+            <span className="font-semibold">
+              No se pudo registrar la atención:
+            </span>
+            <span>{submitError}</span>
+          </div>
+        </div>
+      ) : null}
+      {/* Footer: Acciones */}
       <footer className="sticky bottom-0 z-10">
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-2">

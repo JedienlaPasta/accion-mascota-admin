@@ -43,7 +43,6 @@ export default function Input({
       setData(e.target.value);
     }
   };
-
   return (
     <div className="flex grow flex-col">
       {label && (
@@ -80,7 +79,6 @@ export default function Input({
         placeholder={placeHolder}
         value={value}
         onChange={handleChange}
-        onWheel={(e) => e.preventDefault()}
         minLength={minLength}
         maxLength={maxLength}
         className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm text-gray-700 shadow-sm shadow-gray-200 transition-all outline-none placeholder:text-[13px] placeholder:text-gray-400 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100"
@@ -216,7 +214,6 @@ export function TextArea({
         placeholder={placeHolder}
         value={value}
         onChange={handleChange}
-        onWheel={(e) => e.preventDefault()}
         maxLength={
           maxLength ? maxLength : label === 'Código Campaña' ? 2 : undefined
         }
@@ -289,7 +286,6 @@ export function Select({
           disabled={disabled || readonly}
           value={value ?? ''}
           onChange={handleChange}
-          onWheel={(e) => e.preventDefault()}
           className="h-11 w-full appearance-none rounded-lg border border-slate-200 bg-white pr-10 pl-4 text-sm text-gray-700 shadow-sm shadow-gray-200 transition-all outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:opacity-60 [&_option]:bg-white [&_option:not([disabled])]:text-gray-800"
         >
           {options.length === 0 && placeHolder ? (
@@ -350,10 +346,10 @@ export function CheckboxCard({
     <label
       className={[
         'group flex w-full cursor-pointer items-start gap-3 rounded-xl border p-3.5 transition-all',
-        'border-slate-200 bg-white shadow-sm hover:border-slate-300 hover:bg-slate-50',
+        'border-slate-200 shadow-sm hover:border-slate-300',
         checked
-          ? 'border-emerald-200 !bg-emerald-50 ring-1 ring-emerald-100 hover:!bg-emerald-50/80'
-          : '',
+          ? 'border-emerald-200 bg-emerald-50 ring-1 ring-emerald-100 hover:bg-emerald-50/80'
+          : 'bg-white hover:bg-slate-50',
         disabled ? 'cursor-not-allowed opacity-60 hover:bg-white' : '',
         className,
       ].join(' ')}
@@ -368,7 +364,12 @@ export function CheckboxCard({
         ].join(' ')}
       >
         {checked ? (
-          <svg className="size-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <svg
+            className="size-3.5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
             <path
               fillRule="evenodd"
               d="M16.704 5.29a1 1 0 010 1.42l-7.5 7.5a1 1 0 01-1.414 0l-3.5-3.5a1 1 0 011.414-1.42L8.5 12.08l6.79-6.79a1 1 0 011.414 0z"
@@ -385,11 +386,9 @@ export function CheckboxCard({
         onChange={(e) => onChange?.(e.target.checked)}
       />
       <div className="min-w-0 flex-1 space-y-0.5">
-        <p className="text-sm font-bold text-gray-900 leading-snug">{label}</p>
+        <p className="text-sm leading-snug font-bold text-gray-900">{label}</p>
         {description ? (
-          <p className="text-xs text-gray-500 leading-relaxed">
-            {description}
-          </p>
+          <p className="text-xs leading-relaxed text-gray-500">{description}</p>
         ) : null}
       </div>
     </label>

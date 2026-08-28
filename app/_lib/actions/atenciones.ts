@@ -6,22 +6,15 @@ import {
 } from '../static-data/tipos-atencion';
 import { validateMicrochip } from '../utils/check-values';
 
-// ================================================================
-// TIPOS PÚBLICOS
-// ================================================================
-
 export type CreateAttentionInput = {
-  /** public_id de la mascota */
   petPublicId: string;
-  /** public_id del usuario veterinario (opcional: si no viene, busca uno default) */
-  usuarioPublicId?: string | null;
+  usuarioPublicId?: string | null; // public_id del usuario veterinario
   tipoAtencion: string;
   fechaAtencion: string; // ISO local datetime YYYY-MM-DDThh:mm (se convierte en TIMESTAMP
   pesoAtencion?: number | string | null;
   observaciones?: string | null;
 
-  // --- Campos condicionales por TIPO ---
-  // 1) CONSULTA_MEDICA / CONTROL / EMERGENCIA (tabla consultas_medicas)
+  // CONSULTA_MEDICA
   motivo?: string | null;
   anamnesis?: string | null;
   examenFisico?: string | null;
@@ -30,18 +23,15 @@ export type CreateAttentionInput = {
   tratamiento?: string | null;
   derivacionClinica?: boolean | string | null;
 
-  // 2) OPERATIVO_ESTERILIZACION (tabla operativos_esterilizacion)
+  // OPERATIVO_ESTERILIZACION
   resultadoEsterilizacion?: string | null;
   marcarEsterilizado?: boolean | string | null;
 
-  // 3) OPERATIVO_SANITARIO (tabla N-M atencion_procedimientos -> procedimientos)
-  //    Array con los IDs INTEGER de procedimientos (no public_id, los IDs int)
-  procedimientoIds?: string[];
+  // OPERATIVO_SANITARIO - Array con los codigos de procedimientos
+  procedimientoCodes?: string[];
 
-  // 4) IMPLANTE_MICROCHIP (tabla implantaciones_microchip + UPDATE mascotas)
+  // IMPLANTE_MICROCHIP (tabla implantaciones_microchip)
   numeroMicrochip?: string | null;
-  /** Si es implante, actualiza la mascota (micro y inscrito_registro_nacional?**/
-  actualizarMicrochipMascota?: boolean | string | null;
 };
 
 export type CreateAttentionResult =
@@ -56,16 +46,11 @@ export type CreateAttentionResult =
       code: 'VALIDATION' | 'NOT_FOUND' | 'CONFLICT' | 'DB_ERROR';
     };
 
-// ================================================================
-// ACCIÓN PRINCIPAL
-// ================================================================
 export async function createAttention(
   input: CreateAttentionInput
 ): Promise<CreateAttentionResult> {
   try {
-    // ----------------------------------------------------------------
     // 1) Validación y normalización
-    // ----------------------------------------------------------------
     const petPublicId = input.petPublicId?.trim() ?? '';
     const tipo = (input.tipoAtencion ?? '').trim() as string;
 
@@ -73,7 +58,7 @@ export async function createAttention(
     if (!TIPOS_ATENCION_VALIDOS.includes(tipo))
       return fail('VALIDATION', 'Tipo de atención no válido.');
 
-    // 1a. Fecha
+    // Fecha
     const fechaString = input.fechaAtencion?.trim();
     if (!fechaString)
       return fail('VALIDATION', 'No se ingresó fecha/hora de la atención.');
@@ -93,7 +78,7 @@ export async function createAttention(
       );
     const hoy = new Date();
     const maxAtras = new Date();
-    maxAtras.setFullYear(hoy.getFullYear() - 40);
+    maxAtras.setFullYear(hoy.getFullYear() - 1);
     if (fechaAtencionDate > new Date(hoy.getTime() + 1000 * 60 * 60 * 24 * 7))
       return fail(
         'VALIDATION',
@@ -102,10 +87,10 @@ export async function createAttention(
     if (fechaAtencionDate < maxAtras)
       return fail(
         'VALIDATION',
-        'Fecha de atención muy antigua (más de 40 años atrás.'
+        'Fecha de atención muy antigua (más de 1 año atrás).'
       );
 
-    // 1b. Peso
+    // Peso
     let pesoAtencion: number | null = null;
     if (
       input.pesoAtencion !== undefined &&
@@ -124,9 +109,7 @@ export async function createAttention(
       pesoAtencion = Number(n.toFixed(2));
     }
 
-    // ----------------------------------------------------------------
     // 2) Validar existencia (mascota + usuario)
-    // ----------------------------------------------------------------
     const petRow = await sql`
       SELECT id, public_id, microchip, esterilizado, inscrito_registro_nacional
       FROM mascotas
@@ -139,65 +122,47 @@ export async function createAttention(
     const mascotaId = Number(petRow[0].id);
     const yaTieneChip = Boolean(petRow[0].microchip);
 
-    // Resolver veterinario:
-    let usuarioId: number;
-    if (input.usuarioPublicId) {
-      const u = await sql`
-      SELECT id FROM usuarios WHERE public_id = ${input.usuarioPublicId} AND estado = TRUE LIMIT 1
-    `;
-      if ((u as unknown[]).length === 0)
-        return fail(
-          'NOT_FOUND',
-          'Funcionario/a no encontrado/a o desactivado.'
-        );
-      usuarioId = Number(u[0].id);
-    } else {
-      const u = await sql`
-        SELECT id FROM usuarios 
-        WHERE estado = TRUE 
-        ORDER BY 
-          CASE WHEN LOWER(cargo) LIKE '%veterin%' THEN 0 
-               WHEN LOWER(cargo) LIKE '%admin%' THEN 1 
-               ELSE 2 END,
-          id ASC
-        LIMIT 1
-      `;
-      if ((u as unknown[]).length === 0)
-        return fail(
-          'NOT_FOUND',
-          'No hay usuarios activos en el sistema para asociar a la atención.'
-        );
-      usuarioId = Number(u[0].id);
+    const usuarioPublicIdRaw = input.usuarioPublicId?.trim() ?? '';
+    if (!usuarioPublicIdRaw) {
+      return fail(
+        'VALIDATION',
+        'No se identificó el funcionario/a que realiza la atención. Inicia sesión o selecciona un veterinario.'
+      );
     }
+    const userRow = await sql`
+      SELECT id
+      FROM usuarios
+      WHERE public_id = ${usuarioPublicIdRaw} AND estado = TRUE
+      LIMIT 1
+    `;
+    if ((userRow as unknown[]).length === 0) {
+      return fail('NOT_FOUND', 'Funcionario/a no encontrado/a o desactivado.');
+    }
+    const usuarioId = Number(userRow[0].id);
 
-    // ----------------------------------------------------------------
-    // 3) Validaciones específicas por tipo de atención ANTES de la tx
-    // ----------------------------------------------------------------
-    // 3a. OPERATIVO_SANITARIO: al menos 1 procedimiento
+    // 3) Validaciones por tipo de atención antes de la tx
+    // OPERATIVO_SANITARIO: al menos 1 procedimiento
     let procedimientoIdsInt: number[] = [];
     if (tipo === 'operativo_sanitario') {
-      const ids = input.procedimientoIds ?? [];
-      const cleanIds = Array.isArray(ids)
-        .map((x) => Number(x))
-        .filter((n) => Number.isFinite(n) && Number.isInteger(n) && n > 0);
-      if (cleanIds.length === 0) {
+      const codes = input.procedimientoCodes ?? [];
+      if (codes.length === 0) {
         return fail(
           'VALIDATION',
           'Selecciona al menos un procedimiento para este operativo sanitario.'
         );
       }
-      // Verificar que los IDs existan
-      const existentes = await sql`
-        SELECT id FROM procedimientos WHERE id IN ${sql(cleanIds)}`;
-      if ((existentes as unknown[]).length !== cleanIds.length)
+      // Verificar que los Codes existan
+      const idsExistentes = await sql`
+        SELECT id FROM procedimientos WHERE codigo IN ${sql(codes)}`;
+      if ((idsExistentes as unknown[]).length !== codes.length)
         return fail(
           'NOT_FOUND',
           'Uno o más procedimientos seleccionados no existen en el catálogo.'
         );
-      procedimientoIdsInt = cleanIds;
+      procedimientoIdsInt = idsExistentes.map((x) => Number(x.id));
     }
 
-    // 3b. IMPLANTE microchip
+    // IMPLANTE MICROCHIP
     let numeroMicrochipNormalizado: string | null = null;
     if (input.numeroMicrochip && String(input.numeroMicrochip).trim()) {
       const chip = String(input.numeroMicrochip).trim();
@@ -208,13 +173,13 @@ export async function createAttention(
       if (yaTieneChip) {
         return fail(
           'CONFLICT',
-          `Esta mascota ya tiene microchip registrado (${yaTieneChip}). Si es un reemplazo, actualiza la ficha primero.`
+          `Esta mascota ya tiene microchip registrado (${yaTieneChip}).`
         );
       }
       // Unicidad del chip en tabla implantaciones.
       const repetido = await sql`
         SELECT id FROM implantaciones_microchip WHERE numero_microchip = ${chip} LIMIT 1
-      `;
+        `;
       if ((repetido as unknown[]).length > 0) {
         return fail(
           'CONFLICT',
@@ -224,7 +189,7 @@ export async function createAttention(
       numeroMicrochipNormalizado = chip;
     }
 
-    // 3c. OPERATIVO_ESTERILIZACION: resultado
+    // OPERATIVO_ESTERILIZACION: resultado
     let resultadoEsterilizacion: string | null = null;
     if (tipo === 'operativo_esterilizacion') {
       resultadoEsterilizacion =
@@ -234,47 +199,42 @@ export async function createAttention(
       }
     }
 
-    // 3d. Consulta: motivo
+    // Consulta: motivo
     let motivo: string | null = null;
-    if (
-      tipo === 'consulta_medica' ||
-      tipo === 'control' ||
-      tipo === 'emergencia'
-    ) {
+    if (tipo === 'consulta_medica') {
       motivo = String(input.motivo ?? '').trim() || null;
       if (!motivo) {
-        return fail(
-          'VALIDATION',
-          'Ingresa el motivo de la consulta/control/emergencia.'
-        );
+        return fail('VALIDATION', 'Ingresa el motivo de la consulta.');
       }
     }
 
-    const marcarEsterilizadoBool =
-      typeof input.marcarEsterilizado === true ||
-      String(input.marcarEsterilizado ?? '').toLowerCase() === 'true';
-
-    const actualizarMicrochipMascotaBool =
-      typeof input.actualizarMicrochipMascota === true ||
-      String(input.actualizarMicrochipMascota ?? '').toLowerCase() === 'true';
-
-    const derivacionClinicaBool =
-      typeof input.derivacionClinica === true ||
-      String(input.derivacionClinica ?? '').toLowerCase() === 'true';
-
+    const derivacionClinicaBool = Boolean(input.derivacionClinica) === true;
     const observaciones = String(input.observaciones ?? '').trim() || null;
     const publicId = crypto.randomUUID();
 
-    // ----------------------------------------------------------------
-    // 4) TRANSACCIÓN ATÓMICA
-    // ----------------------------------------------------------------
+    // 4) TRANSACCIÓN ATOMICA
     await sql.begin(async (tx) => {
-      // 4a. INSERT atenciones (fila principal
       await tx`
         INSERT INTO atenciones
-          (public_id, usuario_id, mascota_id, fecha_atencion, tipo_atencion, peso_actual, observaciones)
+          (
+            public_id,
+            usuario_id,
+            mascota_id,
+            fecha_atencion,
+            tipo_atencion,
+            peso_actual,
+            observaciones
+          )
         VALUES
-          (${publicId}, ${usuarioId}, ${mascotaId}, ${fechaString}::timestamp, ${tipo}, ${pesoAtencion}, ${observaciones})
+          (
+            ${publicId},
+            ${usuarioId},
+            ${mascotaId},
+            (${fechaString})::timestamp AT TIME ZONE 'America/Santiago',
+            ${tipo},
+            ${pesoAtencion},
+            ${observaciones}
+          )
       `;
 
       // Cargar el ID serial para las tablas hijas.
@@ -283,12 +243,8 @@ export async function createAttention(
       `;
       const atencionId = Number(attentionRow[0].id);
 
-      // Subtipo 1: CONSULTA_MEDICA / CONTROL / EMERGENCIA (consultas_medicas)
-      if (
-        tipo === 'consulta_medica' ||
-        tipo === 'control' ||
-        tipo === 'emergencia'
-      ) {
+      // Subtipo 1: CONSULTA_MEDICA
+      if (tipo === 'consulta_medica') {
         const cmMotivo = String(input.motivo ?? '').trim() || null;
         const cmAnamnesis = String(input.anamnesis ?? '').trim() || null;
         const cmExamenFisico = String(input.examenFisico ?? '').trim() || null;
@@ -300,9 +256,27 @@ export async function createAttention(
 
         await tx`
           INSERT INTO consultas_medicas
-            (atencion_id, motivo, anamnesis, examen_fisico, diagnostico_predx, examenes_solicitados, tratamiento, derivacion_clinica_privada)
+            (
+              atencion_id, 
+              motivo, 
+              anamnesis, 
+              examen_fisico, 
+              diagnostico_predx, 
+              examenes_solicitados, 
+              tratamiento, 
+              derivacion_clinica_privada
+            )
           VALUES
-            (${atencionId}, ${cmMotivo}, ${cmAnamnesis}, ${cmExamenFisico}, ${cmDiagnosticoPredx}, ${cmExamenesSolicitados}, ${cmTratamiento}, ${derivacionClinicaBool})
+            (
+              ${atencionId}, 
+              ${cmMotivo}, 
+              ${cmAnamnesis}, 
+              ${cmExamenFisico}, 
+              ${cmDiagnosticoPredx}, 
+              ${cmExamenesSolicitados}, 
+              ${cmTratamiento}, 
+              ${derivacionClinicaBool}
+            )
         `;
       }
 
@@ -314,14 +288,14 @@ export async function createAttention(
           VALUES
             (${atencionId}, ${resultadoEsterilizacion})
         `;
-        if (marcarEsterilizadoBool) {
+        if (resultadoEsterilizacion === 'APROBADO') {
           await tx`
             UPDATE mascotas SET esterilizado = TRUE WHERE id = ${mascotaId}
           `;
         }
       }
 
-      // Subtipo 3: OPERATIVO_SANITARIO (N-M atencion_procedimientos)
+      // Subtipo 3: OPERATIVO_SANITARIO
       if (tipo === 'operativo_sanitario' && procedimientoIdsInt.length > 0) {
         const rows = procedimientoIdsInt.map((pid) => ({
           procedimiento_id: pid,
@@ -332,15 +306,9 @@ export async function createAttention(
         `;
       }
 
-      // Subtipo 4: IMPLANTE microchip
+      // Subtipo 4: IMPLANTE MICROCHIP
       if (numeroMicrochipNormalizado) {
         await tx`INSERT INTO implantaciones_microchip (atencion_id, numero_microchip) VALUES (${atencionId}, ${numeroMicrochipNormalizado})`;
-        if (actualizarMicrochipMascotaBool) {
-          await tx`
-            UPDATE mascotas SET microchip = ${numeroMicrochipNormalizado},
-            inscrito_registro_nacional = TRUE
-            WHERE id = ${mascotaId}`;
-        }
       }
     });
 
