@@ -52,6 +52,11 @@ const navItems = [
     label: 'Configuración',
     icon: Settings,
   },
+  {
+    href: '/admin/pdf-test',
+    label: 'PDF Test',
+    icon: ClipboardList,
+  },
 ];
 
 export function AdminSidebar() {

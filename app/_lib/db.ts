@@ -7,7 +7,7 @@ declare global {
 const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
-  throw new Error("DATABASE_URL no está definida");
+  throw new Error('DATABASE_URL no está definida');
 }
 
 const sql =
