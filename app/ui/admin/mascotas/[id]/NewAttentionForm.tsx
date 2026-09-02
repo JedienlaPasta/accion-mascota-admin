@@ -422,7 +422,7 @@ export default function NewAttentionForm(props: NewAttentionFormProps) {
               </div>
             </div>
             {props.esterilizado === true ? (
-              <Badge className="bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100 ring-emerald-200">
+              <Badge className="bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100">
                 <CheckCircle2 className="mr-1 h-3.5 w-3.5" />
                 Ya figura esterilizado
               </Badge>
