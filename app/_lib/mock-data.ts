@@ -6,6 +6,7 @@ import {
   Cat,
   CheckCircle,
   Dog,
+  HeartPulse,
   PawPrint,
   Scissors,
   Stethoscope,
@@ -19,69 +20,6 @@ export const especieIcon: Record<
   perro: Dog,
   gato: Cat,
   otro: PawPrint,
-};
-
-export const tipoIcon: Record<
-  string,
-  React.ComponentType<{ className?: string }>
-> = {
-  consulta: Stethoscope,
-  vacuna: Syringe,
-  cirugia: Scissors,
-  control: CheckCircle,
-  emergencia: AlertCircle,
-  operativo_sanitario: Ambulance,
-};
-
-export const tipoLabels: Record<string, string> = {
-  consulta: 'Consulta',
-  vacuna: 'Vacunación',
-  cirugia: 'Cirugía',
-  control: 'Control',
-  emergencia: 'Emergencia',
-  operativo_sanitario: 'Operativo Sanitario',
-};
-
-export const tipoColors: Record<
-  string,
-  { bg: string; text: string; ring: string; dot: string }
-> = {
-  consulta: {
-    bg: 'bg-blue-50',
-    text: 'text-blue-600',
-    ring: 'ring-blue-100',
-    dot: 'bg-blue-500',
-  },
-  vacuna: {
-    bg: 'bg-green-50',
-    text: 'text-green-600',
-    ring: 'ring-green-100',
-    dot: 'bg-green-500',
-  },
-  cirugia: {
-    bg: 'bg-amber-50',
-    text: 'text-amber-600',
-    ring: 'ring-amber-100',
-    dot: 'bg-amber-500',
-  },
-  control: {
-    bg: 'bg-purple-50',
-    text: 'text-purple-600',
-    ring: 'ring-purple-100',
-    dot: 'bg-purple-500',
-  },
-  emergencia: {
-    bg: 'bg-red-50',
-    text: 'text-red-600',
-    ring: 'ring-red-100',
-    dot: 'bg-red-500',
-  },
-  operativo_sanitario: {
-    bg: 'bg-emerald-50',
-    text: 'text-emerald-700',
-    ring: 'ring-emerald-100',
-    dot: 'bg-emerald-500',
-  },
 };
 
 export interface Usuario {

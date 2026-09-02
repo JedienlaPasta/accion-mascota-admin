@@ -422,7 +422,7 @@ export default function NewAttentionForm(props: NewAttentionFormProps) {
               </div>
             </div>
             {props.esterilizado === true ? (
-              <Badge className="border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100">
+              <Badge className="bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100 ring-emerald-200">
                 <CheckCircle2 className="mr-1 h-3.5 w-3.5" />
                 Ya figura esterilizado
               </Badge>
@@ -537,7 +537,7 @@ export default function NewAttentionForm(props: NewAttentionFormProps) {
             </div>
           </div>
           {props.tieneMicrochipRegistrado ? (
-            <Badge className="border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-700">
+            <Badge className="bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-700 ring-slate-200">
               Ya cuenta con microchip
             </Badge>
           ) : null}

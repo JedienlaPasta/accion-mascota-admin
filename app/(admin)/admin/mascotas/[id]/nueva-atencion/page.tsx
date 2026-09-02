@@ -146,20 +146,20 @@ export default async function NewAttentionPage(props: NewAttentionPageProps) {
                 </p>
                 <div className="mt-1 flex flex-wrap gap-1.5">
                   {mascota.esterilizado ? (
-                    <Badge className="border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 shadow-sm">
+                    <Badge className="bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 shadow-sm ring-emerald-200">
                       Esterilizado
                     </Badge>
                   ) : mascota.esterilizado === null ? (
-                    <Badge className="border-gray-200 bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-500 shadow-sm">
+                    <Badge className="bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-500 shadow-sm ring-gray-200">
                       Esterilizado: No especificado
                     </Badge>
                   ) : (
-                    <Badge className="border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-medium text-rose-500 shadow-sm">
+                    <Badge className="bg-rose-50 px-2.5 py-1 text-xs font-medium text-rose-500 shadow-sm ring-rose-200">
                       Sin esterilizar
                     </Badge>
                   )}
                   {mascota.microchip ? (
-                    <Badge className="border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-sm">
+                    <Badge className="bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-sm ring-slate-200">
                       <span className="flex items-center gap-1">
                         <Cpu className="h-3 w-3" />
                         Chip {mascota.microchip}

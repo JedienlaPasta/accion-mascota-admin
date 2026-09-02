@@ -156,14 +156,14 @@ export default async function PropietarioDetallePage(
               <div className="mt-3 flex flex-wrap gap-2">
                 {/* Estado cuenta portal */}
                 {tieneCuentaPortal ? (
-                  <Badge className="border-emerald-200 bg-emerald-50 px-3 text-emerald-700 shadow-sm">
+                  <Badge className="bg-emerald-50 px-3 text-emerald-700 shadow-sm ring-emerald-200">
                     <span className="flex items-center gap-1">
                       <UserCheck className="h-3.5 w-3.5" />
                       Usuario registrado
                     </span>
                   </Badge>
                 ) : (
-                  <Badge className="border-gray-200 bg-gray-50 px-3 py-1 text-gray-500 shadow-sm">
+                  <Badge className="bg-gray-50 px-3 py-1 text-gray-500 shadow-sm ring-gray-200">
                     <span className="flex items-center gap-1">
                       <XCircle className="h-3.5 w-3.5" />
                       Sin cuenta en portal
@@ -173,7 +173,7 @@ export default async function PropietarioDetallePage(
 
                 {/* RSH si existe */}
                 {propietario.rsh ? (
-                  <Badge className="border-sky-200 bg-sky-50 px-3 text-sky-700 shadow-sm">
+                  <Badge className="bg-sky-50 px-3 text-sky-700 shadow-sm ring-sky-200">
                     <span className="flex items-center gap-1">
                       <Heart className="h-3.5 w-3.5" />
                       RSH N° {propietario.rsh}
@@ -183,7 +183,7 @@ export default async function PropietarioDetallePage(
 
                 {/* Profesión si existe */}
                 {propietario.profesion ? (
-                  <Badge className="border-slate-200 bg-slate-50 px-3 py-1 text-slate-700 shadow-sm">
+                  <Badge className="bg-slate-50 px-3 py-1 text-slate-700 shadow-sm ring-slate-200">
                     {capitalizeAll(propietario.profesion)}
                   </Badge>
                 ) : null}
@@ -435,7 +435,7 @@ export default async function PropietarioDetallePage(
                           <p className="truncate font-semibold text-gray-900 transition-colors group-hover:text-indigo-700">
                             {capitalize(mascota.nombre_mascota)}
                           </p>
-                          <Badge className="border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] text-slate-600">
+                          <Badge className="bg-slate-50 px-2 py-0.5 text-[10px] text-slate-600 ring-slate-200">
                             {capitalize(mascota.especie)}
                           </Badge>
                         </div>
@@ -466,16 +466,16 @@ export default async function PropietarioDetallePage(
                       {/* Estado esterilizado */}
                       <div className="hidden shrink-0 items-center gap-2 pr-2 sm:flex">
                         {mascota.esterilizado === null ? (
-                          <Badge className="border-slate-200 bg-slate-50 px-2 text-[11px] text-slate-500">
+                          <Badge className="bg-slate-50 px-2 text-[11px] text-slate-500 ring-slate-200">
                             N/E
                           </Badge>
                         ) : mascota.esterilizado ? (
-                          <Badge className="flex items-center gap-1 border-emerald-200 bg-emerald-50 px-2 text-[11px] text-emerald-700">
+                          <Badge className="flex items-center gap-1 bg-emerald-50 px-2 text-[11px] text-emerald-700 ring-emerald-200">
                             <CheckCircle2 className="h-3 w-3" />
                             Esterilizado
                           </Badge>
                         ) : (
-                          <Badge className="flex items-center gap-1 border-rose-200 bg-rose-50 px-2 text-[11px] text-rose-600">
+                          <Badge className="flex items-center gap-1 bg-rose-50 px-2 text-[11px] text-rose-600 ring-rose-200">
                             <XCircle className="h-3 w-3" />
                             Sin esterilizar
                           </Badge>
@@ -553,7 +553,7 @@ export default async function PropietarioDetallePage(
                     className="rounded-xl border border-gray-100 bg-gray-50/50 p-4 transition-colors hover:bg-gray-50"
                   >
                     <div className="mb-2 flex items-center justify-between">
-                      <Badge className="border-gray-200">
+                      <Badge className="ring-gray-200">
                         {capitalize(cita.estado)}
                       </Badge>
                       <span className="text-xs font-medium text-gray-500 capitalize">
@@ -605,11 +605,11 @@ export default async function PropietarioDetallePage(
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">Cuenta portal</span>
                 {tieneCuentaPortal ? (
-                  <Badge className="border-emerald-200 bg-emerald-50 text-emerald-700">
+                  <Badge className="bg-emerald-50 text-emerald-700 ring-emerald-200">
                     Registrado
                   </Badge>
                 ) : (
-                  <Badge className="border-gray-200 bg-gray-50 text-gray-500">
+                  <Badge className="bg-gray-50 text-gray-500 ring-gray-200">
                     Sin cuenta
                   </Badge>
                 )}
@@ -627,7 +627,7 @@ export default async function PropietarioDetallePage(
 
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">RUT formateado</span>
-                <Badge className="border-slate-200 bg-slate-50 text-slate-600 tabular-nums">
+                <Badge className="bg-slate-50 text-slate-600 tabular-nums ring-slate-200">
                   {formatRUT(propietario.rut)}
                 </Badge>
               </div>
@@ -637,8 +637,8 @@ export default async function PropietarioDetallePage(
                 <Badge
                   className={`${
                     propietario.rsh
-                      ? 'border-sky-200 bg-sky-50 text-sky-700'
-                      : 'border-gray-200 bg-gray-50 text-gray-500'
+                      ? 'bg-sky-50 text-sky-700 ring-sky-200'
+                      : 'bg-gray-50 text-gray-500 ring-gray-200'
                   }`}
                 >
                   {propietario.rsh ? `N° ${propietario.rsh}` : 'No aplica'}

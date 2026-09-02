@@ -53,6 +53,7 @@ function VisitsTableRowInner(props: Visits) {
 
   const tipoStyle = TIPO_STYLES[tipo_atencion.toLowerCase()];
   const { Icon: EspecieIcon } = getEspecieIcon(especie);
+  const TipoIcon = tipoStyle.Icon;
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -146,7 +147,7 @@ function VisitsTableRowInner(props: Visits) {
           className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-semibold capitalize ring-1 ${tipoStyle.bg} ${tipoStyle.text} ${tipoStyle.ring}`}
           title={capitalizeAll(tipo_atencion)}
         >
-          <tipoStyle.Icon className="size-3" />
+          <TipoIcon className="-mt-0.5 size-3" />
           {tipoStyle.displayName}
         </span>
       </td>

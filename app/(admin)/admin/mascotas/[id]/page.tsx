@@ -21,13 +21,7 @@ import {
   Tag,
 } from 'lucide-react';
 import { Button, SecondaryButton } from '@/app/ui/components/Button';
-import {
-  citas,
-  especieIcon,
-  tipoColors,
-  tipoIcon,
-  tipoLabels,
-} from '@/app/_lib/mock-data';
+import { citas, especieIcon } from '@/app/_lib/mock-data';
 import Badge from '@/app/ui/components/Badge';
 import {
   capitalize,
@@ -42,6 +36,7 @@ import {
   getPetClinicHistoryById,
   getPetDetailsById,
 } from '@/app/_lib/data/mascotas';
+import { TIPO_STYLES } from '@/app/_lib/static-data/tipos-atencion';
 
 type MascotaDetalleProps = {
   params: Promise<{ id: string }>;
@@ -164,17 +159,17 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                 {/* Badges */}
                 {/* Estado esterilizacion */}
                 {mascota.esterilizado ? (
-                  <Badge className="border-emerald-200 bg-emerald-50 px-3 text-emerald-700 shadow-sm">
+                  <Badge className="bg-emerald-50 px-3 text-emerald-700 shadow-sm ring-emerald-200">
                     <span className="flex items-center gap-1">
                       Esterilizado
                     </span>
                   </Badge>
                 ) : mascota.esterilizado === null ? (
-                  <Badge className="border-gray-200 bg-gray-50 px-3 py-1 text-gray-500 shadow-sm">
+                  <Badge className="bg-gray-50 px-3 py-1 text-gray-500 shadow-sm ring-gray-200">
                     Esterilizado: No especificado
                   </Badge>
                 ) : (
-                  <Badge className="border-rose-200 bg-rose-50 px-3 py-1 text-rose-500 shadow-sm">
+                  <Badge className="bg-rose-50 px-3 py-1 text-rose-500 shadow-sm ring-rose-200">
                     <span className="flex items-center gap-1">
                       Sin esterilizar
                     </span>
@@ -182,18 +177,18 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                 )}
                 {/* Microchip */}
                 {mascota.microchip ? (
-                  <Badge className="border-slate-200 bg-slate-50 px-3 py-1 text-slate-700 shadow-sm">
+                  <Badge className="bg-slate-50 px-3 py-1 text-slate-700 shadow-sm ring-slate-200">
                     <span className="flex items-center gap-1">
                       <Cpu className="h-3.5 w-3.5" />
                       {mascota.microchip}
                     </span>
                   </Badge>
                 ) : mascota.microchip === null ? (
-                  <Badge className="border-gray-200 bg-gray-50 px-3 py-1 text-gray-500 shadow-sm">
+                  <Badge className="bg-gray-50 px-3 py-1 text-gray-500 shadow-sm ring-gray-200">
                     Microchip: No especificado
                   </Badge>
                 ) : (
-                  <Badge className="border-gray-200 bg-gray-50 px-3 py-1 text-gray-500 shadow-sm">
+                  <Badge className="bg-gray-50 px-3 py-1 text-gray-500 shadow-sm ring-gray-200">
                     <span className="flex items-center gap-1">
                       Sin microchip
                     </span>
@@ -201,11 +196,11 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                 )}
                 {/* Sexo */}
                 {mascota.sexo ? (
-                  <Badge className="border-slate-200 bg-slate-50 px-3 py-1 text-slate-700 shadow-sm">
+                  <Badge className="bg-slate-50 px-3 py-1 text-slate-700 shadow-sm ring-slate-200">
                     {capitalize(mascota.sexo)}
                   </Badge>
                 ) : (
-                  <Badge className="border-gray-200 bg-gray-50 px-3 py-1 text-gray-500 shadow-sm">
+                  <Badge className="bg-gray-50 px-3 py-1 text-gray-500 shadow-sm ring-gray-200">
                     Sexo: No especificado
                   </Badge>
                 )}
@@ -427,7 +422,7 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                   </p>
                 </div>
                 {tratamientoActivo.peso_actual != null && (
-                  <Badge className="border-slate-200 bg-slate-50 px-3 py-1 text-slate-700 tabular-nums shadow-sm">
+                  <Badge className="bg-slate-50 px-3 py-1 text-slate-700 tabular-nums shadow-sm ring-slate-200">
                     {Number(tratamientoActivo.peso_actual).toFixed(2)} kg
                   </Badge>
                 )}
@@ -478,8 +473,7 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
               {clinicHistory.length > 0 ? (
                 clinicHistory.map((registro) => {
                   const tipoKey = registro.tipo_atencion.toLowerCase();
-                  const TipoIcon = tipoIcon[tipoKey] || Stethoscope;
-                  const colors = tipoColors[tipoKey] || tipoColors.consulta;
+                  const TipoIcon = TIPO_STYLES[tipoKey].Icon || Stethoscope;
                   const isConsulta =
                     registro.tipo_atencion === 'CONSULTA_MEDICA';
                   const isEsterilizacion =
@@ -495,22 +489,24 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                       <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-4">
                         <div className="flex min-w-0 items-center gap-4">
                           <div
-                            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${colors.bg} ${colors.text}`}
+                            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${TIPO_STYLES[tipoKey].bg} ${TIPO_STYLES[tipoKey].text}`}
                           >
                             <TipoIcon className="h-5 w-5" />
                           </div>
                           <div className="min-w-0">
-                            <p className="truncate font-semibold text-gray-900">
-                              {tipoLabels[tipoKey] || registro.tipo_atencion}
+                            <p className="truncate font-semibold text-gray-700">
+                              {TIPO_STYLES[tipoKey].label ||
+                                registro.tipo_atencion}
                             </p>
                             <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs">
                               <span className="font-medium text-gray-500 tabular-nums">
                                 {formatShortDate(registro.fecha_atencion)}
                               </span>
                               <span
-                                className={`rounded-full px-2 py-0.5 font-medium ${colors.bg} ${colors.text}`}
+                                className={`rounded-full px-2.5 py-1 font-medium ${TIPO_STYLES[tipoKey].bg} ${TIPO_STYLES[tipoKey].text}`}
                               >
-                                {tipoLabels[tipoKey] || registro.tipo_atencion}
+                                {TIPO_STYLES[tipoKey].label ||
+                                  registro.tipo_atencion}
                               </span>
                               <span className="text-gray-400">·</span>
                               <span className="font-medium text-gray-600">
@@ -530,12 +526,12 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                         <ChevronDown className="h-4 w-4 shrink-0 text-gray-400 transition-transform group-open:rotate-180" />
                       </summary>
 
-                      <div className="border-t border-gray-100 bg-gray-50/50 px-4 py-4 text-sm">
+                      <div className="border-t border-gray-100/80 bg-gray-50 p-4 text-sm">
                         {/* Consultas Medicas */}
                         {isConsulta && (
                           <div className="grid gap-4 sm:grid-cols-2">
                             <div>
-                              <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                              <p className="text-xs font-semibold tracking-wide text-gray-400 uppercase">
                                 Motivo consulta
                               </p>
                               <p className="mt-0.5 font-medium text-gray-900">
@@ -543,7 +539,7 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                               </p>
                             </div>
                             <div>
-                              <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                              <p className="text-xs font-semibold tracking-wide text-gray-400 uppercase">
                                 Diagnóstico presuntivo
                               </p>
                               <p className="mt-0.5 font-medium text-gray-900">
@@ -553,7 +549,7 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                             </div>
 
                             <div className="sm:col-span-2">
-                              <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                              <p className="text-xs font-semibold tracking-wide text-gray-400 uppercase">
                                 Anamnesis
                               </p>
                               <p className="mt-0.5 whitespace-pre-line text-gray-700">
@@ -564,7 +560,7 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
 
                             {registro.examen_fisico && (
                               <div className="sm:col-span-2">
-                                <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                                <p className="text-xs font-semibold tracking-wide text-gray-400 uppercase">
                                   Examen físico
                                 </p>
                                 <p className="mt-0.5 whitespace-pre-line text-gray-700">
@@ -575,7 +571,7 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
 
                             {registro.examenes_solicitados && (
                               <div className="sm:col-span-2">
-                                <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                                <p className="text-xs font-semibold tracking-wide text-gray-400 uppercase">
                                   Exámenes solicitados
                                 </p>
                                 <p className="mt-0.5 whitespace-pre-line text-gray-700">
@@ -585,7 +581,7 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                             )}
 
                             <div>
-                              <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                              <p className="text-xs font-semibold tracking-wide text-gray-400 uppercase">
                                 Tratamiento indicado
                               </p>
                               <p className="mt-0.5 whitespace-pre-line text-gray-700">
@@ -611,12 +607,14 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                         {isEsterilizacion && (
                           <div className="grid gap-4 sm:grid-cols-2">
                             <div>
-                              <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
-                                Resultado cirugía
+                              <p className="text-xs font-semibold tracking-wide text-gray-400 uppercase">
+                                Resultado
                               </p>
-                              <div className="mt-1">
+                              <div className="mt-2 flex flex-wrap gap-2">
                                 {registro.resultado_esterilizacion ? (
-                                  <Badge className="border-emerald-200 bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-700 shadow-sm">
+                                  <Badge
+                                    className={`px-2.5 py-1 text-sm font-medium shadow-sm ${TIPO_STYLES[tipoKey].ring} ${TIPO_STYLES[tipoKey].text} ${TIPO_STYLES[tipoKey].bg}`}
+                                  >
                                     {capitalize(
                                       registro.resultado_esterilizacion
                                     )}
@@ -626,10 +624,28 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                                     Sin resultado registrado
                                   </p>
                                 )}
+                                {registro.procedimientos_aplicados &&
+                                registro.procedimientos_aplicados.length > 0 ? (
+                                  registro.procedimientos_aplicados.map(
+                                    (proc) => (
+                                      <Badge
+                                        key={`${proc.codigo}-${proc.nombre}`}
+                                        className={`px-2.5 py-1 text-sm font-medium shadow-sm ${TIPO_STYLES[tipoKey].ring} ${TIPO_STYLES[tipoKey].text} ${TIPO_STYLES[tipoKey].bg}`}
+                                      >
+                                        {proc.nombre}
+                                      </Badge>
+                                    )
+                                  )
+                                ) : (
+                                  <p className="text-sm text-gray-500">
+                                    Sin procedimientos registrados en este
+                                    operativo
+                                  </p>
+                                )}
                               </div>
                             </div>
                             <div>
-                              <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                              <p className="text-xs font-semibold tracking-wide text-gray-400 uppercase">
                                 Tratamiento post-operatorio
                               </p>
                               <p className="mt-0.5 whitespace-pre-line text-gray-700">
@@ -644,7 +660,7 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                         {isSanitario && (
                           <div className="space-y-3">
                             <div>
-                              <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                              <p className="text-xs font-semibold tracking-wide text-gray-400 uppercase">
                                 Procedimientos aplicados
                               </p>
                               <div className="mt-2 flex flex-wrap gap-2">
@@ -654,7 +670,7 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                                     (proc) => (
                                       <Badge
                                         key={`${proc.codigo}-${proc.nombre}`}
-                                        className="border-emerald-200 bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-800/90 shadow-sm"
+                                        className={`px-2.5 py-1 text-sm font-medium shadow-sm ${TIPO_STYLES[tipoKey].ring} ${TIPO_STYLES[tipoKey].text} ${TIPO_STYLES[tipoKey].bg}`}
                                       >
                                         {proc.nombre}
                                       </Badge>
@@ -671,7 +687,7 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
 
                             {registro.tratamiento && (
                               <div>
-                                <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                                <p className="text-xs font-semibold tracking-wide text-gray-400 uppercase">
                                   Observaciones / indicaciones
                                 </p>
                                 <p className="mt-0.5 whitespace-pre-line text-gray-700">
@@ -686,7 +702,7 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                         {!isConsulta && !isEsterilizacion && !isSanitario && (
                           <div className="grid gap-3 sm:grid-cols-2">
                             <div>
-                              <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                              <p className="text-xs font-semibold tracking-wide text-gray-400 uppercase">
                                 Detalle
                               </p>
                               <p className="mt-0.5 text-gray-700">
@@ -695,7 +711,7 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                               </p>
                             </div>
                             <div>
-                              <p className="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                              <p className="text-xs font-semibold tracking-wide text-gray-400 uppercase">
                                 Notas
                               </p>
                               <p className="mt-0.5 whitespace-pre-line text-gray-700">
@@ -771,7 +787,7 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                     className="rounded-xl border border-gray-100 bg-gray-50/50 p-4 transition-colors hover:bg-gray-50"
                   >
                     <div className="mb-2 flex items-center justify-between">
-                      <Badge className="border-gray-200">
+                      <Badge className="ring-gray-200">
                         {capitalize(cita.estado)}
                       </Badge>
                       <span className="text-xs font-medium text-gray-500 capitalize">
@@ -823,14 +839,14 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">Estado vital</span>
-                <Badge className="border-emerald-200 bg-emerald-50 text-emerald-700">
+                <Badge className="bg-emerald-50 text-emerald-700 ring-emerald-200">
                   Activo
                 </Badge>
               </div>
 
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">Microchip</span>
-                <Badge className="border-slate-200 bg-slate-50 text-slate-600">
+                <Badge className="bg-slate-50 text-slate-600 ring-slate-200">
                   {mascota.microchip
                     ? 'Implantado'
                     : mascota.microchip === null
@@ -841,7 +857,7 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
 
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">Registro nacional</span>
-                <Badge className="border-gray-200 bg-blue-50 text-blue-700">
+                <Badge className="bg-blue-50 text-blue-700 ring-gray-200">
                   Registrado
                 </Badge>
               </div>

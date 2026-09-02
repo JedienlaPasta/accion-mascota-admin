@@ -1,10 +1,4 @@
-import {
-  Activity,
-  ClipboardList,
-  Scissors,
-  Stethoscope,
-  Syringe,
-} from 'lucide-react';
+import { HeartPulse, Stethoscope, Syringe } from 'lucide-react';
 
 export const TIPOS_ATENCION_VALIDOS: string[] = [
   'consulta_medica',
@@ -16,6 +10,7 @@ export const TIPO_STYLES: Record<
   string,
   {
     displayName: string;
+    label: string;
     bg: string;
     text: string;
     ring: string;
@@ -24,6 +19,7 @@ export const TIPO_STYLES: Record<
 > = {
   consulta_medica: {
     displayName: 'Consulta médica',
+    label: 'Consulta',
     bg: 'bg-sky-50',
     text: 'text-sky-700',
     ring: 'ring-sky-200/60',
@@ -31,6 +27,7 @@ export const TIPO_STYLES: Record<
   },
   operativo_sanitario: {
     displayName: 'Operativo sanitario',
+    label: 'Operativo Sanitario',
     bg: 'bg-emerald-50',
     text: 'text-emerald-700',
     ring: 'ring-emerald-200/60',
@@ -38,23 +35,10 @@ export const TIPO_STYLES: Record<
   },
   operativo_esterilizacion: {
     displayName: 'Cirugía - Esterilización',
+    label: 'Operativo Esterilización',
     bg: 'bg-rose-50',
     text: 'text-rose-700',
     ring: 'ring-rose-200/60',
-    Icon: Scissors,
-  },
-  control: {
-    displayName: 'Control / seguimiento',
-    bg: 'bg-violet-50',
-    text: 'text-violet-700',
-    ring: 'ring-violet-200/60',
-    Icon: ClipboardList,
-  },
-  emergencia: {
-    displayName: 'Emergencia / Urgencia',
-    bg: 'bg-orange-50',
-    text: 'text-orange-700',
-    ring: 'ring-orange-200/60',
-    Icon: Activity,
+    Icon: HeartPulse,
   },
 };
