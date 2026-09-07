@@ -33,7 +33,7 @@ export default async function VisitsTable({
               <th className="col-span-4 text-xs font-normal">Mascota</th>
               <th className="col-span-4 text-xs font-normal">Tipo</th>
               <th className="col-span-6 text-xs font-normal">
-                Propietario / Motivo
+                Propietario / RUT
               </th>
               <th className="col-span-3 text-xs font-normal">Veterinario</th>
               <th className="col-span-2 text-center text-xs font-normal">

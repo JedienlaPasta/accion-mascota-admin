@@ -1,4 +1,4 @@
-import { getAllOwnersWithQuery } from '@/app/_lib/data/propietarios';
+import { getAllOwnersWithQuery } from '@/app/_lib/data/personas';
 import OwnerTableRow from './OwnersTableRow';
 import Pagination from '../../components/Pagination';
 

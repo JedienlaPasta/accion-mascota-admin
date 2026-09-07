@@ -226,7 +226,7 @@ export function ContentRenderer({ visit }: { visit: VisitDetails | null }) {
     <div id="modal-attention-content">
       {/* Header modal */}
       <header className="border-b border-gray-100 p-6 pb-4 sm:p-8 sm:pb-6">
-        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+        <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
           <span className="flex items-center gap-2">
             <p className="text-sm tracking-widest text-gray-400">ID Atención</p>
             <span className="text-gray-300">·</span>
@@ -274,7 +274,7 @@ export function ContentRenderer({ visit }: { visit: VisitDetails | null }) {
         <h3 className="text-xl font-bold text-gray-900 sm:text-3xl">
           Ficha de atención
         </h3>
-        <p className="mt-2 flex flex-wrap items-center gap-2 text-sm text-gray-500">
+        <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-gray-500">
           <CalendarDays className="h-4 w-4 text-gray-400" />
           {formatDateWithTime(visit.fecha_atencion)}
           <span className="text-gray-300">·</span>
@@ -296,7 +296,7 @@ export function ContentRenderer({ visit }: { visit: VisitDetails | null }) {
             </p>
 
             <span className="grid grid-cols-2">
-              <p className="mt-1 text-lg font-bold text-gray-900">
+              <p className="text-lg font-bold text-gray-900">
                 {visit.nombre_mascota}
               </p>
               {visit.microchip && (
@@ -308,7 +308,7 @@ export function ContentRenderer({ visit }: { visit: VisitDetails | null }) {
                 </li>
               )}
             </span>
-            <ul className="mt-2 grid grid-cols-2 gap-1.5 text-xs text-gray-700">
+            <ul className="mt-1 grid grid-cols-2 gap-1 text-xs text-gray-700">
               <li className="flex items-center gap-1.5">
                 <span className="font-medium text-gray-500">Especie:</span>
                 {visit.especie || '—'}
@@ -333,10 +333,10 @@ export function ContentRenderer({ visit }: { visit: VisitDetails | null }) {
             <p className="text-[10px] font-bold tracking-widest text-gray-500 uppercase">
               Propietario
             </p>
-            <p className="mt-1 text-lg font-bold text-gray-900">
+            <p className="text-lg font-bold text-gray-900">
               {visit.nombre_propietario}
             </p>
-            <ul className="mt-2 space-y-1 text-xs text-gray-700">
+            <ul className="mt-1 space-y-1 text-xs text-gray-700">
               <li className="flex items-center gap-1.5">
                 <span className="font-medium text-gray-500">RUT:</span>
                 <span className="font-mono tabular-nums">
@@ -376,8 +376,8 @@ export function ContentRenderer({ visit }: { visit: VisitDetails | null }) {
           {/* B) Esterilizacion */}
           {visit.tipo_atencion?.toLowerCase() ===
             'operativo_esterilizacion' && (
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FieldBox label="Resultado de la cirugía">
+            <div className="grid gap-4">
+              <FieldBox label="Resultado de la cirugía" fullWidth>
                 {visit.resultado_esterilizacion || 'No registrado.'}
               </FieldBox>
               <FieldBox label="Observaciones post-operatorias" fullWidth>
@@ -567,7 +567,7 @@ function FieldBox({
         {label}
       </p>
       <p
-        className={`mt-1.5 text-sm font-medium whitespace-pre-wrap text-gray-800 ${monospace ? 'font-mono' : ''}`}
+        className={`mt-1 text-sm font-medium whitespace-pre-wrap text-gray-800 ${monospace ? 'font-mono' : ''}`}
       >
         {children}
       </p>

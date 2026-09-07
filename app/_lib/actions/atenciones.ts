@@ -8,7 +8,8 @@ import { validateMicrochip } from '../utils/check-values';
 
 export type CreateAttentionInput = {
   petPublicId: string;
-  usuarioPublicId?: string | null; // public_id del usuario veterinario
+  funcionarioPublicId?: string | null; // public_id del funcionario veterinario
+  acompaniantePublicId?: string | null; // public_id del acompañante
   tipoAtencion: string;
   fechaAtencion: string; // ISO local datetime YYYY-MM-DDThh:mm (se convierte en TIMESTAMP
   pesoAtencion?: number | string | null;
@@ -50,6 +51,7 @@ export async function createAttention(
   input: CreateAttentionInput
 ): Promise<CreateAttentionResult> {
   try {
+    console.log(input);
     // 1) Validación y normalización
     const petPublicId = input.petPublicId?.trim() ?? '';
     const tipo = (input.tipoAtencion ?? '').trim() as string;
@@ -109,7 +111,7 @@ export async function createAttention(
       pesoAtencion = Number(n.toFixed(2));
     }
 
-    // 2) Validar existencia (mascota + usuario)
+    // 2) Validar existencia (mascota + funcionario + acompañante)
     const petRow = await sql`
       SELECT id, public_id, microchip, esterilizado, inscrito_registro_nacional
       FROM mascotas
@@ -122,28 +124,48 @@ export async function createAttention(
     const mascotaId = Number(petRow[0].id);
     const yaTieneChip = Boolean(petRow[0].microchip);
 
-    const usuarioPublicIdRaw = input.usuarioPublicId?.trim() ?? '';
-    if (!usuarioPublicIdRaw) {
+    const funcionarioPublicIdRaw = input.funcionarioPublicId?.trim() ?? '';
+    if (!funcionarioPublicIdRaw) {
       return fail(
         'VALIDATION',
         'No se identificó el funcionario/a que realiza la atención. Inicia sesión o selecciona un veterinario.'
       );
     }
     const userRow = await sql`
-      SELECT id
-      FROM usuarios
-      WHERE public_id = ${usuarioPublicIdRaw} AND estado = TRUE
+      SELECT f.id
+      FROM funcionarios f
+      JOIN personas p ON p.id = f.persona_id
+      WHERE p.public_id = ${funcionarioPublicIdRaw}
+        AND f.estado = TRUE
       LIMIT 1
     `;
     if ((userRow as unknown[]).length === 0) {
       return fail('NOT_FOUND', 'Funcionario/a no encontrado/a o desactivado.');
     }
-    const usuarioId = Number(userRow[0].id);
+    const funcionarioId = Number(userRow[0].id);
+
+    let acompanianteId: number | null = null;
+    const acompaniantePublicIdRaw = input.acompaniantePublicId?.trim() ?? '';
+    if (acompaniantePublicIdRaw) {
+      const companionUserRow = await sql`
+        SELECT p.id
+        FROM personas p
+        WHERE p.public_id = ${acompaniantePublicIdRaw}
+        LIMIT 1
+      `;
+      if ((companionUserRow as unknown[]).length === 0) {
+        return fail(
+          'NOT_FOUND',
+          'Acompañante/a no encontrado/a o desactivado.'
+        );
+      }
+      acompanianteId = Number(companionUserRow[0].id);
+    }
 
     // 3) Validaciones por tipo de atención antes de la tx
     // OPERATIVO_SANITARIO: al menos 1 procedimiento
     let procedimientoIdsInt: number[] = [];
-    if (tipo === 'operativo_sanitario') {
+    if (tipo === 'OPERATIVO_SANITARIO') {
       const codes = input.procedimientoCodes ?? [];
       if (codes.length === 0) {
         return fail(
@@ -191,9 +213,11 @@ export async function createAttention(
 
     // OPERATIVO_ESTERILIZACION: resultado
     let resultadoEsterilizacion: string | null = null;
-    if (tipo === 'operativo_esterilizacion') {
+    if (tipo === 'OPERATIVO_ESTERILIZACION') {
       resultadoEsterilizacion =
-        String(input.resultadoEsterilizacion ?? '').trim() || null;
+        String(input.resultadoEsterilizacion ?? '')
+          .trim()
+          .toUpperCase() || null;
       if (!resultadoEsterilizacion) {
         return fail('VALIDATION', 'Debes indicar el resultado de la cirugía.');
       }
@@ -201,7 +225,7 @@ export async function createAttention(
 
     // Consulta: motivo
     let motivo: string | null = null;
-    if (tipo === 'consulta_medica') {
+    if (tipo === 'CONSULTA_MEDICA') {
       motivo = String(input.motivo ?? '').trim() || null;
       if (!motivo) {
         return fail('VALIDATION', 'Ingresa el motivo de la consulta.');
@@ -212,39 +236,39 @@ export async function createAttention(
     const observaciones = String(input.observaciones ?? '').trim() || null;
     const publicId = crypto.randomUUID();
 
+    console.log(tipo);
+
     // 4) TRANSACCIÓN ATOMICA
     await sql.begin(async (tx) => {
-      await tx`
+      const attentionRow = await tx`
         INSERT INTO atenciones
           (
             public_id,
-            usuario_id,
+            funcionario_id,
             mascota_id,
             fecha_atencion,
             tipo_atencion,
             peso_actual,
-            observaciones
+            observaciones,
+            acompaniante_id
           )
         VALUES
           (
             ${publicId},
-            ${usuarioId},
+            ${funcionarioId},
             ${mascotaId},
             (${fechaString})::timestamp AT TIME ZONE 'America/Santiago',
             ${tipo},
             ${pesoAtencion},
-            ${observaciones}
+            ${observaciones},
+            ${acompanianteId}
           )
-      `;
-
-      // Cargar el ID serial para las tablas hijas.
-      const attentionRow = await tx`
-        SELECT id FROM atenciones WHERE public_id = ${publicId} LIMIT 1
+        RETURNING id
       `;
       const atencionId = Number(attentionRow[0].id);
 
       // Subtipo 1: CONSULTA_MEDICA
-      if (tipo === 'consulta_medica') {
+      if (tipo === 'CONSULTA_MEDICA') {
         const cmMotivo = String(input.motivo ?? '').trim() || null;
         const cmAnamnesis = String(input.anamnesis ?? '').trim() || null;
         const cmExamenFisico = String(input.examenFisico ?? '').trim() || null;
@@ -281,7 +305,7 @@ export async function createAttention(
       }
 
       // Subtipo 2: OPERATIVO_ESTERILIZACION
-      if (tipo === 'operativo_esterilizacion') {
+      if (tipo === 'OPERATIVO_ESTERILIZACION' && resultadoEsterilizacion) {
         await tx`
           INSERT INTO operativos_esterilizacion
             (atencion_id, resultado)
@@ -296,7 +320,7 @@ export async function createAttention(
       }
 
       // Subtipo 3: OPERATIVO_SANITARIO
-      if (tipo === 'operativo_sanitario' && procedimientoIdsInt.length > 0) {
+      if (tipo === 'OPERATIVO_SANITARIO' && procedimientoIdsInt.length > 0) {
         const rows = procedimientoIdsInt.map((pid) => ({
           procedimiento_id: pid,
           atencion_id: atencionId,
@@ -314,7 +338,7 @@ export async function createAttention(
 
     return {
       success: true,
-      message: `Atención (${TIPO_STYLES[tipo].displayName}) registrada correctamente.`,
+      message: `Atención (${TIPO_STYLES[tipo.toLowerCase()].displayName}) registrada correctamente.`,
       publicId,
     };
   } catch (error) {

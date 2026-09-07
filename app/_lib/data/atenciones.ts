@@ -26,6 +26,7 @@ export const getAllVisitsWithFilters = async (
             OR m.nombre ILIKE ${term}
             OR p.nombre ILIKE ${term}
             OR p.rut ILIKE ${term}
+            OR vet_p.nombre ILIKE ${term}
         `
       : sql``;
 
@@ -33,7 +34,9 @@ export const getAllVisitsWithFilters = async (
         SELECT COUNT (*)::int AS total
         FROM atenciones a
         INNER JOIN mascotas m ON m.id = a.mascota_id
-        LEFT JOIN propietarios p ON p.id = m.propietario_id
+        LEFT JOIN personas p ON p.id = m.responsable_id
+        LEFT JOIN funcionarios f ON f.id = a.funcionario_id
+        LEFT JOIN personas vet_p ON vet_p.id = f.persona_id
         ${whereClause}
       `;
 
@@ -48,22 +51,19 @@ export const getAllVisitsWithFilters = async (
             m.nombre AS nombre_mascota,
             m.especie,
             m.public_id AS public_id_mascota,
-            COALESCE(p.nombre, 'Sin propietario') AS nombre_propietario,
+            p.nombre AS nombre_propietario,
             COALESCE(p.rut, '—') AS rut_propietario,
             p.public_id AS public_id_propietario,
             a.tipo_atencion,
-            cm.motivo AS motivo_atencion,
-            COALESCE(cm.anamnesis, cm.diagnostico_predx) AS pre_dx,
-            u.nombre AS veterinario,
+            COALESCE(vet_p.nombre, 'No asignado') AS veterinario,
             m.microchip,
             a.peso_actual,
-            NULL::text AS proxima_visita,
-            cm.tratamiento
+            NULL::text AS proxima_visita
           FROM atenciones a
           JOIN mascotas m ON m.id = a.mascota_id
-          LEFT JOIN propietarios p ON p.id = m.propietario_id
-          JOIN usuarios u ON u.id = a.usuario_id
-          LEFT JOIN consultas_medicas cm ON cm.atencion_id = a.id
+          LEFT JOIN personas p ON p.id = m.responsable_id
+          LEFT JOIN funcionarios f ON f.id = a.funcionario_id
+          LEFT JOIN personas vet_p ON vet_p.id = f.persona_id
           ${whereClause}
           ORDER BY a.fecha_atencion DESC
           LIMIT ${pageSize}
@@ -164,7 +164,7 @@ export const getVisitDetailById = async (
         a.tipo_atencion,
         a.peso_actual,
         a.created_at,
-        u.nombre AS veterinario,
+        COALESCE(vet_p.nombre, 'No asignado') AS veterinario,
 
         -- Mascota
         m.public_id AS public_id_mascota,
@@ -189,14 +189,16 @@ export const getVisitDetailById = async (
 
         -- Esterilización (solo si tipo = OPERATIVO_ESTERILIZACION)
         oe.resultado              AS resultado_esterilizacion,
+        -- oe.observaciones          AS observaciones_esterilizacion, (opcional para agregar mas adelante si es necesario)
 
         -- Procedimientos (solo si tipo = OPERATIVO_SANITARIO)
-        proc.procedimientos_jsonb AS procedimientos_aplicados
+        COALESCE(proc.procedimientos_jsonb, '[]'::jsonb) AS procedimientos_aplicados
 
       FROM atenciones a
       INNER JOIN mascotas m           ON m.id = a.mascota_id
-      LEFT  JOIN propietarios p       ON p.id = m.propietario_id
-      INNER JOIN usuarios u           ON u.id = a.usuario_id
+      LEFT  JOIN personas p           ON p.id = m.responsable_id
+      LEFT  JOIN funcionarios f       ON f.id = a.funcionario_id
+      LEFT  JOIN personas vet_p       ON vet_p.id = f.persona_id
       LEFT  JOIN consultas_medicas cm ON cm.atencion_id = a.id
       LEFT  JOIN operativos_esterilizacion oe ON oe.atencion_id = a.id
 

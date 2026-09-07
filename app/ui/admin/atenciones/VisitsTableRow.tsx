@@ -44,8 +44,6 @@ function VisitsTableRowInner(props: Visits) {
     rut_propietario,
     public_id_propietario,
     tipo_atencion,
-    motivo_atencion,
-    pre_dx,
     veterinario,
     microchip,
     peso_actual,
@@ -78,19 +76,6 @@ function VisitsTableRowInner(props: Visits) {
     // 3) [background non-blocking] Actualizar router Next en paralelo
     void router.replace(nextUrl, { scroll: false });
   };
-
-  const textoCorto =
-    motivo_atencion && motivo_atencion.trim()
-      ? capitalizeAll(motivo_atencion.trim().slice(0, 120))
-      : pre_dx
-        ? capitalizeAll(pre_dx.trim().slice(0, 120))
-        : 'Sin descripción';
-  const tooltipCompleto = [
-    motivo_atencion ? `Motivo: ${capitalizeAll(motivo_atencion)}` : null,
-    pre_dx ? `Pre-DX: ${capitalizeAll(pre_dx)}` : null,
-  ]
-    .filter(Boolean)
-    .join(' · ');
 
   return (
     <tr className="grid h-17 grid-cols-24 items-center gap-4 px-8 py-4 text-sm text-gray-600 transition-colors focus-within:bg-gray-50/80 hover:bg-gray-50/80">
@@ -156,27 +141,34 @@ function VisitsTableRowInner(props: Visits) {
       <td className="col-span-6 min-w-0">
         <Link
           href={`/admin/propietarios/${public_id_propietario}`}
-          className="block min-w-0"
+          className="flex items-center gap-2.5"
         >
-          <div className="flex items-center gap-1.5">
+          <span
+            className={`inline-flex size-8 shrink-0 items-center justify-center rounded-lg ring-1 ring-gray-200`}
+          >
             <User className="size-3.5 shrink-0 text-gray-400" />
-            <p
-              className="truncate text-xs font-semibold text-gray-700 hover:text-indigo-700"
-              title={capitalizeAll(nombre_propietario)}
-            >
-              {capitalizeAll(nombre_propietario)}
-            </p>
-            <span className="shrink-0 text-[10px] text-gray-400 tabular-nums">
-              ({formatRUT(rut_propietario)})
-            </span>
-          </div>
+          </span>
+
+          {nombre_propietario && rut_propietario ? (
+            <div className="group min-w-0 flex-1">
+              <p
+                className="truncate text-xs font-semibold text-gray-700 group-hover:text-indigo-700"
+                title={capitalizeAll(nombre_propietario)}
+              >
+                {capitalizeAll(nombre_propietario)}
+              </p>
+              <p className="shrink-0 text-[11px] text-gray-500/80 tabular-nums">
+                {formatRUT(rut_propietario)}
+              </p>
+            </div>
+          ) : (
+            <div className="min-w-0 flex-1">
+              <p className="shrink-0 text-xs font-medium text-gray-400/70">
+                Sin propietario
+              </p>
+            </div>
+          )}
         </Link>
-        <p
-          className="mt-0.5 truncate text-xs text-gray-500"
-          title={tooltipCompleto || textoCorto}
-        >
-          {textoCorto || '—'}
-        </p>
       </td>
 
       {/* 5. Veterinario */}

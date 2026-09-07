@@ -365,8 +365,7 @@ type FichaDatos = {
     tratamiento: string;
   };
   veterinario: {
-    nombres: string;
-    apellidos: string;
+    nombre: string;
     rut: string;
     comuna: string;
   };
@@ -623,7 +622,7 @@ export default function CertificadoConsultaMedica({
           {/* Row 2: Nombre dueño */}
           <TableRow>
             <TableCell
-              label="Nombre dueño:"
+              label="Nombre Dueño:"
               value={d.responsable.nombre}
               span={3}
               isLast
@@ -762,8 +761,11 @@ export default function CertificadoConsultaMedica({
             </Text>
           </View>
           <View style={styles.row}>
-            <Campo label="Nombres:" value={d.veterinario.nombres} />
-            <Campo label="Apellidos:" value={d.veterinario.apellidos} isLast />
+            <Campo
+              label="Nombre completo:"
+              value={d.veterinario.nombre}
+              isLast
+            />
           </View>
           <View style={[styles.row, styles.rowLast]}>
             <Campo label="Rut:" value={d.veterinario.rut} />

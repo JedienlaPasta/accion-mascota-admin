@@ -133,8 +133,8 @@ export default function NewAttentionForm(props: NewAttentionFormProps) {
     try {
       const response = await createAttention({
         petPublicId,
-        usuarioPublicId: '213ac5be-3c2a-4447-8339-2373657f90c5',
-        tipoAtencion: tipo,
+        funcionarioPublicId: '880dbb19-50e9-45f0-bee4-ac6b078a8f30',
+        tipoAtencion: tipo.toUpperCase(),
         fechaAtencion: fecha,
         pesoAtencion: peso,
         observaciones,
@@ -243,14 +243,14 @@ export default function NewAttentionForm(props: NewAttentionFormProps) {
           </label>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
             {TIPOS_ATENCION_VALIDOS.map((tipo_atencion) => {
-              const c = TIPO_STYLES[tipo_atencion];
+              const c = TIPO_STYLES[tipo_atencion.toLowerCase()];
               const Icon = c.Icon;
-              const active = tipo === tipo_atencion;
+              const active = tipo === tipo_atencion.toLowerCase();
               return (
                 <button
                   key={tipo_atencion}
                   type="button"
-                  onClick={() => setTipo(tipo_atencion)}
+                  onClick={() => setTipo(tipo_atencion.toLowerCase())}
                   className={`relative flex cursor-pointer flex-col items-start gap-2 rounded-2xl border p-4 text-left transition-all ${
                     active
                       ? `${c.bg} ${c.text} ${c.ring} scale-[1.01] border-transparent shadow-md ring-2`

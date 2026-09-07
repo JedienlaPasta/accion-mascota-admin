@@ -1,9 +1,9 @@
 import { HeartPulse, Stethoscope, Syringe } from 'lucide-react';
 
 export const TIPOS_ATENCION_VALIDOS: string[] = [
-  'consulta_medica',
-  'operativo_sanitario',
-  'operativo_esterilizacion',
+  'CONSULTA_MEDICA',
+  'OPERATIVO_SANITARIO',
+  'OPERATIVO_ESTERILIZACION',
 ];
 
 export const TIPO_STYLES: Record<

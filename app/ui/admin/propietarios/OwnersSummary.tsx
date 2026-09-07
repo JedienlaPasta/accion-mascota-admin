@@ -1,5 +1,5 @@
 import SummaryCard from '../SummaryCard';
-import { getOwnersSummaryData } from '@/app/_lib/data/propietarios';
+import { getOwnersSummaryData } from '@/app/_lib/data/personas';
 
 export default async function OwnersSummary() {
   const { total_propietarios, total_propietarios_verificados } =

@@ -55,7 +55,7 @@ export const getPetsForAppointmentByQuery = async (
           p.id AS id_propietario,
           p.rut
         FROM mascotas m
-        JOIN propietarios p ON m.propietario_id = p.id
+        JOIN personas p ON m.responsable_id = p.id
         ORDER BY m.id DESC
         LIMIT 10
       `;
@@ -80,7 +80,7 @@ export const getPetsForAppointmentByQuery = async (
             p.id AS id_propietario,
             p.rut
           FROM mascotas m
-          JOIN propietarios p ON m.propietario_id = p.id
+          JOIN personas p ON m.responsable_id = p.id
           WHERE m.microchip ILIKE ${searchTerm}
           ORDER BY
             CASE WHEN m.microchip = ${q} THEN 0 ELSE 1 END,
@@ -101,7 +101,7 @@ export const getPetsForAppointmentByQuery = async (
             p.id AS id_propietario,
             p.rut
           FROM mascotas m
-          JOIN propietarios p ON m.propietario_id = p.id
+          JOIN personas p ON m.responsable_id = p.id
           WHERE p.nombre ILIKE ${searchTerm}
             OR REPLACE(REPLACE(p.rut, '.', ''), '-', '')
                 ILIKE REPLACE(REPLACE(${searchTerm}, '.', ''), '-', '')

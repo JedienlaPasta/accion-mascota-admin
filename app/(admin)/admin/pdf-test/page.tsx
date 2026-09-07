@@ -8,7 +8,7 @@ export default async function PdfTestIndexPage() {
     SELECT a.public_id, m.nombre AS mascota, p.nombre AS tutor, a.fecha_atencion, a.tipo_atencion
     FROM atenciones a
     INNER JOIN mascotas m ON m.id = a.mascota_id
-    INNER JOIN propietarios p ON p.id = m.propietario_id
+    INNER JOIN personas p ON p.id = m.responsable_id
     ORDER BY a.id DESC
     LIMIT 5
   `;

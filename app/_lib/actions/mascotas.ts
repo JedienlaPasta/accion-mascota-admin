@@ -107,14 +107,14 @@ export async function createPet(
       if (rutNormalized) {
         const propietarioRow = await sql`
           SELECT id
-          FROM propietarios
+          FROM personas
           WHERE REPLACE(REPLACE(UPPER(rut), '.', ''), '-', '') = ${rutNormalized}
           LIMIT 1
         `;
         if ((propietarioRow as unknown as unknown[]).length === 0)
           return fail(
             'NOT_FOUND',
-            'No se encontró ningún propietario con ese RUT. Verifica que esté bien escrito o deja el campo vacío para mascota sin dueño.'
+            'No se encontró ningúna persona con ese RUT. Verifica que esté bien escrito o deja el campo vacío para mascota sin dueño.'
           );
         propietarioIdNum = Number(propietarioRow[0].id);
       }
@@ -126,7 +126,7 @@ export async function createPet(
       INSERT INTO mascotas
         (
           public_id,
-          propietario_id,
+          responsable_id,
           nombre,
           especie,
           raza,

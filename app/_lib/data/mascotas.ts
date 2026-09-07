@@ -37,7 +37,7 @@ export const getAllPetsWithQuery = async (
     const countRows = await sql`
       SELECT COUNT(*)::int AS total
       FROM mascotas m
-      LEFT JOIN propietarios p ON m.propietario_id = p.id
+      LEFT JOIN personas p ON m.responsable_id = p.id
       ${whereClause}
     `;
 
@@ -57,7 +57,7 @@ export const getAllPetsWithQuery = async (
             p.nombre AS nombre_propietario,
             p.rut
           FROM mascotas m
-          LEFT JOIN propietarios p ON m.propietario_id = p.id
+          LEFT JOIN personas p ON m.responsable_id = p.id
           ${whereClause}
           ORDER BY m.id DESC
           LIMIT ${pageSize}
@@ -114,7 +114,7 @@ export const getPetDetailsById = async (id: string): Promise<PetDetails> => {
       p.correo_personal,
       p.correo_contacto
     FROM mascotas m
-    LEFT JOIN propietarios p ON m.propietario_id = p.id
+    LEFT JOIN personas p ON m.responsable_id = p.id
     LEFT JOIN LATERAL (
       SELECT a.peso_actual, a.fecha_atencion
       FROM atenciones a
@@ -143,7 +143,7 @@ export const getPetClinicHistoryById = async (
         a.fecha_atencion,
         a.tipo_atencion,
         a.peso_actual,
-        u.nombre as veterinario,
+        vet_p.nombre as veterinario,
 
         -- 1) Tipo: CONSULTA_MEDICA (tabla hija 1-1 consultas_medicas)
         cm.motivo,
@@ -163,7 +163,14 @@ export const getPetClinicHistoryById = async (
 
       FROM atenciones a
       JOIN mascotas m  ON a.mascota_id = m.id
-      JOIN usuarios u  ON a.usuario_id = u.id
+
+      -- Veterinario:
+      --   atenciones.funcionario_id → funcionarios.id
+      --   funcionarios.persona_id   → personas.id (vet_p) → acá está el nombre REAL
+      LEFT JOIN funcionarios f
+             ON f.id = a.funcionario_id
+      LEFT JOIN personas vet_p
+             ON vet_p.id = f.persona_id
 
       -- Tabla hija 1: consultas medicas (1-1)
       LEFT JOIN consultas_medicas cm

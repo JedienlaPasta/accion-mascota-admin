@@ -60,17 +60,21 @@ export default async function PdfTestPage(props: PageProps) {
       p.correo_personal AS propietario_correo,
       p.telefono AS propietario_telefono,
       -- Veterinario
-      u.public_id AS veterinario_public_id,
-      u.nombre AS veterinario_nombre,
-      u.rut AS veterinario_rut
+      vet_p.public_id AS veterinario_public_id,
+      vet_p.nombre AS veterinario_nombre,
+      vet_p.rut AS veterinario_rut,
+      vet_p.comuna AS veterinario_comuna
     FROM atenciones a
     LEFT JOIN consultas_medicas cm ON cm.atencion_id = a.id
-    INNER JOIN mascotas m ON m.id = a.mascota_id
-    INNER JOIN propietarios p ON p.id = m.propietario_id
-    LEFT JOIN usuarios u ON u.id = a.usuario_id
+    LEFT JOIN mascotas m ON m.id = a.mascota_id
+    LEFT JOIN personas p ON p.id = m.responsable_id
+    LEFT JOIN funcionarios f ON f.id = a.funcionario_id
+    LEFT JOIN personas vet_p ON vet_p.id = f.persona_id
     WHERE a.public_id = ${id}
     LIMIT 1
   `;
+
+  console.log(rows);
 
   const atencion = rows[0];
   if (!atencion) notFound();
@@ -80,16 +84,7 @@ export default async function PdfTestPage(props: PageProps) {
     atencion.mascota_fecha_nacimiento
   );
 
-  // 2) Formatear datos para el PDF
-  const splitVetName = atencion.veterinario_nombre
-    ? atencion.veterinario_nombre.trim().split(' ')
-    : [];
-  const veterinarioNombres = splitVetName
-    .slice(0, Math.ceil(splitVetName.length / 2))
-    .join(' ');
-  const veterinarioApellidos = splitVetName
-    .slice(Math.ceil(splitVetName.length / 2))
-    .join(' ');
+  const nombreVeterinario = atencion.veterinario_nombre?.toUpperCase() ?? '';
 
   const pdfPayload = {
     fecha: formatDate(String(atencion.fecha_atencion)),
@@ -138,10 +133,9 @@ export default async function PdfTestPage(props: PageProps) {
       tratamiento: atencion.cm_tratamiento ?? '',
     },
     veterinario: {
-      nombres: veterinarioNombres,
-      apellidos: veterinarioApellidos,
+      nombre: atencion.veterinario_nombre?.toUpperCase() ?? '',
       rut: atencion.veterinario_rut ? formatRUT(atencion.veterinario_rut) : '',
-      comuna: atencion.propietario_comuna ?? '', // Falta agregar este campo en la DB
+      comuna: atencion.veterinario_comuna?.toUpperCase() ?? '',
     },
     tipoAtencion: String(atencion.tipo_atencion ?? 'consulta_medica'),
   };

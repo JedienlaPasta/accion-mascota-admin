@@ -35,7 +35,7 @@ import { BaseLink } from '@/app/ui/components/Link';
 import {
   getOwnerDetailsById,
   getPetsByOwnerId,
-} from '@/app/_lib/data/propietarios';
+} from '@/app/_lib/data/personas';
 import { validateMicrochip } from '@/app/_lib/utils/check-values';
 import { getAge } from '@/app/_lib/utils/get-values';
 import { citas } from '@/app/_lib/mock-data';

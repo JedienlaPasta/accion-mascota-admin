@@ -60,7 +60,7 @@ export async function createOwner(
 
     const existingByRut = await sql`
       SELECT id
-      FROM propietarios
+      FROM personas
       WHERE REPLACE(REPLACE(UPPER(rut), '.', ''), '-', '') = ${rutNormalized}
       LIMIT 1
     `;
@@ -153,7 +153,7 @@ export async function createOwner(
     const publicId = crypto.randomUUID();
 
     await sql`
-      INSERT INTO propietarios
+      INSERT INTO personas
         (
           public_id,
           rut,
@@ -187,14 +187,14 @@ export async function createOwner(
 
     return {
       success: true,
-      message: `Propietario "${nombre}" creado exitosamente`,
+      message: `Persona "${nombre}" creada exitosamente`,
       publicId,
     };
   } catch (error) {
     console.error('[createOwner] DB error:', error);
     return fail(
       'DB_ERROR',
-      'No fue posible registrar el propietario. Intenta nuevamente en unos segundos.'
+      'No fue posible registrar la persona. Intenta nuevamente en unos segundos.'
     );
   }
 }

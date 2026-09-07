@@ -32,7 +32,7 @@ export const getAllOwnersWithQuery = async (
 
     const countRows = await sql`
       SELECT COUNT(*)::int AS total
-      FROM propietarios
+      FROM personas
       ${whereClause}
     `;
 
@@ -51,11 +51,11 @@ export const getAllOwnersWithQuery = async (
           p.region,
           p.telefono,
           COALESCE(pet_count.total, 0)::int AS total_mascotas
-        FROM propietarios p
+        FROM personas p
         LEFT JOIN LATERAL (
           SELECT COUNT(*) AS total
           FROM mascotas m
-          WHERE m.propietario_id = p.id
+          WHERE m.responsable_id = p.id
         ) pet_count ON true
         ${whereClause}
         ORDER BY p.id DESC
@@ -69,7 +69,7 @@ export const getAllOwnersWithQuery = async (
       totalPages,
     };
   } catch (error) {
-    console.error('Error al obtener propietarios:', error);
+    console.error('Error al obtener responsables:', error);
     return {
       owners: [],
       totalCount: 0,
@@ -84,12 +84,12 @@ export const getOwnersSummaryData = async (): Promise<OwnersSummaryData> => {
       SELECT 
         COUNT(*) AS total_propietarios,
         COUNT(*) FILTER (WHERE correo_personal IS NOT NULL) AS total_propietarios_verificados -- Cambiar a correo_personal eventualmente
-      FROM propietarios
+      FROM personas
     `;
 
     return totalOwners[0] as OwnersSummaryData;
   } catch (error) {
-    console.error('Error al obtener propietarios:', error);
+    console.error('Error al obtener responsables:', error);
     return {} as OwnersSummaryData;
   }
 };
@@ -128,14 +128,14 @@ export const getOwnerDetailsById = async (
         p.telefono,
         p.fecha_nacimiento,
         p.rsh,
-        (SELECT COUNT(*) FROM mascotas m WHERE m.propietario_id = p.id)::int AS total_mascotas
-      FROM propietarios p
+        (SELECT COUNT(*) FROM mascotas m WHERE m.responsable_id = p.id)::int AS total_mascotas
+      FROM personas p
       WHERE p.public_id = ${id}
       LIMIT 1
     `;
     return (owners[0] as OwnerDetails) || null;
   } catch (error) {
-    console.error('Error al obtener detalles de propietario:', error);
+    console.error('Error al obtener detalles de la persona:', error);
     return null;
   }
 };
@@ -156,13 +156,13 @@ export const getPetsByOwnerId = async (
         p.nombre AS nombre_propietario,
         p.rut
       FROM mascotas m
-      JOIN propietarios p ON m.propietario_id = p.id
+      JOIN personas p ON m.responsable_id = p.id
       WHERE p.public_id = ${ownerId}
       ORDER BY m.id DESC
     `;
     return pets.map((pet) => pet as PetsTableData);
   } catch (error) {
-    console.error('Error al obtener mascotas del propietario:', error);
+    console.error('Error al obtener mascotas del responsable:', error);
     return [] as PetsTableData[];
   }
 };
