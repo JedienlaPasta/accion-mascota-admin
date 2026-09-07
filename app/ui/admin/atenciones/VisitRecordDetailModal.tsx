@@ -409,7 +409,7 @@ export function ContentRenderer({ visit }: { visit: VisitDetails | null }) {
                     (p: ProcedimientoItem) => (
                       <span
                         key={p.codigo}
-                        className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 shadow-sm"
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 shadow-sm"
                       >
                         <span className="-ml-1.5 rounded-md bg-white/80 px-1.5 py-0.5 font-mono text-[10px] tracking-tight text-emerald-600 ring-1 ring-emerald-200">
                           {p.codigo}

@@ -5,6 +5,7 @@ import {
   TIPOS_ATENCION_VALIDOS,
 } from '../static-data/tipos-atencion';
 import { validateMicrochip } from '../utils/check-values';
+import { revalidatePath } from 'next/cache';
 
 export type CreateAttentionInput = {
   petPublicId: string;
@@ -45,6 +46,14 @@ export type CreateAttentionResult =
       success: false;
       error: string;
       code: 'VALIDATION' | 'NOT_FOUND' | 'CONFLICT' | 'DB_ERROR';
+    };
+
+export type DeleteAttentionResult =
+  | { success: true; message: string }
+  | {
+      success: false;
+      error: string;
+      code: 'VALIDATION' | 'NOT_FOUND' | 'DB_ERROR';
     };
 
 export async function createAttention(
@@ -347,6 +356,69 @@ export async function createAttention(
       'DB_ERROR',
       'No fue posible registrar la atención. Intenta nuevamente en unos segundos.'
     );
+  }
+}
+
+// Eliminar Atencion
+export async function deleteAttention(
+  publicId: string
+): Promise<DeleteAttentionResult> {
+  const safeId = publicId?.trim() ?? '';
+  if (!safeId) {
+    return {
+      success: false,
+      code: 'VALIDATION',
+      error: 'Falta identificador de la atención.',
+    };
+  }
+
+  try {
+    // 1) Confirmar que exista la atencion
+    const existente = await sql`
+      SELECT a.id, m.public_id AS mascota_public_id
+      FROM atenciones a
+      LEFT JOIN mascotas m ON m.id = a.mascota_id
+      WHERE a.public_id = ${safeId}
+      LIMIT 1
+    `;
+    if ((existente as unknown[]).length === 0) {
+      return {
+        success: false,
+        code: 'NOT_FOUND',
+        error: 'Atención no encontrada (o ya fue borrada).',
+      };
+    }
+    const atencionId = Number(existente[0].id);
+    const mascotaPublicId = existente[0].mascota_public_id as string | null;
+
+    // 2) Transacción: borrar tablas hijas y luego la atención.
+    await sql.begin(async (tx) => {
+      await tx`DELETE FROM consultas_medicas          WHERE atencion_id = ${atencionId}`;
+      await tx`DELETE FROM operativos_esterilizacion  WHERE atencion_id = ${atencionId}`;
+      await tx`DELETE FROM atencion_procedimientos    WHERE atencion_id = ${atencionId}`;
+      await tx`DELETE FROM implantaciones_microchip   WHERE atencion_id = ${atencionId}`;
+
+      // Borrar atencion
+      await tx`DELETE FROM atenciones WHERE id = ${atencionId}`;
+    });
+
+    revalidatePath('/admin/atenciones');
+    revalidatePath('/admin/mascotas');
+    if (mascotaPublicId) {
+      revalidatePath(`/admin/mascotas/${mascotaPublicId}`);
+    }
+
+    return {
+      success: true,
+      message: 'Atención eliminada correctamente.',
+    };
+  } catch (error) {
+    console.error('[deleteAttention] DB error:', error);
+    return {
+      success: false,
+      code: 'DB_ERROR',
+      error: 'No fue posible borrar la atención. Intenta nuevamente.',
+    };
   }
 }
 
