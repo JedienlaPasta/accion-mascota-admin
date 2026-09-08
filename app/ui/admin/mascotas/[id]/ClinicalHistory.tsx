@@ -1,11 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ClinicHistoryItem } from '@/app/_lib/data-types/mascotas';
 import { deleteAttention } from '@/app/_lib/actions/atenciones';
 import { TIPO_STYLES } from '@/app/_lib/static-data/tipos-atencion';
 import { capitalize, formatShortDate } from '@/app/_lib/utils/format';
-import Badge from '@/app/ui/components/Badge';
 import { SecondaryButton } from '@/app/ui/components/Button';
 import { toast } from 'sonner';
 import {
@@ -18,6 +17,12 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { ProcedimientoItem } from '@/app/_lib/data/atenciones';
+import ConfirmationModal from '@/app/ui/components/modals/ConfirmationModal';
+
+type DeletePending = {
+  id: string;
+  registro: ClinicHistoryItem;
+} | null;
 
 export default function ClinicalHistory({
   clinicHistory: initialHistory,
@@ -26,36 +31,47 @@ export default function ClinicalHistory({
 }) {
   const [history, setHistory] = useState<ClinicHistoryItem[]>(initialHistory);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [deletePending, setDeletePending] = useState<DeletePending>(null);
 
-  async function handleDeleteAttention(registro: ClinicHistoryItem) {
-    const tipoLabel =
-      TIPO_STYLES[registro.tipo_atencion.toLowerCase()]?.label ??
-      registro.tipo_atencion;
-    const fecha = formatShortDate(registro.fecha_atencion);
-    const ok = window.confirm(
-      `ATENCION: Eliminar registro del ${fecha} (${tipoLabel}) ?\n\nSe borran TODAS las tablas hijas: diagnosticos, procedimientos, implantes, esterilizacion.\n\nEsta accion NO SE PUEDE DESHACER.`
-    );
-    if (!ok) return;
+  const openDeleteConfirm = (registro: ClinicHistoryItem) => {
+    setDeletePending({ id: registro.id, registro });
+    setShowConfirmModal(true);
+  };
 
-    setDeletingId(registro.id);
-    try {
-      const res = await deleteAttention(registro.id);
-      if (!res.success) {
-        toast.error(res.error ?? 'No fue posible borrar la atencion.');
-        return;
+  const handleDeleteAction = useCallback(
+    async (id: string) => {
+      const pending = deletePending;
+      if (!pending || pending.id !== id) return;
+
+      setDeletingId(id);
+      try {
+        const res = await deleteAttention(id);
+
+        if (!res.success) {
+          toast.error(res.error ?? 'No fue posible borrar la atención.');
+          setShowConfirmModal(false);
+          return { error: res.error };
+        }
+
+        // Actualización optimista (sin F5)
+        setHistory((prev) => prev.filter((x) => x.id !== id));
+        toast.success(res.message);
+        setShowConfirmModal(false);
+        return { success: res.message };
+      } catch (e) {
+        const msg =
+          e instanceof Error ? e.message : 'Error inesperado al eliminar.';
+        toast.error(msg);
+        setShowConfirmModal(false);
+        return { error: msg };
+      } finally {
+        setDeletingId(null);
+        setDeletePending(null);
       }
-      setHistory((prev) => prev.filter((x) => x.id !== registro.id));
-      toast.success(res.message);
-    } catch (e) {
-      toast.error(
-        e instanceof Error
-          ? e.message
-          : 'Ocurrio un error al intentar borrar la atencion.'
-      );
-    } finally {
-      setDeletingId(null);
-    }
-  }
+    },
+    [deletePending]
+  );
 
   return (
     <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
@@ -356,7 +372,7 @@ export default function ClinicalHistory({
                       <button
                         type="button"
                         disabled={isDeleting}
-                        onClick={() => handleDeleteAttention(registro)}
+                        onClick={() => openDeleteConfirm(registro)}
                         className={[
                           'inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold transition-all duration-150',
                           isDeleting
@@ -374,6 +390,7 @@ export default function ClinicalHistory({
                     </div>
                   </div>
                 </div>
+                {/* Modal de confirmación */}
               </details>
             );
           })
@@ -383,6 +400,14 @@ export default function ClinicalHistory({
           </div>
         )}
       </div>
+      {showConfirmModal && deletePending && (
+        <ConfirmationModal
+          id={'confirm-delete-modal'}
+          setShowConfirmModal={setShowConfirmModal}
+          action={handleDeleteAction}
+          content="Eliminar"
+        />
+      )}
     </div>
   );
 }
