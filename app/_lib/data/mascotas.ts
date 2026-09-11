@@ -99,7 +99,7 @@ export const getPetDetailsById = async (id: string): Promise<PetDetails> => {
       m.public_id as id,
       m.nombre AS nombre_mascota,
       m.especie,
-      m.fecha_nacimiento,
+      m.fecha_nacimiento::text,
       m.raza,
       m.sexo,
       m.color,

@@ -4,7 +4,11 @@ import { useCallback, useState } from 'react';
 import { ClinicHistoryItem } from '@/app/_lib/data-types/mascotas';
 import { deleteAttention } from '@/app/_lib/actions/atenciones';
 import { TIPO_STYLES } from '@/app/_lib/static-data/tipos-atencion';
-import { capitalize, formatShortDate } from '@/app/_lib/utils/format';
+import {
+  capitalize,
+  formatDateWithTime,
+  formatShortDate,
+} from '@/app/_lib/utils/format';
 import { SecondaryButton } from '@/app/ui/components/Button';
 import { toast } from 'sonner';
 import {
@@ -118,23 +122,24 @@ export default function ClinicalHistory({
                       <p className="truncate font-semibold text-gray-700">
                         {TIPO_STYLES[tipoKey]?.label ?? registro.tipo_atencion}
                       </p>
-                      <div className="mt-0.5 flex flex-wrap items-center gap-2 text-xs">
+                      <div className="mt-0.5 flex flex-wrap items-center gap-3 text-xs">
                         <span className="font-medium text-gray-500 tabular-nums">
-                          {formatShortDate(registro.fecha_atencion)}
+                          {formatDateWithTime(registro.fecha_atencion)}
                         </span>
+                        <span className="text-gray-300">·</span>
                         <span
                           className={`rounded-full px-2.5 py-1 font-medium ${TIPO_STYLES[tipoKey]?.bg ?? ''} ${TIPO_STYLES[tipoKey]?.text ?? ''}`}
                         >
                           {TIPO_STYLES[tipoKey]?.label ??
                             registro.tipo_atencion}
                         </span>
-                        <span className="text-gray-400">·</span>
+                        <span className="text-gray-300">·</span>
                         <span className="font-medium text-gray-600">
                           {registro.veterinario}
                         </span>
                         {registro.peso_actual != null && (
                           <>
-                            <span className="text-gray-400">·</span>
+                            <span className="text-gray-300">·</span>
                             <span className="font-medium text-slate-600 tabular-nums">
                               {Number(registro.peso_actual).toFixed(2)} kg
                             </span>

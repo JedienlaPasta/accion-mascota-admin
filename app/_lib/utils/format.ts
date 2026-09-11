@@ -66,19 +66,63 @@ export const formatRUT = (raw: string | number) => {
   return formatNumber(sub) + '-' + dv;
 };
 
-export const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('es-CL', {
+// ========= Helpers internos para fechas =========
+const ONLY_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const TZ_CL = 'America/Santiago';
+
+// Parser seguro que NUNCA desfasa el día.
+const safeParseDate = (
+  input: string | Date | null | undefined
+): Date | null => {
+  if (!input) return null;
+  if (input instanceof Date) {
+    return Number.isNaN(input.getTime()) ? null : input;
+  }
+  const str = String(input).trim();
+  if (!str) return null;
+
+  // Caso Date: YYYY-MM-DD
+  if (ONLY_DATE_RE.test(str)) {
+    // Construye la fecha a LAS 12:00 horas
+    const [yearS, monthS, dayS] = str.split('-');
+    const y = Number(yearS);
+    const m = Number(monthS) - 1;
+    const d = Number(dayS);
+    const out = new Date(y, m, d, 12, 0, 0, 0);
+    return Number.isNaN(out.getTime()) ? null : out;
+  }
+
+  // Caso Timestamptz
+  const d = new Date(str);
+  return Number.isNaN(d.getTime()) ? null : d;
+};
+
+// ========= Funciones especificas para tipo Date/Timestamptz =========
+
+// Para formatear solo fecha, sin hora
+export const formatOnlyDate = (
+  dateInput: string | Date | null | undefined,
+  opts: { style?: 'long' | 'short' } = {}
+) => {
+  const d = safeParseDate(dateInput);
+  if (!d) return '—';
+  const style = opts.style ?? 'long';
+  return d.toLocaleDateString('es-CL', {
+    timeZone: TZ_CL,
     day: 'numeric',
-    month: 'long',
+    month: style === 'long' ? 'long' : 'short',
     year: 'numeric',
   });
 };
 
-export const formatDateWithTime = (dateString: string) => {
-  if (!dateString) return '—';
-  const d = new Date(dateString);
-  if (Number.isNaN(d.getTime())) return dateString;
+// Para formatear fecha con hora, en America/Santiago (TZ)
+export const formatDateTimeTz = (
+  dateInput: string | Date | null | undefined
+) => {
+  const d = safeParseDate(dateInput);
+  if (!d) return '—';
   return d.toLocaleString('es-CL', {
+    timeZone: TZ_CL,
     year: 'numeric',
     month: 'short',
     day: '2-digit',
@@ -88,8 +132,58 @@ export const formatDateWithTime = (dateString: string) => {
   });
 };
 
-export const formatShortDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('es-CL', {
+// Para formatear solo fecha, sin hora en America/Santiago (TZ)
+export const formatTzAsDate = (
+  dateInput: string | Date | null | undefined,
+  opts: { style?: 'long' | 'short' } = {}
+) => {
+  const d = safeParseDate(dateInput);
+  if (!d) return '—';
+  const style = opts.style ?? 'short';
+  return d.toLocaleDateString('es-CL', {
+    timeZone: TZ_CL,
+    day: 'numeric',
+    month: style === 'long' ? 'long' : 'short',
+    year: 'numeric',
+  });
+};
+
+// ========= Funciones pendientes de quitar (o evaluar si quitar) =========
+
+export const formatDate = (dateString: string | Date | null | undefined) => {
+  const d = safeParseDate(dateString);
+  if (!d) return '—';
+  return d.toLocaleDateString('es-CL', {
+    timeZone: ONLY_DATE_RE.test(String(dateString ?? '')) ? TZ_CL : undefined,
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+};
+
+export const formatDateWithTime = (
+  dateString: string | Date | null | undefined
+) => {
+  const d = safeParseDate(dateString);
+  if (!d) return '—';
+  return d.toLocaleString('es-CL', {
+    timeZone: TZ_CL,
+    year: 'numeric',
+    month: 'short',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+};
+
+export const formatShortDate = (
+  dateString: string | Date | null | undefined
+) => {
+  const d = safeParseDate(dateString);
+  if (!d) return '—';
+  return d.toLocaleDateString('es-CL', {
+    timeZone: ONLY_DATE_RE.test(String(dateString ?? '')) ? TZ_CL : undefined,
     day: 'numeric',
     month: 'short',
     year: 'numeric',
