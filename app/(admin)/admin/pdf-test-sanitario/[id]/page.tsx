@@ -12,7 +12,7 @@ import {
   formatShortDate,
 } from '@/app/_lib/utils/format';
 import { BaseLink } from '@/app/ui/components/Link';
-import PdfViewerSuspenseBoundary from './PdfViewerSuspenseBoundary';
+import PdfViewerSuspenseBoundary from '../../../../ui/components/pdf/PdfViewerSuspenseBoundary';
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -31,12 +31,8 @@ export default async function PdfTestPage(props: PageProps) {
       a.peso_actual,
       a.observaciones,
       -- Consulta Médica
-      cm.motivo AS cm_motivo,
-      cm.anamnesis AS cm_anamnesis,
-      cm.examen_fisico AS cm_examen_fisico,
-      cm.diagnostico_predx AS cm_predx,
-      cm.examenes_solicitados AS cm_examenes,
-      cm.tratamiento AS cm_tratamiento,
+      COALESCE(proc.procedimientos_jsonb, '[]'::jsonb) AS procedimientos_aplicados,
+
       -- Mascota
       m.public_id AS mascota_public_id,
       m.nombre AS mascota_nombre,
@@ -49,6 +45,7 @@ export default async function PdfTestPage(props: PageProps) {
       m.microchip AS mascota_microchip,
       m.modo_obtencion AS mascota_modo_obtencion,
       m.razon_tenencia AS mascota_razon_tenencia,
+      m.tipo_tenencia AS mascota_tipo_tenencia,
       m.esterilizado AS mascota_esterilizado,
       -- Propietario
       p.public_id AS propietario_public_id,
@@ -65,11 +62,23 @@ export default async function PdfTestPage(props: PageProps) {
       vet_p.rut AS veterinario_rut,
       vet_p.comuna AS veterinario_comuna
     FROM atenciones a
-    LEFT JOIN consultas_medicas cm ON cm.atencion_id = a.id
+    -- LEFT JOIN procedimientos proc ON proc.atencion_id = a.id
     LEFT JOIN mascotas m ON m.id = a.mascota_id
     LEFT JOIN personas p ON p.id = m.responsable_id
     LEFT JOIN funcionarios f ON f.id = a.funcionario_id
     LEFT JOIN personas vet_p ON vet_p.id = f.persona_id
+
+    -- todos los procedimientos en 1 ARRAY JSON
+    LEFT  JOIN LATERAL (
+      SELECT JSONB_AGG(JSONB_BUILD_OBJECT(
+        'codigo', pr.codigo,
+        'nombre', pr.nombre
+      ) ORDER BY pr.codigo) AS procedimientos_jsonb
+      FROM atencion_procedimientos ap
+      JOIN procedimientos pr ON pr.id = ap.procedimiento_id
+      WHERE ap.atencion_id = a.id
+    ) proc ON TRUE
+
     WHERE a.public_id = ${id}
     LIMIT 1
   `;
@@ -117,6 +126,7 @@ export default async function PdfTestPage(props: PageProps) {
       microchip: atencion.mascota_microchip ?? '',
       modoObtencion: atencion.mascota_modo_obtencion ?? '',
       razonTenencia: atencion.mascota_razon_tenencia ?? '',
+      tipoTenencia: atencion.mascota_tipo_tenencia ?? '',
       esterilizado:
         atencion.mascota_esterilizado === true
           ? 'SI'
@@ -124,14 +134,7 @@ export default async function PdfTestPage(props: PageProps) {
             ? 'NO'
             : '',
     },
-    clinica: {
-      motivo: atencion.cm_motivo ?? '',
-      anamnesis: atencion.cm_anamnesis ?? '',
-      examenFisico: atencion.cm_examen_fisico ?? '',
-      preDx: atencion.cm_predx ?? '',
-      examenes: atencion.cm_examenes ?? '',
-      tratamiento: atencion.cm_tratamiento ?? '',
-    },
+    procedimientos: atencion.procedimientos_aplicados,
     veterinario: {
       nombre: atencion.veterinario_nombre?.toUpperCase() ?? '',
       rut: atencion.veterinario_rut ? formatRUT(atencion.veterinario_rut) : '',

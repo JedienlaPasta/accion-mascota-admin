@@ -53,8 +53,18 @@ const navItems = [
     icon: Settings,
   },
   {
-    href: '/admin/pdf-test',
-    label: 'PDF Test',
+    href: '/admin/pdf-test-consulta',
+    label: 'PDF - Consulta',
+    icon: ClipboardList,
+  },
+  {
+    href: '/admin/pdf-test-sanitario',
+    label: 'PDF - Sanitario',
+    icon: ClipboardList,
+  },
+  {
+    href: '/admin/pdf-test-esterilizacion',
+    label: 'PDF - Esterilización',
     icon: ClipboardList,
   },
 ];

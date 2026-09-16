@@ -9,6 +9,7 @@ export default async function PdfTestIndexPage() {
     FROM atenciones a
     INNER JOIN mascotas m ON m.id = a.mascota_id
     INNER JOIN personas p ON p.id = m.responsable_id
+    WHERE a.tipo_atencion = 'OPERATIVO_SANITARIO'
     ORDER BY a.id DESC
     LIMIT 5
   `;
@@ -24,7 +25,7 @@ export default async function PdfTestIndexPage() {
       </Link>
       <h1 className="mb-6 flex items-center gap-2 text-2xl font-bold text-slate-800">
         <FileText className="size-6 text-emerald-700" />
-        Atención · Pruebas PDF
+        Operativo Sanitario · Pruebas PDF
       </h1>
 
       {atenciones.length === 0 ? (
@@ -48,7 +49,7 @@ export default async function PdfTestIndexPage() {
                 </p>
               </div>
               <Link
-                href={`/admin/pdf-test/${a.public_id}`}
+                href={`/admin/pdf-test-sanitario/${a.public_id}`}
                 className="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-emerald-700"
               >
                 Ver PDF →
