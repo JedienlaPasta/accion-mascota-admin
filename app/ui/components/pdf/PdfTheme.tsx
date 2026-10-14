@@ -1,4 +1,11 @@
-import { Text, View, StyleSheet, Font } from '@react-pdf/renderer';
+import {
+  Text,
+  View,
+  StyleSheet,
+  Font,
+  Svg,
+  Polygon,
+} from '@react-pdf/renderer';
 
 // ================================================================
 // CONSTANTES (Tema / Paleta de colores)
@@ -115,7 +122,7 @@ export const certStyles = StyleSheet.create({
     color: GRAY_TEXT,
   },
   logosBox: {
-    width: '38%',
+    width: '34%',
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
@@ -249,7 +256,7 @@ export const certStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginLeft: 4,
-    gap: 8,
+    gap: 2,
   },
   smallRadioBox: {
     flexDirection: 'row',
@@ -279,7 +286,26 @@ export const certStyles = StyleSheet.create({
   siNoBoxes: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 2,
+  },
+
+  // LISTA DE VACUNAS (checkbox + nombre, con wrap)
+  vaccineRow: {
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    gap: 16,
+    marginBottom: 4,
+    marginLeft: 20,
+  },
+  vaccineItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  vaccineLabel: {
+    fontSize: 8,
+    color: '#0f172a',
+    // lineHeight: 1,
   },
 
   // CONSENTIMIENTO (lista bullets)
@@ -530,6 +556,45 @@ export const SiNoCheckBox = ({ value }: { value: string }) => {
         />
         <Text style={certStyles.squareLetter}>NO</Text>
       </View>
+    </View>
+  );
+};
+
+// Triángulo decorativo de esquina (SVG, no rectángulo rotado)
+export const CornerTriangle = ({
+  width = 80,
+  height = 110,
+  color = SECONDARY_HEADER_BG,
+}: {
+  width?: number;
+  height?: number;
+  color?: string;
+}) => (
+  <Svg
+    width={width}
+    height={height}
+    style={{ position: 'absolute', bottom: 0, right: 0 }}
+  >
+    <Polygon
+      points={`${width},0 ${width},${height} 0,${height}`}
+      fill={color}
+    />
+  </Svg>
+);
+
+export const VaccineCheckBox = ({
+  list,
+}: {
+  list: Array<{ codigo: string; nombre: string }> | [];
+}) => {
+  return (
+    <View style={certStyles.vaccineRow}>
+      {list.map((item) => (
+        <View style={certStyles.vaccineItem} key={item.codigo}>
+          <View style={[certStyles.squareBox, certStyles.squareBoxFilled]} />
+          <Text style={certStyles.vaccineLabel}>{item.nombre}</Text>
+        </View>
+      ))}
     </View>
   );
 };

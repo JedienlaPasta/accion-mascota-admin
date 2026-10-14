@@ -13,19 +13,21 @@ import {
   LIGHT_ROW,
   SECONDARY_HEADER_BG,
   HEADER_BG,
-  Campo,
   certStyles,
+  CornerTriangle,
   HCheckBox,
   SiNoCheckBox,
   TableCell,
   TableRow,
+  VaccineCheckBox,
 } from '../PdfTheme';
 import { OperativoSanitarioPayload } from '../Certificado';
 
 const customStyles = StyleSheet.create({
   page: {
-    padding: 24,
-    paddingTop: 30,
+    padding: 32,
+    paddingTop: 36,
+    paddingBottom: 0,
     fontFamily: 'Outfit',
     fontSize: 9,
     backgroundColor: '#fff',
@@ -35,37 +37,79 @@ const customStyles = StyleSheet.create({
 
   // HEADER ZONE (titles + logos)
   headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
     marginBottom: 0,
     paddingBottom: 16,
-    // borderBottom: `1 solid #e2e8f0`,
   },
   titleContainer: {
-    width: '62%',
+    // width: '62%',
   },
   mainTitle: {
-    fontSize: 22,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#0f172a',
     letterSpacing: -0.4,
   },
   subTitle: {
-    fontSize: 11,
+    fontSize: 10,
     color: GRAY_TEXT,
-    // marginTop: 2,
+  },
+  headerItemsWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
   },
   logosBox: {
-    width: '38%',
     flexDirection: 'row',
-    justifyContent: 'flex-end',
     alignItems: 'center',
-    gap: 16,
+    gap: 8,
+    marginTop: -20,
+  },
+  // Boxes derecho del header (Código Proyecto + Microchip)
+  headerBoxesCol: {
+    flexDirection: 'column',
+    width: 160,
+    flexBasis: 160,
+    flexGrow: 0,
+    flexShrink: 0,
+    marginTop: 0,
+    gap: 1,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+  headerCodeBox: {
+    border: `1 solid ${SECONDARY_HEADER_BG}`,
+    paddingHorizontal: 4,
+    minHeight: 19,
+    justifyContent: 'center',
+  },
+  headerCodeBoxText: {
+    fontSize: 8,
+    color: GRAY_TEXT,
+    fontWeight: 'bold',
+  },
+  headerMicrochipBox: {
+    border: `1 solid ${SECONDARY_HEADER_BG}`,
+    paddingHorizontal: 4,
+    paddingVertical: 1,
+    minHeight: 38,
+    alignItems: 'center',
+  },
+  // Logo boxes Izquierda (Accion Mascota + Escudo)
+  headerMicrochipBoxText: {
+    fontSize: 8,
+    color: GRAY_TEXT,
+    fontWeight: 'bold',
   },
   logoBoxUnit: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  logoBoxUnitDivider: {
+    width: 1,
+    height: 24,
+    backgroundColor: GRAY_TEXT,
   },
   logoAccionImg: {
     width: 80,
@@ -74,8 +118,9 @@ const customStyles = StyleSheet.create({
   },
   logoEscudoImg: {
     width: 90,
-    height: 60,
+    height: 50,
     objectFit: 'contain',
+    marginRight: 4,
   },
   logoTextGroup: {
     justifyContent: 'flex-end',
@@ -285,31 +330,52 @@ export default function CertificadoOperativoSanitario({
         <View style={certStyles.cornerTopRight} />
         <View style={certStyles.cornerMidLeft} />
         <View style={certStyles.cornerBottomLeft} />
-        {/* Wrapper para evitar overflow fantasma */}
         <View style={certStyles.cornerGhostWrap}>
-          <View style={certStyles.cornerBottomRight} />
+          <CornerTriangle />
         </View>
 
         {/* HEADER (titulo + logos) */}
-        <View style={certStyles.headerRow}>
-          <View style={certStyles.titleContainer}>
-            <Text style={certStyles.mainTitle}>Ficha Operativo Sanitario</Text>
-            <Text style={certStyles.subTitle}>
+        <View style={customStyles.headerRow}>
+          <View style={customStyles.headerItemsWrapper}>
+            <View style={customStyles.logosBox}>
+              <View style={customStyles.logoBoxUnit}>
+                <Image
+                  style={customStyles.logoEscudoImg}
+                  src="/escudo-nuevo.png"
+                />
+              </View>
+              <View style={customStyles.logoBoxUnitDivider} />
+              <View style={customStyles.logoBoxUnit}>
+                <Image
+                  style={customStyles.logoAccionImg}
+                  src="/accion-mascota-logo-blue.png"
+                  cache={false}
+                />
+              </View>
+            </View>
+
+            <View style={customStyles.headerBoxesCol}>
+              <View style={customStyles.headerCodeBox}>
+                <Text style={customStyles.headerCodeBoxText}>
+                  Código proyecto
+                </Text>
+              </View>
+              <View style={customStyles.headerMicrochipBox}>
+                <Text style={customStyles.headerMicrochipBoxText}>
+                  Etiqueta del microchip
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          <View style={customStyles.titleContainer}>
+            <Text style={customStyles.mainTitle}>
+              Ficha Operativo Sanitario
+            </Text>
+            <Text style={customStyles.subTitle}>
               Documento de Identificación, Consentimiento Informado y
               Declaración simple
             </Text>
-          </View>
-          <View style={certStyles.logosBox}>
-            <View style={certStyles.logoBoxUnit}>
-              <Image
-                style={certStyles.logoAccionImg}
-                src="/accion-mascota-logo-blue.png"
-                cache={false}
-              />
-            </View>
-            <View style={certStyles.logoBoxUnit}>
-              <Image style={certStyles.logoEscudoImg} src="/escudo-nuevo.png" />
-            </View>
           </View>
         </View>
 
@@ -471,24 +537,50 @@ export default function CertificadoOperativoSanitario({
           </TableRow>
         </View>
 
-        {/* DATOS MEDICO VETERINARIO */}
+        {/* DATOS PROCEDIMIENTOS Y RESULTADOS */}
         <View style={certStyles.sectionBoxLight}>
           <View>
             <Text style={customStyles.sectionTitleSecondary}>
               PROCEDIMIENTOS Y RESULTADOS
             </Text>
           </View>
-          <View style={certStyles.row}>
-            <Campo
-              label="Nombre completo:"
-              value={d.veterinario.nombre}
+
+          <TableRow>
+            <TableCell
+              label="Vacunas:"
+              value={<VaccineCheckBox list={d.procedimientos} />}
               isLast
             />
-          </View>
-          <View style={[certStyles.row, certStyles.rowLast]}>
-            <Campo label="Rut:" value={d.veterinario.rut} />
-            <Campo label="Comuna:" value={d.veterinario.comuna} isLast />
-          </View>
+          </TableRow>
+
+          <TableRow>
+            <TableCell label="Laboratorio:" value="" span={2} />
+            <TableCell label="N° Serie:" value="" span={2} isLast />
+          </TableRow>
+
+          <TableRow>
+            <TableCell label="Antiparasitario Interno" value="" span={1} />
+            <TableCell label="Fármaco:" value="" span={1} />
+            <TableCell label="Dosis:" value="" span={1} />
+            <TableCell label="Presentación:" value="" span={1} isLast />
+          </TableRow>
+
+          <TableRow>
+            <TableCell label="Antiparasitario Externo" value="" span={1} />
+            <TableCell label="Fármaco:" value="" span={1} />
+            <TableCell label="Dosis:" value="" span={1} />
+            <TableCell label="Presentación:" value="" span={1} isLast />
+          </TableRow>
+
+          <TableRow isLast>
+            <TableCell
+              label="Nombre Veterinario:"
+              value={d.veterinario.nombre}
+              span={2}
+            />
+            <TableCell label="Rut:" value={d.veterinario.rut} span={1} />
+            <TableCell label="Firma:" value="" span={1} isLast />
+          </TableRow>
         </View>
 
         {/* AUTORIZACION */}
