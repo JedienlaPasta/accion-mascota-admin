@@ -6,7 +6,7 @@ export function validateMicrochip(microchip: string) {
   // Estructura básica
   const isoRegex = /^\d{15}$/;
   if (!isoRegex.test(cleanChip)) {
-    warnings.push('El código no sigue el estándar de 15 dígitos numéricos.');
+    warnings.push('El código no sigue el estándar de 15 dígitos.');
   }
 
   // Validación de prefijos (Reglas de negocio)

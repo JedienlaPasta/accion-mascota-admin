@@ -144,7 +144,7 @@ export const certStyles = StyleSheet.create({
   },
   headerCodeBox: {
     flexDirection: 'row',
-    border: `1 solid ${SECONDARY_HEADER_BG}`,
+    border: `1 solid ${BORDER}`,
     minHeight: 21,
   },
   headerCodeBoxTextContainer: {
@@ -156,7 +156,7 @@ export const certStyles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 3,
     backgroundColor: '#dbe4f0',
-    borderRight: `1 solid ${SECONDARY_HEADER_BG}`,
+    borderRight: `1 solid ${BORDER}`,
   },
   headerCodeBoxText: {
     fontSize: 7.4,
@@ -176,7 +176,7 @@ export const certStyles = StyleSheet.create({
   },
   headerMicrochipBox: {
     flexDirection: 'row',
-    border: `1 solid ${SECONDARY_HEADER_BG}`,
+    border: `1 solid ${BORDER}`,
     minHeight: 36,
   },
   headerMicrochipBoxText: {

@@ -30,13 +30,6 @@ export default async function PdfTestPage(props: PageProps) {
       a.tipo_atencion,
       a.peso_actual,
       a.observaciones,
-      -- Consulta Médica
-      cm.motivo AS cm_motivo,
-      cm.anamnesis AS cm_anamnesis,
-      cm.examen_fisico AS cm_examen_fisico,
-      cm.diagnostico_predx AS cm_predx,
-      cm.examenes_solicitados AS cm_examenes,
-      cm.tratamiento AS cm_tratamiento,
       -- Mascota
       m.public_id AS mascota_public_id,
       m.nombre AS mascota_nombre,

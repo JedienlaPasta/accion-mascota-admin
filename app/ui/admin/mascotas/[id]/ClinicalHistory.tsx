@@ -106,6 +106,16 @@ export default function ClinicalHistory({
               registro.tipo_atencion === 'OPERATIVO_SANITARIO';
             const isDeleting = deletingId === registro.id;
 
+            const pdfUrl = isConsulta
+              ? `/admin/pdf-test-consulta/${registro.id}`
+              : isEsterilizacion
+                ? `/admin/pdf-test-esterilizacion/${registro.id}`
+                : isSanitario
+                  ? `/admin/pdf-test-sanitario/${registro.id}`
+                  : '';
+
+            if (!pdfUrl) return null;
+
             return (
               <details
                 key={registro.id}
@@ -368,7 +378,7 @@ export default function ClinicalHistory({
                       registro.
                     </span>
                     <div className="flex flex-wrap items-center justify-end gap-2">
-                      <Link href={`/admin/pdf-test/${registro.id}`}>
+                      <Link href={pdfUrl}>
                         <SecondaryButton className="gap-2 px-3 py-2 text-xs shadow-sm">
                           <FileText className="h-3.5 w-3.5" />
                           Ver PDF
