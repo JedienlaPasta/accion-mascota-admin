@@ -1,18 +1,6 @@
+import { Document, Page, Text, View, Image } from '@react-pdf/renderer';
 import {
-  Document,
-  Page,
-  Text,
-  View,
-  Image,
-  StyleSheet,
-} from '@react-pdf/renderer';
-import {
-  ALT_ROW,
-  BORDER,
-  GRAY_TEXT,
-  LIGHT_ROW,
   SECONDARY_HEADER_BG,
-  HEADER_BG,
   Campo,
   CampoTextoAncho,
   certStyles,
@@ -22,252 +10,6 @@ import {
   TableRow,
 } from '../PdfTheme';
 import { ConsultaMedicaPayload } from '../Certificado';
-
-const customStyles = StyleSheet.create({
-  page: {
-    padding: 32,
-    paddingTop: 40,
-    fontFamily: 'Outfit',
-    fontSize: 9,
-    backgroundColor: '#fff',
-    position: 'relative',
-    overflow: 'hidden',
-  },
-
-  // HEADER ZONE (titles + logos)
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    marginBottom: 0,
-    paddingBottom: 16,
-    // borderBottom: `1 solid #e2e8f0`,
-  },
-  titleContainer: {
-    width: '62%',
-  },
-  mainTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#0f172a',
-    letterSpacing: -0.4,
-  },
-  subTitle: {
-    fontSize: 11,
-    color: GRAY_TEXT,
-    // marginTop: 2,
-  },
-  logosBox: {
-    width: '38%',
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    gap: 16,
-  },
-  logoBoxUnit: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  logoAccionImg: {
-    width: 80,
-    height: 50,
-    objectFit: 'contain',
-  },
-  logoEscudoImg: {
-    width: 90,
-    height: 60,
-    objectFit: 'contain',
-  },
-  logoTextGroup: {
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
-  },
-  logoTitle: {
-    fontWeight: 'bold',
-    color: '#0f172a',
-    fontSize: 10,
-    lineHeight: 1.15,
-    textAlign: 'right',
-  },
-  logoSub: {
-    fontSize: 7.5,
-    color: GRAY_TEXT,
-    textAlign: 'right',
-    marginTop: 2,
-  },
-
-  sectionBox: {
-    border: `1 solid ${BORDER}`,
-    marginBottom: 10,
-    overflow: 'hidden',
-  },
-  sectionBoxLight: {
-    border: `1 solid ${SECONDARY_HEADER_BG}`,
-    marginBottom: 10,
-    overflow: 'hidden',
-  },
-  sectionTitle: {
-    margin: -1,
-    marginBottom: 0,
-    backgroundColor: HEADER_BG,
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 10,
-    paddingVertical: 4, // 5 original + 1 para compensar margin -1 top
-    paddingHorizontal: 8, // 9 original + 1 para compensar margin -1 left/right
-    letterSpacing: 0.4,
-  },
-  sectionTitleSecondary: {
-    margin: -1,
-    marginBottom: 0,
-    backgroundColor: SECONDARY_HEADER_BG,
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 10,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    letterSpacing: 0.4,
-  },
-
-  // ROWS / COLS
-  row: {
-    flexDirection: 'row',
-    minHeight: 19,
-    borderBottom: `1 solid ${SECONDARY_HEADER_BG}`,
-    backgroundColor: LIGHT_ROW,
-  },
-  rowAlt: {
-    backgroundColor: ALT_ROW,
-  },
-  rowLast: {
-    borderBottomWidth: 0,
-  },
-
-  cell: {
-    paddingVertical: 3,
-    paddingHorizontal: 6,
-    flexDirection: 'row',
-    borderRight: `1 solid ${SECONDARY_HEADER_BG}`,
-  },
-  cellLast: {
-    borderRightWidth: 0,
-  },
-  cellLabel: {
-    fontWeight: 'bold',
-    color: '#0f172a',
-    fontSize: 9,
-    marginRight: 4,
-    paddingTop: 1,
-  },
-  cellValue: {
-    flex: 1,
-    color: '#1e293b',
-    fontSize: 9,
-    paddingTop: 1,
-  },
-
-  // Wide cell spanning full width (textareas)
-  fullCell: {
-    paddingVertical: 3,
-    paddingHorizontal: 6,
-    borderRightWidth: 0,
-    flexDirection: 'row',
-  },
-  fullCellLabel: {
-    fontWeight: 'bold',
-    color: '#0f172a',
-    fontSize: 9,
-    minWidth: 105,
-    maxWidth: 120,
-  },
-  fullCellValue: {
-    flex: 1,
-    fontSize: 9,
-    color: '#1e293b',
-    lineHeight: 1.35,
-  },
-
-  // H / M checkboxes (Sexo Hembra/Macho)
-  smallRadioBoxWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 4,
-    gap: 8,
-  },
-  smallRadioBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 6,
-    gap: 3,
-  },
-  squareBox: {
-    width: 9,
-    height: 9,
-    border: `1 solid ${BORDER}`,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  squareBoxFilled: {
-    backgroundColor: '#1e3a8a',
-  },
-  squareLetter: {
-    fontSize: 7,
-    color: '#0f172a',
-    fontWeight: 'bold',
-    marginLeft: 2,
-  },
-
-  // SI / NO para esterilizado
-  siNoBoxes: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-
-  // CONSENTIMIENTO (lista bullets)
-  consentimientoBox: {
-    padding: 5,
-    paddingHorizontal: 8,
-  },
-  bulletRow: {
-    flexDirection: 'row',
-    marginBottom: 0,
-  },
-  bullet: {
-    width: 12,
-    paddingLeft: 3,
-    fontSize: 8,
-    color: '#0f172a',
-    fontWeight: 'bold',
-  },
-  bulletText: {
-    flex: 1,
-    fontSize: 9,
-    color: '#1e293b',
-    lineHeight: 1.2,
-    textAlign: 'justify',
-  },
-
-  // FIRMAS
-  signatureBox: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginTop: 50,
-    paddingHorizontal: 30,
-  },
-  signatureLine: {
-    width: '40%',
-    borderTop: `1 solid #4c82c2`,
-    paddingTop: 6,
-  },
-  signatureLabel: {
-    textAlign: 'center',
-    fontSize: 9,
-    fontWeight: 'bold',
-    color: '#0f172a',
-  },
-});
 
 export default function CertificadoConsultaMedica({
   datos,
@@ -293,23 +35,45 @@ export default function CertificadoConsultaMedica({
 
         {/* HEADER (titulo + logos) */}
         <View style={certStyles.headerRow}>
+          <View style={certStyles.headerItemsWrapper}>
+            <View style={certStyles.logosBox}>
+              <View style={certStyles.logoBoxUnit}>
+                <Image
+                  style={certStyles.logoEscudoImg}
+                  src="/escudo-nuevo.png"
+                />
+              </View>
+              <View style={certStyles.logoBoxUnitDivider} />
+              <View style={certStyles.logoBoxUnit}>
+                <Image
+                  style={certStyles.logoAccionImg}
+                  src="/accion-mascota-logo-blue.png"
+                  cache={false}
+                />
+              </View>
+            </View>
+
+            <View style={certStyles.headerBoxesCol}>
+              <View style={certStyles.headerMicrochipBox}>
+                <View style={certStyles.headerCodeBoxTextContainer}>
+                  <Text style={certStyles.headerCodeBoxText}>
+                    Etiqueta o número de microchip
+                  </Text>
+                </View>
+                <View style={certStyles.headerCodeBoxValue}>
+                  <Text style={certStyles.headerMicrochipBoxText}>
+                    {d.paciente.microchip || ''}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </View>
+
           <View style={certStyles.titleContainer}>
             <Text style={certStyles.mainTitle}>Ficha Consulta Médica</Text>
             <Text style={certStyles.subTitle}>
               Tenencia Responsable de Mascotas
             </Text>
-          </View>
-          <View style={certStyles.logosBox}>
-            <View style={certStyles.logoBoxUnit}>
-              <Image
-                style={certStyles.logoAccionImg}
-                src="/accion-mascota-logo-blue.png"
-                cache={false}
-              />
-            </View>
-            <View style={certStyles.logoBoxUnit}>
-              <Image style={certStyles.logoEscudoImg} src="/escudo-nuevo.png" />
-            </View>
           </View>
         </View>
 
@@ -467,15 +231,10 @@ export default function CertificadoConsultaMedica({
               label="Motivo Consulta:"
               value={d.clinica.motivo}
             />
-            <CampoTextoAncho
-              label="Anamnesis:"
-              value={d.clinica.anamnesis}
-              minHeight={48}
-            />
+            <CampoTextoAncho label="Anamnesis:" value={d.clinica.anamnesis} />
             <CampoTextoAncho
               label="Examen Físico:"
               value={d.clinica.examenFisico}
-              minHeight={48}
             />
             <CampoTextoAncho label="Pre Dx:" value={d.clinica.preDx} />
             <CampoTextoAncho
@@ -486,7 +245,6 @@ export default function CertificadoConsultaMedica({
               label="Tratamiento:"
               isLast={true}
               value={d.clinica.tratamiento}
-              minHeight={48}
             />
           </View>
         </View>

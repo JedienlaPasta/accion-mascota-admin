@@ -11,7 +11,7 @@ export default async function PdfTestIndexPage() {
     INNER JOIN personas p ON p.id = m.responsable_id
     WHERE a.tipo_atencion = 'OPERATIVO_SANITARIO'
     ORDER BY a.id DESC
-    LIMIT 5
+    LIMIT 20
   `;
 
   return (

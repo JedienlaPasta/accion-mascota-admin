@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { pdf } from '@react-pdf/renderer';
-import CertificadoConsultaMedica from './Certificado';
+import Certificado from './Certificado';
 
 type Props = {
   datos: unknown;
@@ -24,9 +24,7 @@ export default function PdfViewer({ datos, className = '' }: Props) {
 
     (async () => {
       try {
-        const Document = (
-          <CertificadoConsultaMedica datos={datosRef.current as any} />
-        );
+        const Document = <Certificado datos={datosRef.current as any} />;
         const instance = pdf();
         instance.updateContainer(Document);
         const blob = await instance.toBlob();

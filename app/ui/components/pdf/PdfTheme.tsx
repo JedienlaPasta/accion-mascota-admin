@@ -50,7 +50,8 @@ try {
 export const certStyles = StyleSheet.create({
   page: {
     padding: 32,
-    paddingTop: 40,
+    paddingTop: 20,
+    paddingBottom: 0,
     fontFamily: 'Outfit',
     fontSize: 9,
     backgroundColor: '#fff',
@@ -100,37 +101,98 @@ export const certStyles = StyleSheet.create({
     height: 0,
   },
 
-  // HEADER (titles + logos)
+  // HEADER ZONE (titles + logos)
   headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
     marginBottom: 0,
-    paddingBottom: 10,
+    paddingBottom: 16,
   },
   titleContainer: {
-    width: '62%',
+    // width: '62%',
   },
   mainTitle: {
-    fontSize: 22,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#0f172a',
     letterSpacing: -0.4,
   },
   subTitle: {
-    fontSize: 11,
+    fontSize: 10,
     color: GRAY_TEXT,
   },
-  logosBox: {
-    width: '34%',
+  headerItemsWrapper: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
     alignItems: 'center',
-    gap: 16,
+    justifyContent: 'space-between',
+    gap: 8,
   },
+  logosBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  // Boxes derecho del header (Código Proyecto + Microchip)
+  headerBoxesCol: {
+    flexDirection: 'column',
+    width: 220,
+    flexBasis: 220,
+    flexGrow: 0,
+    flexShrink: 0,
+    position: 'absolute',
+    right: 0,
+    top: 22,
+    gap: 1,
+  },
+  headerCodeBox: {
+    flexDirection: 'row',
+    border: `1 solid ${SECONDARY_HEADER_BG}`,
+    minHeight: 21,
+  },
+  headerCodeBoxTextContainer: {
+    width: 80,
+    flexBasis: 80,
+    flexGrow: 0,
+    flexShrink: 0,
+    justifyContent: 'center',
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    backgroundColor: '#dbe4f0',
+    borderRight: `1 solid ${SECONDARY_HEADER_BG}`,
+  },
+  headerCodeBoxText: {
+    fontSize: 7.4,
+    color: HEADER_BG,
+    fontWeight: 'bold',
+    lineHeight: 1.1,
+  },
+  headerCodeBoxValue: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+    justifyContent: 'center',
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    backgroundColor: '#fff',
+    textAlign: 'center',
+  },
+  headerMicrochipBox: {
+    flexDirection: 'row',
+    border: `1 solid ${SECONDARY_HEADER_BG}`,
+    minHeight: 36,
+  },
+  headerMicrochipBoxText: {
+    fontSize: 8.4,
+    color: '#0f172a',
+    lineHeight: 1.15,
+  },
+  // Logo boxes Izquierda (Accion Mascota + Escudo)
   logoBoxUnit: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  logoBoxUnitDivider: {
+    width: 1,
+    height: 24,
+    backgroundColor: GRAY_TEXT,
   },
   logoAccionImg: {
     width: 80,
@@ -139,8 +201,9 @@ export const certStyles = StyleSheet.create({
   },
   logoEscudoImg: {
     width: 90,
-    height: 60,
+    height: 50,
     objectFit: 'contain',
+    marginRight: 4,
   },
   logoTextGroup: {
     justifyContent: 'flex-end',
@@ -177,8 +240,8 @@ export const certStyles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 10,
-    paddingVertical: 6,
-    paddingHorizontal: 10,
+    paddingVertical: 5, // 5 original + 1 (6) para compensar margin -1 top
+    paddingHorizontal: 7, // 9 original + 1 (10) para compensar margin -1 left/right
     letterSpacing: 0.4,
   },
   sectionTitleSecondary: {
@@ -188,8 +251,8 @@ export const certStyles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 10,
-    paddingVertical: 6,
-    paddingHorizontal: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 7,
     letterSpacing: 0.4,
   },
 
@@ -236,19 +299,23 @@ export const certStyles = StyleSheet.create({
     paddingHorizontal: 6,
     borderRightWidth: 0,
     flexDirection: 'row',
+    flex: 1,
   },
   fullCellLabel: {
     fontWeight: 'bold',
     color: '#0f172a',
-    fontSize: 9,
-    minWidth: 105,
-    maxWidth: 120,
+    fontSize: 8,
+    minWidth: 85,
+    paddingTop: 1,
   },
   fullCellValue: {
-    flex: 1,
-    fontSize: 9,
+    fontSize: 8,
     color: '#1e293b',
     lineHeight: 1.35,
+    paddingTop: 1,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
   },
 
   // H / M checkboxes (Sexo Hembra/Macho)
@@ -487,18 +554,16 @@ export const Campo = ({
 export const CampoTextoAncho = ({
   label,
   value,
-  minHeight = 12,
   isLast = false,
 }: {
   label: string;
   value: string;
-  minHeight?: number;
   isLast?: boolean;
 }) => (
   <View style={[certStyles.row, isLast ? certStyles.rowLast : undefined]}>
     <View style={certStyles.fullCell}>
       <Text style={certStyles.fullCellLabel}>{label}</Text>
-      <View style={[{ ...certStyles.fullCellValue, minHeight }]}>
+      <View style={certStyles.fullCellValue}>
         <Text>{value || ''}</Text>
       </View>
     </View>

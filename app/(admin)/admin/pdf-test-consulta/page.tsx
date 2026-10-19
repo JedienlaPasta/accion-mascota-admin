@@ -9,9 +9,9 @@ export default async function PdfTestIndexPage() {
     FROM atenciones a
     INNER JOIN mascotas m ON m.id = a.mascota_id
     INNER JOIN personas p ON p.id = m.responsable_id
-    -- WHERE a.tipo_atencion = 'CONSULTA_MEDICA'
+    WHERE a.tipo_atencion = 'CONSULTA_MEDICA'
     ORDER BY a.id DESC
-    LIMIT 5
+    LIMIT 20
   `;
 
   return (

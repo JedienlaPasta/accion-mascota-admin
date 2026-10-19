@@ -1,7 +1,6 @@
 import CertificadoConsultaMedica from './certificados/CertificadoConsultaMedica';
+import CertificadoEsterilizacion from './certificados/CertificadoEsterilizacion';
 import CertificadoOperativoSanitario from './certificados/CertificadoOperativoSanitario';
-// import CertificadoOperativoSanitario from './certificados/CertificadoOperativoSanitario';
-// import CertificadoEsterilizacion from './certificados/CertificadoEsterilizacion';
 
 // ============================================================
 // TIPOS DISCRIMINADOS (cada payload es distinto por tipo)
@@ -85,8 +84,8 @@ export default function Certificado({ datos }: { datos: FichaDatos }) {
     case 'OPERATIVO_SANITARIO':
       return <CertificadoOperativoSanitario datos={datos} />;
 
-    // case 'OPERATIVO_ESTERILIZACION':
-    //   return <CertificadoEsterilizacion datos={datos} />;
+    case 'OPERATIVO_ESTERILIZACION':
+      return <CertificadoEsterilizacion datos={datos} />;
 
     default: {
       // Caso fallback por si llega un tipo nuevo sin actualizar el componente.

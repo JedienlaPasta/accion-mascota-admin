@@ -7,12 +7,6 @@ import {
   StyleSheet,
 } from '@react-pdf/renderer';
 import {
-  ALT_ROW,
-  BORDER,
-  GRAY_TEXT,
-  LIGHT_ROW,
-  SECONDARY_HEADER_BG,
-  HEADER_BG,
   certStyles,
   CornerTriangle,
   HCheckBox,
@@ -24,292 +18,12 @@ import {
 import { OperativoSanitarioPayload } from '../Certificado';
 
 const customStyles = StyleSheet.create({
-  page: {
-    padding: 32,
-    paddingTop: 36,
-    paddingBottom: 0,
-    fontFamily: 'Outfit',
-    fontSize: 9,
-    backgroundColor: '#fff',
-    position: 'relative',
-    overflow: 'hidden',
-  },
-
-  // HEADER ZONE (titles + logos)
-  headerRow: {
-    marginBottom: 0,
-    paddingBottom: 16,
-  },
-  titleContainer: {
-    // width: '62%',
-  },
-  mainTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#0f172a',
-    letterSpacing: -0.4,
-  },
-  subTitle: {
-    fontSize: 10,
-    color: GRAY_TEXT,
-  },
-  headerItemsWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 8,
-  },
-  logosBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginTop: -20,
-  },
-  // Boxes derecho del header (Código Proyecto + Microchip)
-  headerBoxesCol: {
-    flexDirection: 'column',
-    width: 160,
-    flexBasis: 160,
-    flexGrow: 0,
-    flexShrink: 0,
-    marginTop: 0,
-    gap: 1,
-    position: 'absolute',
-    right: 0,
-    top: 0,
-  },
-  headerCodeBox: {
-    border: `1 solid ${SECONDARY_HEADER_BG}`,
-    paddingHorizontal: 4,
-    minHeight: 19,
-    justifyContent: 'center',
-  },
-  headerCodeBoxText: {
-    fontSize: 8,
-    color: GRAY_TEXT,
-    fontWeight: 'bold',
-  },
-  headerMicrochipBox: {
-    border: `1 solid ${SECONDARY_HEADER_BG}`,
-    paddingHorizontal: 4,
-    paddingVertical: 1,
-    minHeight: 38,
-    alignItems: 'center',
-  },
-  // Logo boxes Izquierda (Accion Mascota + Escudo)
-  headerMicrochipBoxText: {
-    fontSize: 8,
-    color: GRAY_TEXT,
-    fontWeight: 'bold',
-  },
-  logoBoxUnit: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  logoBoxUnitDivider: {
-    width: 1,
-    height: 24,
-    backgroundColor: GRAY_TEXT,
-  },
-  logoAccionImg: {
-    width: 80,
-    height: 50,
-    objectFit: 'contain',
-  },
-  logoEscudoImg: {
-    width: 90,
-    height: 50,
-    objectFit: 'contain',
-    marginRight: 4,
-  },
-  logoTextGroup: {
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
-  },
-  logoTitle: {
-    fontWeight: 'bold',
-    color: '#0f172a',
-    fontSize: 10,
-    lineHeight: 1.15,
-    textAlign: 'right',
-  },
-  logoSub: {
-    fontSize: 7.5,
-    color: GRAY_TEXT,
-    textAlign: 'right',
-    marginTop: 2,
-  },
-
-  sectionBox: {
-    border: `1 solid ${BORDER}`,
-    marginBottom: 10,
-    overflow: 'hidden',
-  },
-  sectionBoxLight: {
-    border: `1 solid ${SECONDARY_HEADER_BG}`,
-    marginBottom: 10,
-    overflow: 'hidden',
-  },
-  sectionTitle: {
-    margin: -1,
-    marginBottom: 0,
-    backgroundColor: HEADER_BG,
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 10,
-    paddingVertical: 5, // 5 original + 1 para compensar margin -1 top
-    paddingHorizontal: 7, // 9 original + 1 para compensar margin -1 left/right
-    letterSpacing: 0.4,
-  },
-  sectionTitleSecondary: {
-    margin: -1,
-    marginBottom: 0,
-    backgroundColor: SECONDARY_HEADER_BG,
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 10,
-    paddingVertical: 5,
-    paddingHorizontal: 7,
-    letterSpacing: 0.4,
-  },
-
-  // ROWS / COLS
-  row: {
-    flexDirection: 'row',
-    minHeight: 19,
-    borderBottom: `1 solid ${SECONDARY_HEADER_BG}`,
-    backgroundColor: LIGHT_ROW,
-  },
-  rowAlt: {
-    backgroundColor: ALT_ROW,
-  },
-  rowLast: {
-    borderBottomWidth: 0,
-  },
-
-  cell: {
-    paddingVertical: 3,
-    paddingHorizontal: 6,
-    flexDirection: 'row',
-    borderRight: `1 solid ${SECONDARY_HEADER_BG}`,
-  },
-  cellLast: {
-    borderRightWidth: 0,
-  },
-  cellLabel: {
-    fontWeight: 'bold',
-    color: '#0f172a',
-    fontSize: 9,
-    marginRight: 4,
-    paddingTop: 1,
-  },
-  cellValue: {
-    flex: 1,
-    color: '#1e293b',
-    fontSize: 9,
-    paddingTop: 1,
-  },
-
-  // Wide cell spanning full width (textareas)
-  fullCell: {
-    paddingVertical: 3,
-    paddingHorizontal: 6,
-    borderRightWidth: 0,
-    flexDirection: 'row',
-  },
-  fullCellLabel: {
-    fontWeight: 'bold',
-    color: '#0f172a',
-    fontSize: 9,
-    minWidth: 105,
-    maxWidth: 120,
-  },
-  fullCellValue: {
-    flex: 1,
-    fontSize: 9,
-    color: '#1e293b',
-    lineHeight: 1.35,
-  },
-
-  // H / M checkboxes (Sexo Hembra/Macho)
-  smallRadioBoxWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 4,
-    gap: 8,
-  },
-  smallRadioBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 6,
-    gap: 3,
-  },
-  squareBox: {
-    width: 9,
-    height: 9,
-    border: `1 solid ${BORDER}`,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  squareBoxFilled: {
-    backgroundColor: '#1e3a8a',
-  },
-  squareLetter: {
-    fontSize: 7,
-    color: '#0f172a',
-    fontWeight: 'bold',
-    marginLeft: 2,
-  },
-
-  // SI / NO para esterilizado
-  siNoBoxes: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-
-  // CONSENTIMIENTO (lista bullets)
-  consentimientoBox: {
-    padding: 5,
-    paddingHorizontal: 8,
-  },
-  bulletRow: {
-    flexDirection: 'row',
-    marginBottom: 0,
-  },
-  bullet: {
-    width: 12,
-    paddingLeft: 3,
-    fontSize: 8,
-    color: '#0f172a',
-    fontWeight: 'bold',
-  },
   bulletText: {
     flex: 1,
     fontSize: 7.3,
     color: '#1e293b',
     lineHeight: 1.18,
     textAlign: 'justify',
-  },
-
-  // FIRMAS
-  signatureBox: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginTop: 50,
-    paddingHorizontal: 30,
-  },
-  signatureLine: {
-    width: '40%',
-    borderTop: `1 solid #4c82c2`,
-    paddingTop: 6,
-  },
-  signatureLabel: {
-    textAlign: 'center',
-    fontSize: 9,
-    fontWeight: 'bold',
-    color: '#0f172a',
   },
 });
 
@@ -325,7 +39,7 @@ export default function CertificadoOperativoSanitario({
       author="Acción Mascota - Municipalidad de Algarrobo"
       title={`Ficha Consulta Médica · ${d.paciente.nombre}`}
     >
-      <Page size={CIRCULAR_PAGE_SIZE} style={customStyles.page}>
+      <Page size={CIRCULAR_PAGE_SIZE} style={certStyles.page}>
         {/* Esquinas decorativas */}
         <View style={certStyles.cornerTopRight} />
         <View style={certStyles.cornerMidLeft} />
@@ -335,46 +49,53 @@ export default function CertificadoOperativoSanitario({
         </View>
 
         {/* HEADER (titulo + logos) */}
-        <View style={customStyles.headerRow}>
-          <View style={customStyles.headerItemsWrapper}>
-            <View style={customStyles.logosBox}>
-              <View style={customStyles.logoBoxUnit}>
+        <View style={certStyles.headerRow}>
+          <View style={certStyles.headerItemsWrapper}>
+            <View style={certStyles.logosBox}>
+              <View style={certStyles.logoBoxUnit}>
                 <Image
-                  style={customStyles.logoEscudoImg}
+                  style={certStyles.logoEscudoImg}
                   src="/escudo-nuevo.png"
                 />
               </View>
-              <View style={customStyles.logoBoxUnitDivider} />
-              <View style={customStyles.logoBoxUnit}>
+              <View style={certStyles.logoBoxUnitDivider} />
+              <View style={certStyles.logoBoxUnit}>
                 <Image
-                  style={customStyles.logoAccionImg}
+                  style={certStyles.logoAccionImg}
                   src="/accion-mascota-logo-blue.png"
                   cache={false}
                 />
               </View>
             </View>
 
-            <View style={customStyles.headerBoxesCol}>
-              <View style={customStyles.headerCodeBox}>
-                <Text style={customStyles.headerCodeBoxText}>
-                  Código proyecto
-                </Text>
+            <View style={certStyles.headerBoxesCol}>
+              <View style={certStyles.headerCodeBox}>
+                <View style={certStyles.headerCodeBoxTextContainer}>
+                  <Text style={certStyles.headerCodeBoxText}>
+                    Código Proyecto
+                  </Text>
+                </View>
+                <View style={certStyles.headerCodeBoxValue} />
               </View>
-              <View style={customStyles.headerMicrochipBox}>
-                <Text style={customStyles.headerMicrochipBoxText}>
-                  Etiqueta del microchip
-                </Text>
+              <View style={certStyles.headerMicrochipBox}>
+                <View style={certStyles.headerCodeBoxTextContainer}>
+                  <Text style={certStyles.headerCodeBoxText}>
+                    Etiqueta o número de microchip
+                  </Text>
+                </View>
+                <View style={certStyles.headerCodeBoxValue}>
+                  <Text style={certStyles.headerMicrochipBoxText}>
+                    {d.paciente.microchip || ''}
+                  </Text>
+                </View>
               </View>
             </View>
           </View>
 
-          <View style={customStyles.titleContainer}>
-            <Text style={customStyles.mainTitle}>
-              Ficha Operativo Sanitario
-            </Text>
-            <Text style={customStyles.subTitle}>
-              Documento de Identificación, Consentimiento Informado y
-              Declaración simple
+          <View style={certStyles.titleContainer}>
+            <Text style={certStyles.mainTitle}>Ficha Operativo Sanitario</Text>
+            <Text style={certStyles.subTitle}>
+              Documento de Identificación, Consentimiento y Declaración simple
             </Text>
           </View>
         </View>
@@ -382,7 +103,7 @@ export default function CertificadoOperativoSanitario({
         {/* DATOS RESPONSABLE */}
         <View style={certStyles.sectionBox}>
           <View>
-            <Text style={customStyles.sectionTitle}>DATOS RESPONSABLE</Text>
+            <Text style={certStyles.sectionTitle}>DATOS RESPONSABLE</Text>
           </View>
 
           {/* Row 1: Fecha / Fecha Nac / Rut */}
@@ -455,7 +176,7 @@ export default function CertificadoOperativoSanitario({
         {/* DATOS DEL PACIENTE */}
         <View style={certStyles.sectionBoxLight}>
           <View>
-            <Text style={customStyles.sectionTitleSecondary}>
+            <Text style={certStyles.sectionTitleSecondary}>
               DATOS DEL PACIENTE
             </Text>
           </View>
@@ -499,21 +220,6 @@ export default function CertificadoOperativoSanitario({
             />
           </TableRow>
 
-          {/* Row 4: Modo de obtención + Microchip */}
-          {/* <TableRow isAlt>
-            <TableCell
-              label="Modo de obtención:"
-              value={d.paciente.modoObtencion}
-              span={2}
-            />
-            <TableCell
-              label="Microchip:"
-              value={d.paciente.microchip}
-              span={1}
-              isLast
-            />
-          </TableRow> */}
-
           {/* Row 5: Razón tenencia + Esterilizado SI-NO */}
           <TableRow>
             <TableCell
@@ -540,7 +246,7 @@ export default function CertificadoOperativoSanitario({
         {/* DATOS PROCEDIMIENTOS Y RESULTADOS */}
         <View style={certStyles.sectionBoxLight}>
           <View>
-            <Text style={customStyles.sectionTitleSecondary}>
+            <Text style={certStyles.sectionTitleSecondary}>
               PROCEDIMIENTOS Y RESULTADOS
             </Text>
           </View>
@@ -586,7 +292,7 @@ export default function CertificadoOperativoSanitario({
         {/* AUTORIZACION */}
         <View style={certStyles.sectionBoxLight}>
           <View>
-            <Text style={customStyles.sectionTitleSecondary}>AUTORIZACIÓN</Text>
+            <Text style={certStyles.sectionTitleSecondary}>AUTORIZACIÓN</Text>
           </View>
           <View style={certStyles.consentimientoBox}>
             <View style={certStyles.bulletRow}>
@@ -606,7 +312,7 @@ export default function CertificadoOperativoSanitario({
         {/* ASISTENCIA SANITARIA */}
         <View style={certStyles.sectionBoxLight}>
           <View>
-            <Text style={customStyles.sectionTitleSecondary}>
+            <Text style={certStyles.sectionTitleSecondary}>
               ASISTENCIA SANITARIA
             </Text>
           </View>
@@ -676,7 +382,7 @@ export default function CertificadoOperativoSanitario({
         {/* REGISTRO E IDENTIFICACIÓN */}
         <View style={certStyles.sectionBoxLight}>
           <View>
-            <Text style={customStyles.sectionTitleSecondary}>
+            <Text style={certStyles.sectionTitleSecondary}>
               REGISTRO E IDENTIFICACIÓN
             </Text>
           </View>
@@ -700,7 +406,7 @@ export default function CertificadoOperativoSanitario({
         {/* EGRESO */}
         <View style={certStyles.sectionBoxLight}>
           <View>
-            <Text style={customStyles.sectionTitleSecondary}>EGRESO</Text>
+            <Text style={certStyles.sectionTitleSecondary}>EGRESO</Text>
           </View>
           <View style={certStyles.consentimientoBox}>
             <View style={certStyles.bulletRow}>
