@@ -14,25 +14,13 @@ export const SERVICES = [
     id: '1',
     name: 'Consulta General',
     description: 'Examen de rutina para evaluar el estado general de salud.',
-    price: '$5.000',
+    price: 'Gratis',
   },
   {
     id: '2',
-    name: 'Vacunación',
+    name: 'Esterilización',
     description:
-      'Administración de vacunas esenciales para prevenir enfermedades.',
-    price: '$8.000',
-  },
-  {
-    id: '3',
-    name: 'Limpieza Dental',
-    description: 'Limpieza profunda para eliminar placa y sarro.',
-    price: '$12.000',
-  },
-  {
-    id: '4',
-    name: 'Desparasitación',
-    description: 'Tratamiento interno y externo contra parásitos.',
+      'Procedimiento quirúrgico de extracción de órganos reproductivos.',
     price: 'Gratis',
   },
 ];

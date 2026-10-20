@@ -1,4 +1,8 @@
-import { AppointmentPet } from '../data-types/citas';
+import {
+  AppointmentPet,
+  AppointmentListItem,
+  Appointment,
+} from '../data-types/citas';
 import sql from '../db';
 
 export async function getOccupiedSlotsForDateRange(
@@ -29,6 +33,109 @@ export async function getOccupiedSlotsForDateRange(
   } catch (error) {
     console.error('[getOccupiedSlotsForDateRange] error:', error);
     return new Set<string>();
+  }
+}
+
+export async function getAppointmentById(
+  id: string
+): Promise<Appointment | null> {
+  try {
+    const row = await sql`
+      SELECT
+        c.public_id AS public_id_cita,
+        c.funcionario_id,
+        c.mascota_id,
+        c.hora_agendada,
+        c.motivo,
+        c.estado,
+        c.tipo_atencion,
+        c.created_at,
+        --responsable_id,
+        m.nombre AS nombre_mascota,
+        m.especie,
+        m.microchip,
+        m.fecha_nacimiento,
+        m.sexo,
+        p.nombre AS nombre_propietario,
+        p.rut AS rut_propietario,
+        p.public_id AS public_id_propietario
+      FROM citas c
+      INNER JOIN mascotas m ON m.id = c.mascota_id
+      LEFT JOIN personas p ON p.id = m.responsable_id
+      WHERE
+        c.public_id = (${id})::text
+    `;
+    return row[0] as unknown as Appointment | null;
+  } catch (error) {
+    console.error('[getAppointmentById] error:', error);
+    return null;
+  }
+}
+
+export async function getAllAppointmentsWithFilters(
+  query: string,
+  page: number,
+  pageSize = 10
+): Promise<{
+  appointments: AppointmentListItem[];
+  totalPages: number;
+  totalCount: number;
+}> {
+  try {
+    const q = (query || '').trim().slice(0, 100);
+    const currentPage =
+      Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
+    const offset = (currentPage - 1) * pageSize;
+    const term = `%${q}%`;
+
+    const rows = await sql`
+      SELECT
+        c.public_id AS id,
+        to_char(c.hora_agendada, 'YYYY-MM-DD HH24:MI') AS hora_agendada,
+        c.motivo,
+        c.estado,
+        m.nombre AS nombre_mascota,
+        m.especie,
+        m.microchip,
+        m.public_id AS public_id_mascota,
+        p.nombre AS nombre_propietario,
+        p.rut AS rut_propietario,
+        p.public_id AS public_id_propietario
+      FROM citas c
+      INNER JOIN mascotas m ON m.id = c.mascota_id
+      LEFT JOIN personas p ON p.id = m.responsable_id
+      WHERE (
+        ${q} = ''
+        OR m.nombre ILIKE ${term}
+        OR p.nombre ILIKE ${term}
+        OR m.microchip ILIKE ${term}
+      )
+      ORDER BY c.hora_agendada DESC
+      LIMIT ${pageSize} OFFSET ${offset}
+    `;
+
+    const countRows = await sql`
+      SELECT COUNT(*)::int AS total
+      FROM citas c
+      INNER JOIN mascotas m ON m.id = c.mascota_id
+      LEFT JOIN personas p ON p.id = m.responsable_id
+      WHERE (
+        ${q} = ''
+        OR m.nombre ILIKE ${term}
+        OR p.nombre ILIKE ${term}
+        OR m.microchip ILIKE ${term}
+      )
+    `;
+
+    const totalCount = (countRows[0] as { total: number })?.total ?? 0;
+    return {
+      appointments: rows as unknown as AppointmentListItem[],
+      totalCount,
+      totalPages: Math.max(1, Math.ceil(totalCount / pageSize)),
+    };
+  } catch (error) {
+    console.error('[getAllAppointmentsWithFilters] error:', error);
+    return { appointments: [], totalPages: 1, totalCount: 0 };
   }
 }
 

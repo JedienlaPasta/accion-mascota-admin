@@ -99,7 +99,7 @@ export async function createAppointment(
 
     await sql`
       INSERT INTO citas
-        (public_id, usuario_id, mascota_id, hora_agendada, motivo, estado)
+        (public_id, funcionario_id, mascota_id, hora_agendada, motivo, estado)
       VALUES
         (
           ${publicId},

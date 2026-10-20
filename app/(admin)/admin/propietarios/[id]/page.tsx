@@ -114,7 +114,7 @@ export default async function PropietarioDetallePage(
         <div className="p-7">
           <div className="flex flex-col items-start gap-6 sm:flex-row">
             {/* Avatar con iniciales del propietario */}
-            <div className="relative flex h-28 w-28 shrink-0 items-center justify-center rounded-3xl bg-linear-to-br from-indigo-100/50 to-violet-100/50 shadow-sm shadow-gray-200">
+            <div className="relative flex h-28 w-28 shrink-0 items-center justify-center rounded-3xl bg-linear-to-br from-red-100/50 to-indigo-100/50 shadow-sm shadow-gray-200">
               <div className="absolute inset-0 rounded-3xl bg-linear-to-br from-indigo-500/10 to-violet-500/10"></div>
               <span className="relative text-4xl font-black tracking-tight text-indigo-700">
                 {getInitials(propietario.nombre_propietario)}
@@ -195,7 +195,7 @@ export default async function PropietarioDetallePage(
           <div className="mt-4 grid grid-cols-2 gap-5 border-t border-slate-100 pt-4 sm:grid-cols-4">
             {/* Teléfono */}
             <div className="group flex items-center gap-3 rounded-2xl bg-gray-50 p-4 transition-all hover:bg-slate-50">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br from-emerald-100/90 to-emerald-200/90 text-emerald-700 transition-all group-hover:scale-105">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br from-slate-100 to-slate-200 text-slate-700 transition-all group-hover:scale-105">
                 <Phone className="h-5 w-5" />
               </div>
               <div className="min-w-0 space-y-0.5">
@@ -215,7 +215,7 @@ export default async function PropietarioDetallePage(
 
             {/* Email */}
             <div className="group flex items-center gap-3 rounded-2xl bg-gray-50 p-4 transition-all hover:bg-slate-50">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br from-sky-100 to-sky-200 text-sky-700 transition-all group-hover:scale-105">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br from-slate-100 to-slate-200 text-slate-700 transition-all group-hover:scale-105">
                 <Mail className="h-5 w-5" />
               </div>
               <div className="min-w-0 flex-1 space-y-0.5">
@@ -233,7 +233,7 @@ export default async function PropietarioDetallePage(
 
             {/* Nacimiento / Edad */}
             <div className="group flex items-center gap-3 rounded-2xl bg-gray-50 p-4 transition-all hover:bg-slate-50">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br from-violet-100 to-violet-200 text-violet-700 transition-all group-hover:scale-105">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br from-slate-100 to-slate-200 text-slate-700 transition-all group-hover:scale-105">
                 <CalendarDays className="h-5 w-5" />
               </div>
               <div className="min-w-0 space-y-0.5">
@@ -290,7 +290,7 @@ export default async function PropietarioDetallePage(
         <div className="grid gap-4 sm:grid-cols-3">
           {/* Calle/Dirección */}
           <div className="group flex items-center gap-4 rounded-2xl bg-gray-50 p-4 transition-all hover:bg-slate-50 sm:col-span-2">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br from-orange-100 to-orange-200 text-orange-700 transition-all group-hover:scale-105">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br from-slate-100 to-slate-200 text-slate-700 transition-all group-hover:scale-105">
               <Home className="h-5 w-5" />
             </div>
             <div className="min-w-0 flex-1 space-y-0.5">
@@ -310,7 +310,7 @@ export default async function PropietarioDetallePage(
 
           {/* Comuna */}
           <div className="group flex items-center gap-4 rounded-2xl bg-gray-50 p-4 transition-all hover:bg-slate-50">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br from-teal-100 to-teal-200 text-teal-700 transition-all group-hover:scale-105">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br from-slate-100 to-slate-200 text-slate-700 transition-all group-hover:scale-105">
               <MapPin className="h-5 w-5" />
             </div>
             <div className="min-w-0 flex-1 space-y-0.5">
@@ -340,8 +340,8 @@ export default async function PropietarioDetallePage(
       <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
         {/* Total mascotas */}
         <div className="flex items-center gap-4 rounded-xl border border-gray-100 bg-white p-5 shadow-sm transition-all hover:shadow-md">
-          <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-indigo-100/90 to-indigo-200/90">
-            <PawPrint className="size-5 text-indigo-700" />
+          <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-emerald-100/90 to-emerald-200/90">
+            <PawPrint className="size-5 text-emerald-700" />
           </div>
           <div>
             <p className="text-2xl font-bold text-gray-900">{totalMascotas}</p>
@@ -396,8 +396,7 @@ export default async function PropietarioDetallePage(
           <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:shadow-md">
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900">
-                  <PawPrint className="h-5 w-5 text-indigo-600" />
+                <h3 className="text-lg font-bold text-gray-900">
                   Mascotas registradas
                 </h3>
                 <p className="text-sm text-gray-500">

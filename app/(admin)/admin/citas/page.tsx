@@ -1,26 +1,33 @@
-import { adminAppointments } from '@/app/_lib/mock-data';
-import AppointmentDetailsModal from '@/app/ui/admin/citas/AppointmentDetailsModal';
+import { getAllAppointmentsWithFilters } from '@/app/_lib/data/citas';
 import AppointmentsCalendarTable from '@/app/ui/admin/citas/AppointmentsCalendarTable';
 import SummaryCard from '@/app/ui/admin/SummaryCard';
 import { BaseLink } from '@/app/ui/components/Link';
 import { Plus } from 'lucide-react';
+import AppointmentDetails from '@/app/ui/admin/citas/modal/AppointmentDetails';
 
 type AppointmentsManagementProps = {
-  searchParams?: Promise<{ appointmentId?: string }>;
+  searchParams?: Promise<{
+    appointmentId?: string;
+    query?: string;
+    page?: number;
+  }>;
 };
 
 export default async function AppointmentsManagementPageAdmin(
   props: AppointmentsManagementProps
 ) {
   const searchParams = await props.searchParams;
+  const query = searchParams?.query || '';
+  const page = searchParams?.page || 1;
   const id = searchParams?.appointmentId ?? '';
+
+  const { appointments, totalPages, totalCount } =
+    await getAllAppointmentsWithFilters(query, page, 10);
 
   return (
     <div className="flex min-h-full flex-col space-y-4 bg-gray-50/50 p-6 lg:p-8">
       {/* Appointment Details Modal */}
-      {id && (
-        <AppointmentDetailsModal id={id} appointmentData={adminAppointments} />
-      )}
+      {id && <AppointmentDetails id={id} />}
       {/* Header */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-baseline">
         <div>
@@ -52,7 +59,12 @@ export default async function AppointmentsManagementPageAdmin(
         </div>
 
         {/* Calendario de citas (Confirmadas y por confirmar) */}
-        <AppointmentsCalendarTable />
+        <AppointmentsCalendarTable
+          appointments={appointments}
+          page={page}
+          totalPages={totalPages}
+          totalCount={totalCount}
+        />
       </section>
     </div>
   );

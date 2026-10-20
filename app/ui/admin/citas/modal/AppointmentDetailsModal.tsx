@@ -52,18 +52,10 @@ export default function AppointmentDetailsModal({
     const mainContainer = document.getElementById('main-scroll');
     if (!mainContainer) return;
 
-    const scrollbarWidth =
-      mainContainer.offsetWidth - mainContainer.clientWidth;
-
     mainContainer.style.overflow = 'hidden';
-
-    if (scrollbarWidth > 0) {
-      mainContainer.style.paddingRight = `${scrollbarWidth}px`;
-    }
 
     return () => {
       mainContainer.style.overflow = '';
-      mainContainer.style.paddingRight = '';
     };
   }, []);
 

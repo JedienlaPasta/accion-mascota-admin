@@ -24,12 +24,15 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-gray-100">
+    <div className="overflow-hiddend flex h-dvh flex-col bg-gray-100">
       {/* El header podria cambiarlo para que solo sea visible en modo movil */}
       {/* <Header /> */}
       <div className="flex flex-1 overflow-hidden">
         <AdminSidebar />
-        <main id="main-scroll" className="min-h-0 w-full flex-1 overflow-auto">
+        <main
+          id="main-scroll"
+          className="min-h-0 w-full flex-1 scrollbar-gutter-stable overflow-auto"
+        >
           {children}
         </main>
       </div>

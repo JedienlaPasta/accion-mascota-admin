@@ -1,17 +1,19 @@
 'use client';
 
 import { capitalize } from '@/app/_lib/utils/format';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { CalendarRange, ChevronLeft, ChevronRight, List } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import Dropdown from '../../components/Dropdown';
 import { adminAppointments, type AdminAppointment } from '@/app/_lib/mock-data';
 import { useRouter, useSearchParams } from 'next/navigation';
+import AppointmentsTable from './AppointmentsTable';
+import { AppointmentListItem } from '@/app/_lib/data-types/citas';
 
 const DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
-const SLOT_MIN = 15;
+const SLOT_MIN = 30;
 const DAY_START = '08:30';
 const DAY_END = '17:30';
-const SLOT_HEIGHT = 30;
+const SLOT_HEIGHT = 120;
 
 type Status = AdminAppointment['status'];
 
@@ -58,7 +60,13 @@ function formatWeekRange(weekStart: Date) {
   return `${inicio} – ${fin}`;
 }
 
-export default function AppointmentsCalendarTable() {
+export default function AppointmentsCalendarTable(props: {
+  appointments: AppointmentListItem[];
+  page: number;
+  totalPages: number;
+  totalCount: number;
+}) {
+  const [tableMode, setTableMode] = useState('calendar');
   const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date()));
   const [statusFilter, setStatusFilter] = useState<'Todos' | Status>('Todos');
 
@@ -78,14 +86,21 @@ export default function AppointmentsCalendarTable() {
   const totalMin = endMin - startMin;
   const slotCount = Math.ceil(totalMin / SLOT_MIN);
   const dayHeight = slotCount * SLOT_HEIGHT;
-  const hourBlockH = (60 / SLOT_MIN) * SLOT_HEIGHT;
 
-  const hours: string[] = [];
-  const firstHourLabelMin = Math.ceil(startMin / 60) * 60;
-  for (let minute = firstHourLabelMin; minute < endMin; minute += 60) {
-    const hour = String(Math.floor(minute / 60)).padStart(2, '0');
-    hours.push(`${hour}:00`);
-  }
+  const timeMarks = useMemo(() => {
+    const marks: string[] = [];
+    for (let minute = startMin; minute <= endMin; minute += SLOT_MIN) {
+      const hh = String(Math.floor(minute / 60)).padStart(2, '0');
+      const mm = String(minute % 60).padStart(2, '0');
+      marks.push(`${hh}:${mm}`);
+    }
+    return marks;
+  }, [startMin, endMin]);
+
+  const slotStarts = timeMarks.slice(0, -1);
+  const gridLines = timeMarks.slice(1, -1);
+
+  const isFullHour = (time: string) => time.endsWith(':00');
 
   function topFor(time: string) {
     const delta = toMin(time) - startMin;
@@ -123,13 +138,13 @@ export default function AppointmentsCalendarTable() {
   };
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
-      <div className="flex items-center justify-between gap-3 border-b border-zinc-200 bg-white px-3 py-3">
+    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+      <div className="flex items-center justify-between gap-3 border-b border-gray-200 bg-white px-3 py-3">
         <div className="flex items-center gap-2 px-1">
           <button
             type="button"
             onClick={() => setWeekStart((prev) => addDays(prev, -7))}
-            className="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50"
+            className="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-700 shadow-sm transition-colors hover:bg-gray-50"
             aria-label="Semana anterior"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -137,25 +152,45 @@ export default function AppointmentsCalendarTable() {
           <button
             type="button"
             onClick={() => setWeekStart(startOfWeek(new Date()))}
-            className="inline-flex h-9 cursor-pointer items-center justify-center rounded-lg border border-zinc-200 bg-white px-3 text-sm font-semibold text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50"
+            className="inline-flex h-9 cursor-pointer items-center justify-center rounded-lg border border-gray-200 bg-white px-3 text-sm font-semibold text-gray-700 shadow-sm transition-colors hover:bg-gray-50"
           >
             Hoy
           </button>
           <button
             type="button"
             onClick={() => setWeekStart((prev) => addDays(prev, 7))}
-            className="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50"
+            className="inline-flex size-9 cursor-pointer items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-700 shadow-sm transition-colors hover:bg-gray-50"
             aria-label="Semana siguiente"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
         </div>
-
-        <p className="truncate text-sm font-semibold text-zinc-800">
+        <p className="truncate text-sm font-semibold text-gray-800">
           Semana {weekLabel}
         </p>
 
-        <div>
+        {/* Table mode & Status filter */}
+        <div className="flex items-center gap-2">
+          {/* Table mode */}
+          <div className="flex items-center gap-2 px-1">
+            <button
+              type="button"
+              onClick={() => setTableMode('calendar')}
+              className={`inline-flex size-9 cursor-pointer items-center justify-center rounded-lg border shadow-sm transition-colors ${tableMode === 'calendar' ? 'border-blue-200 bg-blue-50 text-blue-500' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'}`}
+              aria-label="Semana anterior"
+            >
+              <CalendarRange className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setTableMode('list')}
+              className={`inline-flex size-9 cursor-pointer items-center justify-center rounded-lg border shadow-sm transition-colors ${tableMode === 'list' ? 'border-blue-200 bg-blue-50 text-blue-500' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'}`}
+              aria-label="Semana siguiente"
+            >
+              <List className="h-4 w-4" />
+            </button>
+          </div>
+          {/* Status filter */}
           <Dropdown
             value={statusFilter}
             readOnly={true}
@@ -171,80 +206,110 @@ export default function AppointmentsCalendarTable() {
         </div>
       </div>
 
-      <div className="grid grid-cols-[80px_repeat(5,1fr)] items-stretch border-b border-zinc-200">
-        <div className="flex items-center justify-center bg-zinc-50 py-2 text-center text-sm font-medium text-zinc-700">
-          Hora
-        </div>
-        {DAYS.map((day, idx) => (
-          <div key={day} className="bg-zinc-50 py-2 text-center">
-            <p className="text-sm font-semibold text-zinc-700">{day}</p>
-            <p className="text-xs font-medium text-zinc-500">
-              {formatDayShort(dayDates[idx])}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-[80px_repeat(5,1fr)] divide-x divide-zinc-200/60">
-        <div className="relative" style={{ height: dayHeight }}>
-          {hours.map((hour) => (
-            <div key={hour} style={{ height: hourBlockH }} className="relative">
-              <span className="absolute top-1/2 right-3 -translate-y-1/2 text-xs text-zinc-500">
-                {hour}
-              </span>
+      {tableMode === 'calendar' && (
+        <>
+          <div className="grid grid-cols-[80px_repeat(5,1fr)] items-stretch border-b border-gray-200">
+            <div className="flex items-center justify-center bg-gray-50 py-2 text-center text-sm font-medium text-gray-700">
+              Hora
             </div>
-          ))}
-        </div>
-
-        {DAYS.map((_, dayIdx) => (
-          <div key={dayIdx} className="relative" style={{ height: dayHeight }}>
-            {hours.map((hour) => (
-              <div
-                key={hour}
-                className="absolute right-0 left-0 border-t border-zinc-200/60"
-                style={{ top: topFor(hour) }}
-              />
+            {DAYS.map((day, idx) => (
+              <div key={day} className="bg-gray-50 py-2 text-center">
+                <p className="text-sm font-semibold text-gray-700">{day}</p>
+                <p className="text-xs font-medium text-gray-500">
+                  {formatDayShort(dayDates[idx])}
+                </p>
+              </div>
             ))}
-
-            {events
-              .filter((e) => e.day === dayIdx)
-              .map((e) => (
+          </div>
+          <div className="grid grid-cols-[80px_repeat(5,1fr)] divide-x divide-gray-200/60">
+            <div className="relative" style={{ height: dayHeight }}>
+              {slotStarts.map((time, idx) => (
                 <div
-                  key={e.id}
-                  onClick={() => openAppointmentModal(e.id)}
-                  role="button"
-                  className="absolute right-2 left-2 flex cursor-pointer gap-2 rounded-2xl border border-zinc-200 bg-white p-3 text-xs shadow-sm"
-                  style={{
-                    top: topFor(e.start) + 8,
-                    height: heightFor(e.start, e.end) - 16,
-                  }}
+                  key={time}
+                  style={{ height: SLOT_HEIGHT }}
+                  className="relative"
                 >
-                  <div
-                    className={`h-full w-2 rounded-full ${lineByStatus(e.status)}`}
-                  ></div>
-                  <div className="relative flex h-full w-full flex-col justify-between">
-                    <div>
-                      <div className="mb-1 text-[11px] font-semibold text-zinc-700">
-                        {e.start} – {e.end}
-                      </div>
-                      <div className="text-sm font-semibold text-zinc-900">
-                        {e.petName}
-                      </div>
-                      <div className="text-[11px] text-zinc-600 capitalize">
-                        {e.type}
-                      </div>
-                    </div>
-                    <div
-                      className={`rounded-md border px-1.5 py-0.5 text-[10px] font-medium ${badgeByStatus(e.status)}`}
+                  {idx > 0 && (
+                    <span
+                      className={`absolute right-3 -translate-y-1/2 text-xs ${
+                        isFullHour(time) ? 'text-gray-500' : 'text-gray-400/65'
+                      }`}
                     >
-                      {e.status}
-                    </div>
-                  </div>
+                      {time}
+                    </span>
+                  )}
                 </div>
               ))}
+            </div>
+
+            {DAYS.map((_, dayIdx) => (
+              <div
+                key={dayIdx}
+                className="bg-gray-100s relative"
+                style={{ height: dayHeight }}
+              >
+                {gridLines.map((time) => (
+                  <div
+                    key={time}
+                    className={`absolute right-0 left-0 border-t ${
+                      isFullHour(time)
+                        ? 'border-gray-200/80'
+                        : 'border-gray-100'
+                    }`}
+                    style={{ top: topFor(time) }}
+                  />
+                ))}
+
+                {events
+                  .filter((e) => e.day === dayIdx)
+                  .map((e) => (
+                    <div
+                      key={e.id}
+                      onClick={() => openAppointmentModal(e.id)}
+                      role="button"
+                      className="absolute right-2 left-2 flex cursor-pointer gap-2 rounded-2xl border border-gray-200 bg-white p-3 text-xs shadow-sm"
+                      style={{
+                        top: topFor(e.start) + 8,
+                        height: heightFor(e.start, e.end) - 16,
+                      }}
+                    >
+                      <div
+                        className={`h-full w-2 rounded-full ${lineByStatus(e.status)}`}
+                      ></div>
+                      <div className="relative flex h-full w-full flex-col justify-start gap-1">
+                        <div>
+                          <div className="mb-1 text-[11px] font-semibold text-gray-700">
+                            {e.start} – {e.end}
+                          </div>
+                          <div className="text-sm font-semibold text-gray-900">
+                            {e.petName}
+                          </div>
+                          <div className="text-[11px] text-gray-600 capitalize">
+                            {e.type}
+                          </div>
+                        </div>
+                        <div
+                          className={`rounded-md border px-1.5 py-0.5 text-[10px] font-medium ${badgeByStatus(e.status)}`}
+                        >
+                          {e.status}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      )}
+
+      {tableMode === 'list' && (
+        <AppointmentsTable
+          appointments={props.appointments}
+          page={props.page}
+          totalPages={props.totalPages}
+          totalCount={props.totalCount}
+        />
+      )}
     </div>
   );
 }
