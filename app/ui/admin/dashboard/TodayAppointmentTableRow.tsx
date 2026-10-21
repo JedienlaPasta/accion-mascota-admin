@@ -1,14 +1,26 @@
-import { AdminTodayAppointment } from '@/app/_lib/mock-data';
+import { TodayAppointmentItem } from '@/app/_lib/data-types/citas';
+import { TIPO_STYLES } from '@/app/_lib/static-data/tipos-atencion';
+import { capitalize, capitalizeAll } from '@/app/_lib/utils/format';
 import { CalendarDays, CheckCircle2, Clock, MoveRight } from 'lucide-react';
 
-function StatusBadge({ estado }: { estado: AdminTodayAppointment['estado'] }) {
-  const isConfirmed = estado === 'confirmada';
+function normalizeStatus(raw: string | null) {
+  const value = (raw ?? '').trim().toLowerCase();
+  if (value === 'confirmada' || value === 'confirmado') return 'confirmada';
+  if (value === 'agendada' || value === 'agendado') return 'agendada';
+  if (value === 'cancelada' || value === 'cancelado') return 'cancelada';
+  if (value === 'completada' || value === 'completado') return 'completada';
+  return 'pendiente';
+}
+
+function StatusBadge({ estado }: { estado: string | null }) {
+  const status = normalizeStatus(estado);
+  const isConfirmed = status === 'confirmada';
   const StatusIcon = isConfirmed ? CheckCircle2 : Clock;
 
   return (
     <span
       role="status"
-      aria-label={`Estado: ${estado}`}
+      aria-label={`Estado: ${status}`}
       className={`inline-flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-semibold capitalize ${
         isConfirmed
           ? 'bg-emerald-50 text-emerald-700/90 ring-1 ring-emerald-200/60'
@@ -19,24 +31,23 @@ function StatusBadge({ estado }: { estado: AdminTodayAppointment['estado'] }) {
         className={`size-3 ${isConfirmed ? 'text-emerald-500' : 'text-slate-500'}`}
         aria-hidden="true"
       />
-      {estado}
+      {status}
     </span>
   );
 }
 
 type AppointmentTableRowProps = {
-  appointment: AdminTodayAppointment;
+  appointment: TodayAppointmentItem;
 };
 
-export function AppointmentTableRow({ appointment }: AppointmentTableRowProps) {
-  const {
-    horaInicio,
-    horaFin,
-    nombreMascota,
-    nombrePropietario,
-    tipoConsulta,
-    estado,
-  } = appointment;
+export function TodayAppointmentTableRow({
+  appointment,
+}: AppointmentTableRowProps) {
+  const { hora, nombre_mascota, nombre_propietario, tipo_atencion, estado } =
+    appointment;
+
+  const tipoStyle = TIPO_STYLES[tipo_atencion.toLowerCase()];
+  const tipoLabel = tipoStyle?.displayName ?? capitalizeAll(tipo_atencion);
 
   return (
     <tr className="grid h-16 grid-cols-24 items-center gap-4 px-8 text-sm text-gray-600 transition-colors focus-within:bg-gray-50/80 hover:bg-gray-50/80">
@@ -47,18 +58,18 @@ export function AppointmentTableRow({ appointment }: AppointmentTableRowProps) {
             aria-hidden="true"
           />
           <span className="text-xs font-medium tabular-nums">
-            {horaInicio}
-            <span className="px-1.5 text-gray-300">—</span>
-            {horaFin}
+            {hora || '—'}
           </span>
         </div>
       </td>
-      <td className="col-span-3 font-medium text-gray-900">{nombreMascota}</td>
-      <td className="col-span-6 truncate font-medium text-gray-900">
-        {nombrePropietario}
+      <td className="col-span-3 font-medium text-gray-900">
+        {capitalize(nombre_mascota)}
       </td>
-      <td className="col-span-6 truncate" title={tipoConsulta}>
-        <span className="inline-flex items-center">{tipoConsulta}</span>
+      <td className="col-span-6 truncate font-medium text-gray-900">
+        {nombre_propietario ? capitalizeAll(nombre_propietario) : 'Sin asignar'}
+      </td>
+      <td className="col-span-6 truncate" title={tipoLabel}>
+        <span className="inline-flex items-center">{tipoLabel}</span>
       </td>
       <td className="col-span-3 flex justify-center">
         <StatusBadge estado={estado} />

@@ -2,12 +2,16 @@ import TableWrapper from '@/app/ui/admin/TableWrapper';
 import SummaryCard from '@/app/ui/admin/SummaryCard';
 import AppointmentTable from '@/app/ui/admin/dashboard/TodayAppointments';
 import HeatMap from '@/app/ui/admin/dashboard/heatmap/Heatmap';
+import { getTodayAppointmentsByQuery } from '@/app/_lib/data/citas';
+import AppointmentDetails from '@/app/ui/admin/citas/modal/AppointmentDetails';
 // import { SecondaryButton } from '@/app/ui/components/Button';
 // import { Download, ListFilter } from 'lucide-react';
 
 type PortalAdminProps = {
   searchParams?: Promise<{
     year?: string;
+    query?: string;
+    appointmentId?: string;
   }>;
 };
 
@@ -15,9 +19,14 @@ export default async function PortalAdmin(props: PortalAdminProps) {
   const searchParams = await props.searchParams;
   const currentYear = new Date().getFullYear();
   const year = searchParams?.year || String(currentYear);
+  const query = searchParams?.query || '';
+  const appointmentId = searchParams?.appointmentId ?? '';
+
+  const todayAppointments = await getTodayAppointmentsByQuery(query);
 
   return (
     <div className="flex min-h-full flex-col space-y-4 bg-gray-50/50 p-6 lg:p-8">
+      {appointmentId && <AppointmentDetails id={appointmentId} />}
       {/* Header */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-baseline">
         <div className="mt-3">
@@ -54,7 +63,7 @@ export default async function PortalAdmin(props: PortalAdminProps) {
 
         {/* Appointments Table */}
         <TableWrapper title="Horario de Hoy">
-          <AppointmentTable />
+          <AppointmentTable appointments={todayAppointments} />
         </TableWrapper>
 
         {/* Dashboard Metrics & Data */}

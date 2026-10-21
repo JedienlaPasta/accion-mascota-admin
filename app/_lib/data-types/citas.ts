@@ -74,3 +74,12 @@ export type Appointment = {
   rut_propietario: string;
   public_id_propietario: string;
 };
+
+export type TodayAppointmentItem = {
+  id: string;
+  hora: string;
+  nombre_mascota: string;
+  nombre_propietario: string | null;
+  tipo_atencion: string;
+  estado: string | null;
+};

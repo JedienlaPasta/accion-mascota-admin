@@ -228,6 +228,46 @@ export const getPetsForAppointmentByQuery = async (
   }
 };
 
+export async function getTodayAppointmentsByQuery(
+  query = ''
+): Promise<AppointmentListItem[]> {
+  try {
+    const q = (query || '').trim().slice(0, 100);
+    const term = `%${q}%`;
+
+    const rows = await sql`
+      SELECT
+        c.public_id AS id,
+        to_char(c.hora_agendada, 'YYYY-MM-DD HH24:MI') AS hora_agendada,
+        c.tipo_atencion,
+        c.estado,
+        m.nombre AS nombre_mascota,
+        m.especie,
+        m.microchip,
+        m.public_id AS public_id_mascota,
+        p.nombre AS nombre_propietario,
+        p.rut AS rut_propietario,
+        p.public_id AS public_id_propietario
+      FROM citas c
+      INNER JOIN mascotas m ON m.id = c.mascota_id
+      LEFT JOIN personas p ON p.id = m.responsable_id
+      WHERE c.hora_agendada::date = (now() AT TIME ZONE 'America/Santiago')::date
+        AND COALESCE(c.estado, 'pendiente') <> 'cancelada'
+        AND (
+          ${q} = ''
+          OR m.nombre ILIKE ${term}
+          OR p.nombre ILIKE ${term}
+          OR m.microchip ILIKE ${term}
+        )
+      ORDER BY c.hora_agendada
+    `;
+    return rows as unknown as AppointmentListItem[];
+  } catch (error) {
+    console.error('[getTodayAppointmentsByQuery] error:', error);
+    return [];
+  }
+}
+
 export const getAppointmentStatistics = async () => {
   try {
     const rows = await sql`
