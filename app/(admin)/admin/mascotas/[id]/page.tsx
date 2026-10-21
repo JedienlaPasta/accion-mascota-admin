@@ -10,7 +10,6 @@ import {
   Pencil,
   HeartPulse,
   Palette,
-  ChevronDown,
   ChevronRight,
   Cpu,
   User,
@@ -36,7 +35,6 @@ import {
   getPetClinicHistoryById,
   getPetDetailsById,
 } from '@/app/_lib/data/mascotas';
-import { TIPO_STYLES } from '@/app/_lib/static-data/tipos-atencion';
 import ClinicalHistory from '@/app/ui/admin/mascotas/[id]/ClinicalHistory';
 
 type MascotaDetalleProps = {
@@ -150,10 +148,12 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                     </span>
                   </p>
                 </div>
-                <Button className="gap-2 shadow-md transition-all hover:shadow-lg">
-                  <Pencil className="h-4 w-4" />
-                  Editar
-                </Button>
+                <Link href={`/admin/mascotas/${mascota.id}/editar`}>
+                  <Button className="gap-2 shadow-md transition-all hover:shadow-lg">
+                    <Pencil className="h-4 w-4" />
+                    Editar
+                  </Button>
+                </Link>
               </div>
 
               <div className="mt-3 flex flex-wrap gap-2">
@@ -471,7 +471,7 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                 <Plus className="h-4 w-4 text-gray-500" />
                 Registrar nueva atención
               </BaseMutedLink>
-              <Link href="#">
+              <Link href={`/admin/mascotas/${mascota.id}/editar`}>
                 <SecondaryButton className="w-full justify-start gap-2 border-gray-200 hover:bg-gray-50 hover:text-gray-900">
                   <Pencil className="h-4 w-4 text-gray-500" />
                   Editar mascota
