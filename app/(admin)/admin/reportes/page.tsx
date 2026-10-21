@@ -1,13 +1,24 @@
-// import { createTestUser } from '@/app/_lib/actions/usuarios';
+import { getSanitaryOperatorStatsByYear } from '@/app/_lib/data/estadisticas';
+import MonthlyStatsTable from '@/app/ui/admin/reportes/MonthlyStatsTable';
+import ReportTypeSelector from '@/app/ui/admin/reportes/ReportTypeSelector';
+import YearlyStatsTable from '@/app/ui/admin/reportes/YearlyStatsTable';
 import { Button } from '@/app/ui/components/Button';
 import { Printer } from 'lucide-react';
 
-export default async function ReportsPage() {
-  // const { success, message } = await createTestUser();
+type ReportsPageProps = {
+  searchParams?: Promise<{ tipo?: string; year?: string }>;
+};
 
-  // if (!success) {
-  //   return <div className="text-red-500">{message}</div>;
-  // }
+export default async function ReportsPage(props: ReportsPageProps) {
+  const searchParams = await props.searchParams;
+  const tipo = searchParams?.tipo || 'OPERATIVO_SANITARIO';
+
+  const yearlyStats = await getSanitaryOperatorStatsByYear();
+  const latestYear =
+    yearlyStats.length > 0
+      ? String(yearlyStats[0].anio)
+      : new Date().getFullYear().toString();
+  const year = searchParams?.year || latestYear;
 
   return (
     <div className="flex min-h-full flex-col space-y-4 bg-gray-50/50 p-6 lg:p-8">
@@ -15,11 +26,11 @@ export default async function ReportsPage() {
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-baseline">
         <div>
           <h2 className="text-foreground text-lg font-bold">
-            Reportes Administrativos
+            Reportes y Estadísticas
           </h2>
           <p className="text-muted-foreground text-sm">
-            Genera reportes administrativos sobre estadisticas de atencion a
-            mascotas.
+            Estadísticas de atención a mascotas generadas a partir de los
+            registros del sistema.
           </p>
         </div>
         {/* Top Content Buttons */}
@@ -29,7 +40,18 @@ export default async function ReportsPage() {
         </Button>
       </div>
 
-      <section className="flex flex-col gap-4 xl:col-span-5"></section>
+      <ReportTypeSelector activeType={tipo} />
+
+      {tipo === 'OPERATIVO_SANITARIO' ? (
+        <section className="flex flex-col gap-6">
+          <YearlyStatsTable rows={yearlyStats} />
+          <MonthlyStatsTable year={year} defaultYear={latestYear} />
+        </section>
+      ) : (
+        <section className="rounded-2xl border border-dashed border-gray-200 bg-white p-12 text-center text-sm text-gray-400">
+          Este reporte estará disponible próximamente.
+        </section>
+      )}
     </div>
   );
 }
