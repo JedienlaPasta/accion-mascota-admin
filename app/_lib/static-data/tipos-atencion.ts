@@ -34,7 +34,7 @@ export const TIPO_STYLES: Record<
     Icon: Syringe,
   },
   operativo_esterilizacion: {
-    displayName: 'Cirugía - Esterilización',
+    displayName: 'Esterilización',
     label: 'Operativo Esterilización',
     bg: 'bg-rose-50',
     text: 'text-rose-700',

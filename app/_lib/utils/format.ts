@@ -115,6 +115,21 @@ export const formatOnlyDate = (
   });
 };
 
+// Para formatear solo la hora (HH:mm) en America/Santiago (TZ)
+// Determinista: timeZone fija y sin AM/PM para evitar hydration mismatch
+export const formatOnlyTimeTz = (
+  dateInput: string | Date | null | undefined
+) => {
+  const d = safeParseDate(dateInput);
+  if (!d) return '—';
+  return d.toLocaleTimeString('es-CL', {
+    timeZone: TZ_CL,
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+};
+
 // Para formatear fecha con hora, en America/Santiago (TZ)
 export const formatDateTimeTz = (
   dateInput: string | Date | null | undefined

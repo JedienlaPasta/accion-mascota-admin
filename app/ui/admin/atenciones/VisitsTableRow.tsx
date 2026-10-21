@@ -15,6 +15,7 @@ import {
   capitalize,
   capitalizeAll,
   formatRUT,
+  formatOnlyTimeTz,
   formatShortDate,
 } from '@/app/_lib/utils/format';
 import { ComponentType, memo } from 'react';
@@ -92,11 +93,7 @@ function VisitsTableRowInner(props: Visits) {
             </span>
           </div>
           <span className="pl-5.5 text-[11px] text-gray-400 tabular-nums">
-            {/* hora si la tuvieras en timestamp — si quieres la extraes: */}
-            {new Date(fecha_atencion).toLocaleTimeString('es-CL', {
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
+            {formatOnlyTimeTz(fecha_atencion)}
           </span>
         </div>
       </td>
