@@ -40,7 +40,7 @@ export default async function AtencionesPageAdmin(
           </p>
         </div>
         <BaseLink
-          href="/admin/atenciones/nueva"
+          href="#"
           className="h-11 gap-2 text-sm shadow-md transition-all hover:shadow-lg"
         >
           <Plus className="h-4 w-4" />
