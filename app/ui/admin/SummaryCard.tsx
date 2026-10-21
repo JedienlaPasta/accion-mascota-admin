@@ -42,6 +42,7 @@ type SummaryCardProps = {
 
 export default function SummaryCard({ title, value, icon }: SummaryCardProps) {
   const Icon = cardIcons[icon];
+  console.log(value);
 
   return (
     <div className="flex cursor-pointer items-center justify-between gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-shadow duration-300 hover:shadow-md">
@@ -50,7 +51,7 @@ export default function SummaryCard({ title, value, icon }: SummaryCardProps) {
           {title}
         </h3>
         <p className="text-3xl font-bold tracking-tight text-zinc-700">
-          {value.toLocaleString('es-CL')}
+          {value}
         </p>
       </div>
 

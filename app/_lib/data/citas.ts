@@ -43,14 +43,14 @@ export async function getAppointmentById(
     const row = await sql`
       SELECT
         c.public_id AS public_id_cita,
-        c.funcionario_id,
+        --c.funcionario_id,
         c.mascota_id,
         c.hora_agendada,
         c.motivo,
         c.estado,
         c.tipo_atencion,
         c.created_at,
-        --responsable_id,
+        m.public_id AS public_id_mascota,
         m.nombre AS nombre_mascota,
         m.especie,
         m.microchip,
@@ -58,10 +58,13 @@ export async function getAppointmentById(
         m.sexo,
         p.nombre AS nombre_propietario,
         p.rut AS rut_propietario,
-        p.public_id AS public_id_propietario
+        p.public_id AS public_id_propietario,
+        COALESCE(fp.nombre, 'No asignado') AS nombre_funcionario
       FROM citas c
       INNER JOIN mascotas m ON m.id = c.mascota_id
       LEFT JOIN personas p ON p.id = m.responsable_id
+      LEFT JOIN funcionarios f ON f.id = c.funcionario_id
+      LEFT JOIN personas fp ON fp.id = f.persona_id
       WHERE
         c.public_id = (${id})::text
     `;
@@ -92,7 +95,7 @@ export async function getAllAppointmentsWithFilters(
       SELECT
         c.public_id AS id,
         to_char(c.hora_agendada, 'YYYY-MM-DD HH24:MI') AS hora_agendada,
-        c.motivo,
+        c.tipo_atencion,
         c.estado,
         m.nombre AS nombre_mascota,
         m.especie,
@@ -222,5 +225,25 @@ export const getPetsForAppointmentByQuery = async (
   } catch (error) {
     console.error('Error al obtener listado de mascotas:', error);
     return [] as AppointmentPet[];
+  }
+};
+
+export const getAppointmentStatistics = async () => {
+  try {
+    const rows = await sql`
+      SELECT
+        COUNT(*)::int AS total,
+        COUNT(CASE WHEN estado = 'agendado' THEN 1 ELSE NULL END) AS scheduled,
+        COUNT(CASE WHEN estado = 'completado' THEN 1 ELSE NULL END) AS finished
+      FROM citas
+    `;
+    return rows[0] as unknown as {
+      total: number;
+      scheduled: number;
+      finished: number;
+    };
+  } catch (error) {
+    console.error('Error al obtener estadísticas de citas:', error);
+    return { total: 0, scheduled: 0, finished: 0 };
   }
 };

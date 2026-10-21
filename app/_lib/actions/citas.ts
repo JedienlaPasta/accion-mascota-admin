@@ -10,7 +10,7 @@ const DEV_USER_ID = 1;
 
 export type CreateAppointmentInput = {
   petPublicId: string;
-  serviceName: string;
+  serviceType: string;
   dateIso: string; // Fecha ISO YYYY-MM-DD
   time24: string; // Hora HH:MM formato 24h
 };
@@ -29,13 +29,15 @@ export async function createAppointment(
   try {
     // Validación estricta de entrada
     const petPublicId = input.petPublicId?.trim();
-    const serviceName = input.serviceName?.trim();
+    const serviceType = input.serviceType?.trim();
     const dateIso = input.dateIso?.trim();
     const time24 = input.time24?.trim();
 
+    console.log(serviceType);
+
     if (!petPublicId)
       return fail('VALIDATION', 'No se seleccionó ninguna mascota');
-    if (!serviceName)
+    if (!serviceType)
       return fail('VALIDATION', 'No se seleccionó ningún servicio');
     if (!/^\d{4}-\d{2}-\d{2}$/.test(dateIso))
       return fail('VALIDATION', 'Fecha inválida (formato YYYY-MM-DD)');
@@ -99,15 +101,15 @@ export async function createAppointment(
 
     await sql`
       INSERT INTO citas
-        (public_id, funcionario_id, mascota_id, hora_agendada, motivo, estado)
+        (public_id, funcionario_id, mascota_id, hora_agendada, tipo_atencion, estado)
       VALUES
         (
           ${publicId},
           ${DEV_USER_ID},
           ${mascotaId},
           (${horaAgendadaSql})::text::timestamp,
-          ${serviceName},
-          'pendiente'
+          ${serviceType},
+          'agendado'
         )
     `;
 
@@ -124,4 +126,18 @@ function fail(
   error: string
 ): CreateAppointmentResult {
   return { success: false, code, error };
+}
+
+export async function cancelAppointment(publicId: string) {
+  try {
+    await sql`
+      UPDATE citas
+      SET estado = 'cancelada'
+      WHERE public_id = ${publicId}
+    `;
+    return { success: true, message: 'Cita cancelada con exito' };
+  } catch (error) {
+    console.error('[cancelAppointment] DB error:', error);
+    return fail('DB_ERROR', 'Problema interno. Intenta nuevamente.');
+  }
 }

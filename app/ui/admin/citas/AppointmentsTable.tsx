@@ -25,10 +25,12 @@ export default function AppointmentsTable({
             <tr className="grid grid-cols-24 items-center gap-4 px-8 py-3 text-left text-gray-500">
               <th className="col-span-3 text-xs font-normal">Hora</th>
               <th className="col-span-4 text-xs font-normal">Mascota</th>
-              <th className="col-span-5 text-xs font-normal">
+              <th className="col-span-7 text-xs font-normal">
                 Propietario / RUT
               </th>
-              <th className="col-span-5 text-xs font-normal">Motivo</th>
+              <th className="col-span-5 text-xs font-normal">
+                Tipo de atención
+              </th>
               <th className="col-span-3 text-center text-xs font-normal">
                 Estado
               </th>

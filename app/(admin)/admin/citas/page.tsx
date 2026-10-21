@@ -1,4 +1,7 @@
-import { getAllAppointmentsWithFilters } from '@/app/_lib/data/citas';
+import {
+  getAllAppointmentsWithFilters,
+  getAppointmentStatistics,
+} from '@/app/_lib/data/citas';
 import AppointmentsCalendarTable from '@/app/ui/admin/citas/AppointmentsCalendarTable';
 import SummaryCard from '@/app/ui/admin/SummaryCard';
 import { BaseLink } from '@/app/ui/components/Link';
@@ -23,6 +26,8 @@ export default async function AppointmentsManagementPageAdmin(
 
   const { appointments, totalPages, totalCount } =
     await getAllAppointmentsWithFilters(query, page, 10);
+
+  const { total, scheduled, finished } = await getAppointmentStatistics();
 
   return (
     <div className="flex min-h-full flex-col space-y-4 bg-gray-50/50 p-6 lg:p-8">
@@ -49,11 +54,11 @@ export default async function AppointmentsManagementPageAdmin(
 
       <section className="flex flex-col gap-4 xl:col-span-5">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <SummaryCard title="Total Agendadas" value={100} icon="calendar" />
-          <SummaryCard title="Total Atendidas" value={100} icon="month" />
+          <SummaryCard title="Total Agendadas" value={total} icon="calendar" />
+          <SummaryCard title="Total Atendidas" value={finished} icon="month" />
           <SummaryCard
-            title="Pendientes de Confirmar"
-            value={100}
+            title="Pendientes de Atención"
+            value={scheduled}
             icon="user"
           />
         </div>

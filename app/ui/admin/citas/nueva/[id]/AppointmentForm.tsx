@@ -12,13 +12,15 @@ import { toast } from 'sonner';
 export const SERVICES = [
   {
     id: '1',
-    name: 'Consulta General',
+    name: 'Consulta Médica',
+    type: 'CONSULTA_MEDICA',
     description: 'Examen de rutina para evaluar el estado general de salud.',
     price: 'Gratis',
   },
   {
     id: '2',
     name: 'Esterilización',
+    type: 'OPERATIVO_ESTERILIZACION',
     description:
       'Procedimiento quirúrgico de extracción de órganos reproductivos.',
     price: 'Gratis',
@@ -143,7 +145,7 @@ export default function AppointmentForm({
 
       const response = await createAppointment({
         petPublicId: pet.id,
-        serviceName: svc.name,
+        serviceType: svc.type,
         dateIso: dateIsoLocal,
         time24: selectedTime,
       });

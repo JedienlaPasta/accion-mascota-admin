@@ -46,20 +46,24 @@ export type AppointmentListItem = {
   nombre_propietario: string | null;
   rut_propietario: string | null;
   public_id_propietario: string | null;
-  motivo: string | null;
+  // motivo: string | null;
   estado: string | null;
+  tipo_atencion: string;
+  nombre_funcionario: string | null;
 };
 
 export type Appointment = {
   public_id_cita: string;
-  funcionario_id: string;
+  // funcionario_id: string;
+  nombre_funcionario: string | null;
   mascota_id: string;
   hora_agendada: string;
-  motivo: string | null;
+  // motivo: string | null;
   estado: string | null;
   tipo_atencion: string;
   created_at: string;
   // responsable_id: string;
+  public_id_mascota: string;
   nombre_mascota: string;
   especie: string;
   microchip: string | null;

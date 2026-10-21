@@ -4,10 +4,10 @@ import { capitalize } from '@/app/_lib/utils/format';
 import { CalendarRange, ChevronLeft, ChevronRight, List } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import Dropdown from '../../components/Dropdown';
-import { adminAppointments, type AdminAppointment } from '@/app/_lib/mock-data';
 import { useRouter, useSearchParams } from 'next/navigation';
 import AppointmentsTable from './AppointmentsTable';
 import { AppointmentListItem } from '@/app/_lib/data-types/citas';
+import { TIPO_STYLES } from '@/app/_lib/static-data/tipos-atencion';
 
 const DAYS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
 const SLOT_MIN = 30;
@@ -15,11 +15,44 @@ const DAY_START = '08:30';
 const DAY_END = '17:30';
 const SLOT_HEIGHT = 120;
 
-type Status = AdminAppointment['status'];
+type CalendarStatus =
+  | 'agendado'
+  | 'confirmado'
+  | 'completado'
+  | 'pendiente'
+  | 'cancelado';
+type StatusFilter = 'todos' | CalendarStatus;
 
 function toMin(t: string) {
   const [hour, minute] = t.split(':').map(Number);
   return hour * 60 + minute;
+}
+
+function toDateKey(date: Date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+function addMinutesToTime(time: string, minutes: number) {
+  const total = toMin(time) + minutes;
+  const hh = String(Math.floor(total / 60)).padStart(2, '0');
+  const mm = String(total % 60).padStart(2, '0');
+  return `${hh}:${mm}`;
+}
+
+function normalizeStatus(status: string | null | undefined): CalendarStatus {
+  const value = (status ?? '').trim().toLowerCase();
+  if (value === 'confirmada' || value === 'confirmado') return 'confirmado';
+  if (value === 'completada' || value === 'completado') return 'completado';
+  if (value === 'cancelada' || value === 'cancelado') return 'cancelado';
+  if (value === 'agendada' || value === 'agendado') return 'agendado';
+  return 'pendiente';
+}
+
+function labelByStatus(status: CalendarStatus) {
+  return capitalize(status);
 }
 
 function startOfWeek(date: Date) {
@@ -68,18 +101,38 @@ export default function AppointmentsCalendarTable(props: {
 }) {
   const [tableMode, setTableMode] = useState('calendar');
   const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date()));
-  const [statusFilter, setStatusFilter] = useState<'Todos' | Status>('Todos');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('todos');
 
   const weekLabel = useMemo(() => formatWeekRange(weekStart), [weekStart]);
   const dayDates = useMemo(
     () => DAYS.map((_, idx) => addDays(weekStart, idx)),
     [weekStart]
   );
+  const weekKeys = useMemo(() => dayDates.map(toDateKey), [dayDates]);
 
   const events = useMemo(() => {
-    if (statusFilter === 'Todos') return adminAppointments;
-    return adminAppointments.filter((e) => e.status === statusFilter);
-  }, [statusFilter]);
+    return props.appointments
+      .map((appointment) => {
+        const [dateKey = '', start = ''] = appointment.hora_agendada.split(' ');
+        const day = weekKeys.indexOf(dateKey);
+        if (day === -1 || !start) return null;
+
+        const status = normalizeStatus(appointment.estado);
+        if (statusFilter !== 'todos' && status !== statusFilter) return null;
+
+        return {
+          id: appointment.id,
+          day,
+          start,
+          end: addMinutesToTime(start, SLOT_MIN),
+          petName: capitalize(appointment.nombre_mascota),
+          type: TIPO_STYLES[appointment.tipo_atencion.toLowerCase()]
+            .displayName,
+          status,
+        };
+      })
+      .filter((event): event is NonNullable<typeof event> => event !== null);
+  }, [props.appointments, statusFilter, weekKeys]);
 
   const startMin = toMin(DAY_START);
   const endMin = toMin(DAY_END);
@@ -110,19 +163,22 @@ export default function AppointmentsCalendarTable(props: {
     return ((toMin(endTime) - toMin(startTime)) / SLOT_MIN) * SLOT_HEIGHT;
   }
 
-  function badgeByStatus(s: Status) {
-    if (s === 'Completado')
+  function badgeByStatus(s: CalendarStatus) {
+    if (s === 'completado')
       return 'border-emerald-200 bg-emerald-50 text-emerald-600';
-    if (s === 'Cancelado') return 'border-red-200 bg-red-50 text-red-600';
-    if (s === 'Pendiente')
+    if (s === 'cancelado') return 'border-red-200 bg-red-50 text-red-600';
+    if (s === 'pendiente')
       return 'border-yellow-200 bg-yellow-50 text-yellow-600';
+    if (s === 'confirmado')
+      return 'border-indigo-200 bg-indigo-50 text-indigo-600';
     return 'border-sky-200 bg-sky-50 text-sky-600';
   }
 
-  function lineByStatus(s: Status) {
-    if (s === 'Completado') return 'bg-emerald-500/35';
-    if (s === 'Cancelado') return 'bg-red-500/35';
-    if (s === 'Pendiente') return 'bg-yellow-500/35';
+  function lineByStatus(s: CalendarStatus) {
+    if (s === 'completado') return 'bg-emerald-500/35';
+    if (s === 'cancelado') return 'bg-red-500/35';
+    if (s === 'pendiente') return 'bg-yellow-500/35';
+    if (s === 'confirmado') return 'bg-indigo-500/35';
     return 'bg-sky-500/35';
   }
 
@@ -194,13 +250,14 @@ export default function AppointmentsCalendarTable(props: {
           <Dropdown
             value={statusFilter}
             readOnly={true}
-            onChange={(e) => setStatusFilter(e as 'Todos' | Status)}
+            onChange={(value) => setStatusFilter(value as StatusFilter)}
             options={[
-              { value: 'Todos', label: 'Todos' },
-              { value: 'Agendado', label: 'Agendado' },
-              { value: 'Completado', label: 'Completado' },
-              { value: 'Pendiente', label: 'Pendiente' },
-              { value: 'Cancelado', label: 'Cancelado' },
+              { value: 'todos', label: 'Todos' },
+              { value: 'agendado', label: 'Agendado' },
+              { value: 'confirmado', label: 'Confirmado' },
+              { value: 'completado', label: 'Completado' },
+              { value: 'pendiente', label: 'Pendiente' },
+              { value: 'cancelado', label: 'Cancelado' },
             ]}
           />
         </div>
@@ -291,7 +348,7 @@ export default function AppointmentsCalendarTable(props: {
                         <div
                           className={`rounded-md border px-1.5 py-0.5 text-[10px] font-medium ${badgeByStatus(e.status)}`}
                         >
-                          {e.status}
+                          {labelByStatus(e.status)}
                         </div>
                       </div>
                     </div>

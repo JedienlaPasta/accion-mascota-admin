@@ -1,18 +1,12 @@
 'use client';
 
-import {
-  AppWindow,
-  Cat,
-  Clock,
-  Dog,
-  PawPrint,
-  User,
-} from 'lucide-react';
+import { AppWindow, Cat, Clock, Dog, PawPrint, User } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { capitalize, capitalizeAll, formatRUT } from '@/app/_lib/utils/format';
 import { ComponentType, memo } from 'react';
 import { AppointmentListItem } from '@/app/_lib/data-types/citas';
+import { TIPO_STYLES } from '@/app/_lib/static-data/tipos-atencion';
 
 function getEspecieIcon(especieRaw: string): {
   Icon: ComponentType<{ className?: string }>;
@@ -32,9 +26,9 @@ function StatusBadge({ estado }: { estado: string | null }) {
     e === 'cancelada' || e === 'cancelado'
       ? 'bg-red-50 text-red-600 ring-red-200/60'
       : e === 'confirmada' || e === 'agendado' || e === 'agendada'
-        ? 'bg-emerald-50 text-emerald-700 ring-emerald-200/60'
+        ? 'bg-sky-50 text-sky-700 ring-sky-200/60'
         : e === 'completada' || e === 'completado' || e === 'atendida'
-          ? 'bg-sky-50 text-sky-700 ring-sky-200/60'
+          ? 'bg-emerald-50 text-emerald-700 ring-emerald-200/60'
           : 'bg-amber-50 text-amber-700 ring-amber-200/60';
   return (
     <span
@@ -55,7 +49,8 @@ function AppointmentsTableRowInner(props: AppointmentListItem) {
     nombre_propietario,
     rut_propietario,
     public_id_propietario,
-    motivo,
+    // motivo,
+    tipo_atencion,
     estado,
     microchip,
   } = props;
@@ -63,6 +58,7 @@ function AppointmentsTableRowInner(props: AppointmentListItem) {
   const { Icon: EspecieIcon } = getEspecieIcon(especie);
   const fecha = hora_agendada?.slice(0, 10) ?? '—';
   const hora = hora_agendada?.slice(11, 16) ?? '—';
+  const atencion = TIPO_STYLES[tipo_atencion.toLowerCase()].displayName || '—';
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -119,7 +115,7 @@ function AppointmentsTableRowInner(props: AppointmentListItem) {
       </td>
 
       {/* 3. Propietario */}
-      <td className="col-span-5 min-w-0">
+      <td className="col-span-7 min-w-0">
         {nombre_propietario && rut_propietario ? (
           <Link
             href={`/admin/propietarios/${public_id_propietario}`}
@@ -152,13 +148,13 @@ function AppointmentsTableRowInner(props: AppointmentListItem) {
         )}
       </td>
 
-      {/* 4. Motivo del servicio */}
+      {/* 4. tipo de servicio */}
       <td className="col-span-5 truncate">
         <span
           className="truncate text-xs font-medium text-gray-700"
-          title={motivo ? capitalizeAll(motivo) : undefined}
+          title={atencion ? capitalizeAll(atencion) : undefined}
         >
-          {motivo ? capitalizeAll(motivo) : 'Sin motivo'}
+          {atencion ? capitalizeAll(atencion) : 'No especificado'}
         </span>
       </td>
 
