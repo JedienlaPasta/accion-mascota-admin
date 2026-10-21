@@ -5,7 +5,7 @@ import { validateRutDv } from '@/app/_lib/utils/check-values';
 import { capitalizeAll, formatPhone, formatRUT } from '@/app/_lib/utils/format';
 import { getInitials } from '@/app/_lib/utils/get-values';
 import { Button, SecondaryButton } from '@/app/ui/components/Button';
-import Input, { SafeNumberInput, TextArea } from '@/app/ui/components/Input';
+import Input from '@/app/ui/components/Input';
 import {
   ArrowLeft,
   AtSign,
@@ -20,7 +20,6 @@ import {
   Phone,
   ShieldAlert,
   ShieldCheck,
-  UserPlus2,
   UserRound,
   X,
   XCircle,
@@ -802,7 +801,7 @@ export default function NewOwnerAdminPage() {
                   className="h-10 w-full gap-2 bg-emerald-600 text-sm hover:bg-emerald-700"
                 >
                   <Check className="h-4 w-4" />
-                  {isSubmitting ? 'Guardando…' : 'Guardar Propietario'}
+                  {isSubmitting ? 'Guardando…' : 'Guardar'}
                 </Button>
               </div>
             </div>

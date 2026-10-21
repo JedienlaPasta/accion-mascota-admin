@@ -147,10 +147,12 @@ export default async function PropietarioDetallePage(
                     )}
                   </p>
                 </div>
-                <Button className="gap-2 shadow-md transition-all hover:shadow-lg">
-                  <Pencil className="h-4 w-4" />
-                  Editar
-                </Button>
+                <Link href={`/admin/propietarios/${propietario.id}/editar`}>
+                  <Button className="gap-2 shadow-md transition-all hover:shadow-lg">
+                    <Pencil className="h-4 w-4" />
+                    Editar
+                  </Button>
+                </Link>
               </div>
 
               <div className="mt-3 flex flex-wrap gap-2">
@@ -515,7 +517,7 @@ export default async function PropietarioDetallePage(
                   Registrar nueva mascota
                 </SecondaryButton>
               </Link>
-              <Link href="#">
+              <Link href={`/admin/propietarios/${propietario.id}/editar`}>
                 <SecondaryButton className="w-full justify-start gap-2 border-gray-200 hover:bg-gray-50 hover:text-gray-900">
                   <Pencil className="h-4 w-4 text-gray-500" />
                   Editar propietario
