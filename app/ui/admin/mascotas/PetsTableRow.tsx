@@ -34,9 +34,9 @@ function PetTableRowInner(props: PetsTableData) {
   const hasMicrochipError = microchipErrors.length > 0;
 
   return (
-    <tr className="group grid h-17 grid-cols-24 items-center gap-4 px-8 text-sm text-gray-600 transition-colors focus-within:bg-gray-50/80 hover:bg-gray-50/80">
+    <tr className="grid h-17 grid-cols-24 items-center gap-4 px-8 text-sm text-gray-600 transition-colors focus-within:bg-gray-50/80 hover:bg-gray-50/80">
       {/* Mascota (nombre + edad) */}
-      <td className="col-span-4 min-w-0 lg:col-span-5">
+      <td className="group col-span-4 min-w-0 lg:col-span-5">
         <Link
           href={`/admin/mascotas/${id}`}
           className="flex items-center gap-3"
@@ -51,7 +51,7 @@ function PetTableRowInner(props: PetsTableData) {
           </span>
           <div className="min-w-0 flex-1">
             <p
-              className="truncate font-semibold text-gray-900 transition-colors group-hover:text-emerald-700"
+              className="truncate font-semibold text-gray-900 transition-colors group-hover:text-emerald-700 group-hover:underline"
               title={capitalize(nombre_mascota)}
             >
               {capitalize(nombre_mascota)}
