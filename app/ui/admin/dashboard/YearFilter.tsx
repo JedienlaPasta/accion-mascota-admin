@@ -1,7 +1,7 @@
 'use client';
 
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
-import { Calendar, Check } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { SecondaryButton } from '../../components/Button';
 
@@ -57,29 +57,32 @@ export default function YearFilter({ defaultYear }: { defaultYear?: string }) {
         className="text-slate-500"
       >
         <Calendar className="h-4 w-4" />
-        <span className="text-xs font-medium text-blue-600">{activeYear}</span>
+        <span className="text-xs font-medium text-slate-700 tabular-nums">
+          {activeYear}
+        </span>
       </SecondaryButton>
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="ring-opacity-5 absolute top-full left-1/2 z-100 mt-1 max-h-40 w-32 -translate-x-1/2 overflow-hidden rounded-lg border border-slate-200 bg-white p-2 shadow-lg">
+        <div className="ring-opacity-5 absolute top-full left-1/2 z-100 mt-1 max-h-40 w-48 -translate-x-5/7 overflow-hidden rounded-lg border border-slate-200 bg-white p-2 shadow-lg">
           <div className="mb-1 px-2 py-1 text-[10px] font-semibold text-slate-400 uppercase">
             Año Entrega
           </div>
 
           <div className="my-1 border-t border-slate-100" />
 
-          <div className="max-h-28 overflow-auto">
+          <div className="overflow-autos grid max-h-28 grid-cols-3">
             {years.map((year) => (
               <button
                 key={year}
                 onClick={() => handleYearChange(year)}
-                className="flex w-full cursor-pointer items-center justify-between rounded-md px-2 py-2 text-left text-xs text-slate-700 tabular-nums hover:bg-slate-50"
+                className="px-2s flex w-full cursor-pointer items-center justify-center rounded-md py-2 text-center text-xs tabular-nums hover:bg-slate-100"
               >
-                <span>{year}</span>
-                {year === activeYear && (
-                  <Check className="h-4 w-4 text-blue-600" />
-                )}
+                <span
+                  className={`${year === activeYear ? 'font-medium text-blue-600' : 'text-slate-700'}`}
+                >
+                  {year}
+                </span>
               </button>
             ))}
           </div>
