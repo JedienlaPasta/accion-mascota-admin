@@ -5,7 +5,13 @@ import { Calendar } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { SecondaryButton } from '../../components/Button';
 
-export default function YearFilter({ defaultYear }: { defaultYear?: string }) {
+export default function YearFilter({
+  defaultYear,
+  years,
+}: {
+  defaultYear?: string;
+  years?: string[];
+}) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
@@ -16,11 +22,6 @@ export default function YearFilter({ defaultYear }: { defaultYear?: string }) {
   const yearParam = searchParams.get('year');
   // Por defecto toma el año actual
   const activeYear = yearParam || defaultYear || currentYear.toString();
-
-  const startYear = 2019;
-  const years = Array.from({ length: currentYear - startYear + 1 }, (_, i) =>
-    (currentYear - i).toString()
-  );
 
   const handleYearChange = (year: string) => {
     const params = new URLSearchParams(searchParams);
@@ -72,7 +73,7 @@ export default function YearFilter({ defaultYear }: { defaultYear?: string }) {
           <div className="my-1 border-t border-slate-100" />
 
           <div className="overflow-autos grid max-h-28 grid-cols-3">
-            {years.map((year) => (
+            {years?.map((year) => (
               <button
                 key={year}
                 onClick={() => handleYearChange(year)}

@@ -1,4 +1,5 @@
-import { getSanitaryOperatorStatsByYear } from '@/app/_lib/data/estadisticas';
+import { getReportStatsByYear } from '@/app/_lib/data/estadisticas';
+import { getReportMetrics } from '@/app/_lib/static-data/reportes';
 import MonthlyStatsTable from '@/app/ui/admin/reportes/MonthlyStatsTable';
 import ReportTypeSelector from '@/app/ui/admin/reportes/ReportTypeSelector';
 import YearlyStatsTable from '@/app/ui/admin/reportes/YearlyStatsTable';
@@ -12,13 +13,15 @@ type ReportsPageProps = {
 export default async function ReportsPage(props: ReportsPageProps) {
   const searchParams = await props.searchParams;
   const tipo = searchParams?.tipo || 'OPERATIVO_SANITARIO';
+  const columns = getReportMetrics(tipo);
 
-  const yearlyStats = await getSanitaryOperatorStatsByYear();
+  const yearlyStats = await getReportStatsByYear(tipo);
   const latestYear =
     yearlyStats.length > 0
       ? String(yearlyStats[0].anio)
       : new Date().getFullYear().toString();
   const year = searchParams?.year || latestYear;
+  const years = yearlyStats.map((row) => row.anio.toString());
 
   return (
     <div className="flex min-h-full flex-col space-y-4 bg-gray-50/50 p-6 lg:p-8">
@@ -42,16 +45,16 @@ export default async function ReportsPage(props: ReportsPageProps) {
 
       <ReportTypeSelector activeType={tipo} />
 
-      {tipo === 'OPERATIVO_SANITARIO' ? (
-        <section className="flex flex-col gap-6">
-          <YearlyStatsTable rows={yearlyStats} />
-          <MonthlyStatsTable year={year} defaultYear={latestYear} />
-        </section>
-      ) : (
-        <section className="rounded-2xl border border-dashed border-gray-200 bg-white p-12 text-center text-sm text-gray-400">
-          Este reporte estará disponible próximamente.
-        </section>
-      )}
+      <section className="flex flex-col gap-6">
+        <YearlyStatsTable rows={yearlyStats} columns={columns} />
+        <MonthlyStatsTable
+          tipo={tipo}
+          year={year}
+          years={years}
+          defaultYear={latestYear}
+          columns={columns}
+        />
+      </section>
     </div>
   );
 }

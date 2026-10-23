@@ -28,7 +28,7 @@ export default function ReportTypeSelector({
             type="button"
             disabled={!enabled}
             onClick={() => handleChange(value)}
-            className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors ${
+            className={`flex cursor-pointer items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors ${
               isActive
                 ? 'border-emerald-200 bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200/60'
                 : enabled
