@@ -9,9 +9,11 @@ import {
 import {
   certStyles,
   CornerTriangle,
+  EsDuenoCheckBox,
   HCheckBox,
   SiNoCheckBox,
   TableCell,
+  TableCellItemTitle,
   TableRow,
   VaccineCheckBox,
 } from '../PdfTheme';
@@ -33,7 +35,9 @@ export default function CertificadoOperativoSanitario({
   datos: OperativoSanitarioPayload;
 }) {
   const d = datos;
-  const CIRCULAR_PAGE_SIZE: [number, number] = [612, 936];
+  // const CIRCULAR_PAGE_SIZE: [number, number] = [612, 936];
+  const CIRCULAR_PAGE_SIZE = 'LETTER';
+
   return (
     <Document
       author="Acción Mascota - Municipalidad de Algarrobo"
@@ -69,14 +73,6 @@ export default function CertificadoOperativoSanitario({
             </View>
 
             <View style={certStyles.headerBoxesCol}>
-              <View style={certStyles.headerCodeBox}>
-                <View style={certStyles.headerCodeBoxTextContainer}>
-                  <Text style={certStyles.headerCodeBoxText}>
-                    Código Proyecto
-                  </Text>
-                </View>
-                <View style={certStyles.headerCodeBoxValue} />
-              </View>
               <View style={certStyles.headerMicrochipBox}>
                 <View style={certStyles.headerCodeBoxTextContainer}>
                   <Text style={certStyles.headerCodeBoxText}>
@@ -109,7 +105,7 @@ export default function CertificadoOperativoSanitario({
           {/* Row 1: Fecha / Fecha Nac / Rut */}
           <TableRow isLight={false}>
             <TableCell
-              label="Fecha:"
+              label="Atención:"
               value={d.fecha}
               span={1}
               isLight={false}
@@ -132,9 +128,15 @@ export default function CertificadoOperativoSanitario({
           {/* Row 2: Nombre dueño */}
           <TableRow isLight={false}>
             <TableCell
-              label="Nombre Dueño:"
+              label="Nombre:"
               value={d.responsable.nombre}
-              span={3}
+              span={2}
+              isLight={false}
+            />
+            <TableCell
+              label="Rol:"
+              value={<EsDuenoCheckBox value={d.responsable.rol} />}
+              span={1}
               isLight={false}
               isLast
             />
@@ -181,14 +183,14 @@ export default function CertificadoOperativoSanitario({
             </Text>
           </View>
 
-          {/* Row 1: Nombre mascota + Especie */}
+          {/* Row 1: Nombre mascota / Especie / Raza */}
           <TableRow>
             <TableCell label="Nombre:" value={d.paciente.nombre} />
             <TableCell label="Especie:" value={d.paciente.especie} />
             <TableCell label="Raza:" value={d.paciente.raza} isLast />
           </TableRow>
 
-          {/* Row 2: Raza / Color / Sexo H-M */}
+          {/* Row 2: Fecha Nac. / Sexo / Color */}
           <TableRow isAlt>
             <TableCell label="Fecha Nac.:" value={d.paciente.fechaNacimiento} />
             <TableCell
@@ -198,38 +200,27 @@ export default function CertificadoOperativoSanitario({
             <TableCell label="Color:" value={d.paciente.color} isLast />
           </TableRow>
 
-          {/* Row 3: Fecha nac. / Patrón / Peso */}
+          {/* Row 3: Tipo Tenencia / Patrón / Peso */}
           <TableRow>
             <TableCell label="Tipo Tenencia:" value={d.paciente.tipoTenencia} />
             <TableCell label="Patrón:" value={d.paciente.patron} />
             <TableCell label="Peso:" value={d.paciente.peso} isLast />
           </TableRow>
 
-          {/* Row 4: Tipo Tenencia + Modo de obtención */}
-          <TableRow>
-            <TableCell
-              label="Modo de obtención:"
-              value={d.paciente.modoObtencion}
-              span={2}
-            />
-            <TableCell
-              label="Esterilizado:"
-              value={<SiNoCheckBox value={d.paciente.esterilizado} />}
-              span={1}
-              isLast
-            />
-          </TableRow>
-
-          {/* Row 5: Razón tenencia + Esterilizado SI-NO */}
+          {/* Row 4: Razón de tenencia / Modo de obtención / Mascotas en Casa */}
           <TableRow>
             <TableCell
               label="Razón de tenencia:"
               value={d.paciente.razonTenencia}
-              span={2}
             />
-            <TableCell label="Mascotas en Casa:" value="3" span={1} isLast />
+            <TableCell
+              label="Modo de obtención:"
+              value={d.paciente.modoObtencion}
+            />
+            <TableCell label="Mascotas en Casa:" value="3" isLast />
           </TableRow>
 
+          {/* Row 5: Primera Visita? / Microchip implantado hoy? / Esterilizado SI-NO */}
           <TableRow isLast>
             <TableCell
               label="¿Primera Visita Vet?:"
@@ -239,7 +230,11 @@ export default function CertificadoOperativoSanitario({
               label="¿Microchip implantado hoy?:"
               value={<SiNoCheckBox value={d.paciente.esterilizado} />}
             />
-            <TableCell label="Microchip:" value={d.paciente.microchip} isLast />
+            <TableCell
+              label="Esterilizado:"
+              value={<SiNoCheckBox value={d.paciente.esterilizado} />}
+              isLast
+            />
           </TableRow>
         </View>
 
@@ -251,41 +246,81 @@ export default function CertificadoOperativoSanitario({
             </Text>
           </View>
 
-          <TableRow>
+          {/* <TableRow>
             <TableCell
               label="Vacunas:"
               value={<VaccineCheckBox list={d.procedimientos} />}
               isLast
             />
+          </TableRow> */}
+
+          <TableRow>
+            {/* <TableCellItemTitle label={vacunaLabel} span={1} /> */}
+            {/* <TableCell
+              label=""
+              value={
+                vacuna ? (
+                  <View style={certStyles.vaccineItem}>
+                    <View
+                      style={[certStyles.squareBox, certStyles.squareBoxFilled]}
+                    />
+                    <Text style={certStyles.vaccineLabel}>
+                      {vacuna.nombre}
+                    </Text>
+                  </View>
+                ) : null
+              }
+              span={1}
+            /> */}
+            {/* <TableCell
+              label="Vacuna:"
+              value={
+                d.procedimientos.find(
+                  (item) =>
+                    item.codigo === 'OCTUPLE' || item.codigo === 'TRIPLE_FELINA'
+                )?.nombre || ''
+              }
+              span={5}
+            /> */}
+            <TableCell
+              label="Vacuna:"
+              value={<VaccineCheckBox list={d.procedimientos} />}
+              span={5}
+            />
+
+            <TableCell
+              label="Antirrábica:"
+              value={
+                d.procedimientos.find((item) => item.codigo === 'ANTIRRABICA')
+                  ? 'Aplicada'
+                  : 'No Aplicada'
+              }
+              span={3}
+            />
+            <TableCell label="N° Serie:" value="" span={3} isLast />
           </TableRow>
 
           <TableRow>
-            <TableCell label="Laboratorio:" value="" span={2} />
-            <TableCell label="N° Serie:" value="" span={2} isLast />
+            <TableCellItemTitle label="Desparasitación Int" value="" span={2} />
+            <TableCell label="Fármaco:" value="" span={3} />
+            <TableCell label="Dosis:" value="" span={3} />
+            <TableCell label="Presentación:" value="" span={3} isLast />
           </TableRow>
 
           <TableRow>
-            <TableCell label="Antiparasitario Interno" value="" span={1} />
-            <TableCell label="Fármaco:" value="" span={1} />
-            <TableCell label="Dosis:" value="" span={1} />
-            <TableCell label="Presentación:" value="" span={1} isLast />
-          </TableRow>
-
-          <TableRow>
-            <TableCell label="Antiparasitario Externo" value="" span={1} />
-            <TableCell label="Fármaco:" value="" span={1} />
-            <TableCell label="Dosis:" value="" span={1} />
-            <TableCell label="Presentación:" value="" span={1} isLast />
+            <TableCellItemTitle label="Desparasitación Ext" value="" span={2} />
+            <TableCell label="Fármaco:" value="" span={3} />
+            <TableCell label="Dosis:" value="" span={3} />
+            <TableCell label="Presentación:" value="" span={3} isLast />
           </TableRow>
 
           <TableRow isLast>
             <TableCell
               label="Nombre Veterinario:"
               value={d.veterinario.nombre}
-              span={2}
+              span={8}
             />
-            <TableCell label="Rut:" value={d.veterinario.rut} span={1} />
-            <TableCell label="Firma:" value="" span={1} isLast />
+            <TableCell label="Rut:" value={d.veterinario.rut} span={3} isLast />
           </TableRow>
         </View>
 

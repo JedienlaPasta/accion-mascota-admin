@@ -8,6 +8,8 @@ import {
   SiNoCheckBox,
   TableCell,
   TableRow,
+  CornerTriangle,
+  EsDuenoCheckBox,
 } from '../PdfTheme';
 import { ConsultaMedicaPayload } from '../Certificado';
 
@@ -17,7 +19,9 @@ export default function CertificadoConsultaMedica({
   datos: ConsultaMedicaPayload;
 }) {
   const d = datos;
-  const CIRCULAR_PAGE_SIZE: [number, number] = [612, 936];
+  // const CIRCULAR_PAGE_SIZE: [number, number] = [612, 936];
+  const CIRCULAR_PAGE_SIZE = 'LETTER';
+
   return (
     <Document
       author="Acción Mascota - Municipalidad de Algarrobo"
@@ -28,9 +32,8 @@ export default function CertificadoConsultaMedica({
         <View style={certStyles.cornerTopRight} />
         <View style={certStyles.cornerMidLeft} />
         <View style={certStyles.cornerBottomLeft} />
-        {/* Wrapper para evitar overflow fantasma */}
         <View style={certStyles.cornerGhostWrap}>
-          <View style={certStyles.cornerBottomRight} />
+          <CornerTriangle />
         </View>
 
         {/* HEADER (titulo + logos) */}
@@ -86,7 +89,7 @@ export default function CertificadoConsultaMedica({
           {/* Row 1: Fecha / Fecha Nac / Rut */}
           <TableRow isLight={false}>
             <TableCell
-              label="Fecha:"
+              label="Atención:"
               value={d.fecha}
               span={1}
               isLight={false}
@@ -109,9 +112,15 @@ export default function CertificadoConsultaMedica({
           {/* Row 2: Nombre dueño */}
           <TableRow isLight={false}>
             <TableCell
-              label="Nombre Dueño:"
+              label="Nombre:"
               value={d.responsable.nombre}
-              span={3}
+              span={2}
+              isLight={false}
+            />
+            <TableCell
+              label="Rol:"
+              value={<EsDuenoCheckBox value={d.responsable.rol} />}
+              span={1}
               isLight={false}
               isLast
             />
@@ -176,12 +185,11 @@ export default function CertificadoConsultaMedica({
           {/* Row 2: Raza / Color / Sexo H-M */}
           <TableRow isAlt>
             <TableCell label="Raza:" value={d.paciente.raza} />
-            <TableCell label="Color:" value={d.paciente.color} />
             <TableCell
               label="Sexo:"
               value={<HCheckBox value={d.paciente.sexo} />}
-              isLast
             />
+            <TableCell label="Color:" value={d.paciente.color} isLast />
           </TableRow>
 
           {/* Row 3: Fecha nac. / Patrón / Peso */}
@@ -199,8 +207,8 @@ export default function CertificadoConsultaMedica({
               span={2}
             />
             <TableCell
-              label="Microchip:"
-              value={d.paciente.microchip}
+              label="Esterilizado:"
+              value={<SiNoCheckBox value={d.paciente.esterilizado} />}
               span={1}
               isLast
             />
@@ -214,8 +222,8 @@ export default function CertificadoConsultaMedica({
               span={2}
             />
             <TableCell
-              label="Esterilizado:"
-              value={<SiNoCheckBox value={d.paciente.esterilizado} />}
+              label="Microchip:"
+              value={d.paciente.microchip}
               span={1}
               isLast
             />

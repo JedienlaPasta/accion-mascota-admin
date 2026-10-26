@@ -49,8 +49,8 @@ try {
 // ================================================================
 export const certStyles = StyleSheet.create({
   page: {
-    padding: 32,
-    paddingTop: 20,
+    padding: 30,
+    paddingTop: 18,
     paddingBottom: 0,
     fontFamily: 'Outfit',
     fontSize: 9,
@@ -76,15 +76,6 @@ export const certStyles = StyleSheet.create({
     height: 22,
     backgroundColor: '#93c5fd',
   },
-  cornerBottomRight: {
-    position: 'absolute',
-    bottom: -50,
-    right: -70,
-    width: 100,
-    height: 200,
-    transform: 'rotate(35deg)',
-    backgroundColor: SECONDARY_HEADER_BG,
-  },
   cornerMidLeft: {
     position: 'absolute',
     top: 260,
@@ -104,7 +95,7 @@ export const certStyles = StyleSheet.create({
   // HEADER ZONE (titles + logos)
   headerRow: {
     marginBottom: 0,
-    paddingBottom: 16,
+    paddingBottom: 8,
   },
   titleContainer: {
     // width: '62%',
@@ -225,12 +216,12 @@ export const certStyles = StyleSheet.create({
 
   sectionBox: {
     border: `1 solid ${BORDER}`,
-    marginBottom: 4,
+    marginBottom: 2,
     overflow: 'hidden',
   },
   sectionBoxLight: {
     border: `1 solid ${SECONDARY_HEADER_BG}`,
-    marginBottom: 4,
+    marginBottom: 2,
     overflow: 'hidden',
   },
   sectionTitle: {
@@ -239,8 +230,8 @@ export const certStyles = StyleSheet.create({
     backgroundColor: HEADER_BG,
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: 10,
-    paddingVertical: 5, // 5 original + 1 (6) para compensar margin -1 top
+    fontSize: 9.5,
+    paddingVertical: 4, // 5 original + 1 (6) para compensar margin -1 top
     paddingHorizontal: 7, // 9 original + 1 (10) para compensar margin -1 left/right
     letterSpacing: 0.4,
   },
@@ -250,8 +241,8 @@ export const certStyles = StyleSheet.create({
     backgroundColor: SECONDARY_HEADER_BG,
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: 10,
-    paddingVertical: 5,
+    fontSize: 9.5,
+    paddingVertical: 4,
     paddingHorizontal: 7,
     letterSpacing: 0.4,
   },
@@ -322,13 +313,13 @@ export const certStyles = StyleSheet.create({
   smallRadioBoxWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 4,
+    marginLeft: 0,
     gap: 2,
   },
   smallRadioBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 6,
+    marginLeft: 3,
     gap: 3,
   },
   squareBox: {
@@ -362,7 +353,7 @@ export const certStyles = StyleSheet.create({
     alignItems: 'center',
     gap: 16,
     marginBottom: 4,
-    marginLeft: 20,
+    // marginLeft: 0,
   },
   vaccineItem: {
     flexDirection: 'row',
@@ -377,7 +368,7 @@ export const certStyles = StyleSheet.create({
 
   // CONSENTIMIENTO (lista bullets)
   consentimientoBox: {
-    padding: 5,
+    padding: 2,
     paddingHorizontal: 6,
   },
   bulletRow: {
@@ -403,7 +394,7 @@ export const certStyles = StyleSheet.create({
   signatureBox: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 50,
+    marginTop: 40,
     paddingHorizontal: 30,
   },
   signatureLine: {
@@ -422,13 +413,18 @@ export const certStyles = StyleSheet.create({
 // ============================================================
 // HELPERS DE TABLA %
 // ============================================================
-export type CellSpan = 1 | 2 | 3;
+export type CellSpan = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
 export function spanWidth(span: CellSpan): `${number}%` {
   const widths: Record<CellSpan, `${number}%`> = {
     1: '33.33%',
     2: '66.66%',
     3: '100%',
+    4: '100%',
+    5: '166.75%',
+    6: '200%',
+    7: '100%',
+    8: '266.75%',
   };
   return widths[span];
 }
@@ -525,6 +521,32 @@ export function TableCell({
   );
 }
 
+export function TableCellItemTitle({
+  label,
+  span = 1,
+  isLight = true,
+}: TableCellProps) {
+  const borderColor = isLight ? SECONDARY_HEADER_BG : BORDER;
+  return (
+    <View
+      style={{
+        width: spanWidth(span),
+        flexBasis: spanWidth(span),
+        flexGrow: 0,
+        flexShrink: 0,
+        paddingVertical: 3,
+        paddingHorizontal: 6,
+        borderRightWidth: 1,
+        borderRightColor: borderColor,
+        borderStyle: 'solid',
+        backgroundColor: '#dbe4f0',
+      }}
+    >
+      <Text style={certStyles.cellLabel}>{label}</Text>
+    </View>
+  );
+}
+
 // ============================================================
 // HELPERS DE TABLA FLEX
 // ============================================================
@@ -597,6 +619,33 @@ export const HCheckBox = ({ value }: { value: string }) => {
   );
 };
 
+export const EsDuenoCheckBox = ({ value }: { value: string }) => {
+  const isOwner = value && value.toUpperCase().startsWith('DUEÑO');
+  const isCompanion = value && value.toUpperCase().startsWith('ACOMPAÑANTE');
+  return (
+    <View style={certStyles.smallRadioBoxWrapper}>
+      <View style={certStyles.smallRadioBox}>
+        <View
+          style={[
+            certStyles.squareBox,
+            isOwner ? certStyles.squareBoxFilled : undefined,
+          ]}
+        />
+        <Text style={certStyles.squareLetter}>Dueño</Text>
+      </View>
+      <View style={certStyles.smallRadioBox}>
+        <View
+          style={[
+            certStyles.squareBox,
+            isCompanion ? certStyles.squareBoxFilled : undefined,
+          ]}
+        />
+        <Text style={certStyles.squareLetter}>Acompañante</Text>
+      </View>
+    </View>
+  );
+};
+
 export const SiNoCheckBox = ({ value }: { value: string }) => {
   const up = value?.toUpperCase?.() ?? '';
   const si = up === 'SI' || up === 'SÍ' || up === 'S';
@@ -627,8 +676,8 @@ export const SiNoCheckBox = ({ value }: { value: string }) => {
 
 // Triángulo decorativo de esquina (SVG, no rectángulo rotado)
 export const CornerTriangle = ({
-  width = 80,
-  height = 110,
+  width = 50,
+  height = 70,
   color = SECONDARY_HEADER_BG,
 }: {
   width?: number;
@@ -652,9 +701,12 @@ export const VaccineCheckBox = ({
 }: {
   list: Array<{ codigo: string; nombre: string }> | [];
 }) => {
+  const filteredList = list.filter((item) => {
+    return item.codigo === 'OCTUPLE' || item.codigo === 'TRIPLE_FELINA';
+  });
   return (
     <View style={certStyles.vaccineRow}>
-      {list.map((item) => (
+      {filteredList.map((item) => (
         <View style={certStyles.vaccineItem} key={item.codigo}>
           <View style={[certStyles.squareBox, certStyles.squareBoxFilled]} />
           <Text style={certStyles.vaccineLabel}>{item.nombre}</Text>

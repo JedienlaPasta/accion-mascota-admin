@@ -14,6 +14,7 @@ export type DatosComunes = {
   fecha: string;
   responsable: {
     nombre: string;
+    rol: string;
     rut: string;
     fechaNacimiento: string;
     direccion: string;

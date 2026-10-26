@@ -7,8 +7,6 @@ import {
   StyleSheet,
 } from '@react-pdf/renderer';
 import {
-  SECONDARY_HEADER_BG,
-  HEADER_BG,
   certStyles,
   CornerTriangle,
   HCheckBox,
@@ -16,33 +14,11 @@ import {
   TableCell,
   TableRow,
   Campo,
+  EsDuenoCheckBox,
 } from '../PdfTheme';
 import { EsterilizacionPayload } from '../Certificado';
 
 const customStyles = StyleSheet.create({
-  sectionTitle: {
-    margin: -1,
-    marginBottom: 0,
-    backgroundColor: HEADER_BG,
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 10,
-    paddingVertical: 5, // 5 original + 1 para compensar margin -1 top
-    paddingHorizontal: 7, // 9 original + 1 para compensar margin -1 left/right
-    letterSpacing: 0.4,
-  },
-  sectionTitleSecondary: {
-    margin: -1,
-    marginBottom: 0,
-    backgroundColor: SECONDARY_HEADER_BG,
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 10,
-    paddingVertical: 5,
-    paddingHorizontal: 7,
-    letterSpacing: 0.4,
-  },
-
   bulletText: {
     flex: 1,
     fontSize: 7.3,
@@ -58,7 +34,9 @@ export default function CertificadoEsterilizacion({
   datos: EsterilizacionPayload;
 }) {
   const d = datos;
-  const CIRCULAR_PAGE_SIZE: [number, number] = [612, 936];
+  // const CIRCULAR_PAGE_SIZE: [number, number] = [612, 936];
+  const CIRCULAR_PAGE_SIZE = 'LETTER';
+
   return (
     <Document
       author="Acción Mascota - Municipalidad de Algarrobo"
@@ -120,13 +98,13 @@ export default function CertificadoEsterilizacion({
         {/* DATOS RESPONSABLE */}
         <View style={certStyles.sectionBox}>
           <View>
-            <Text style={customStyles.sectionTitle}>DATOS RESPONSABLE</Text>
+            <Text style={certStyles.sectionTitle}>DATOS RESPONSABLE</Text>
           </View>
 
           {/* Row 1: Fecha / Fecha Nac / Rut */}
           <TableRow isLight={false}>
             <TableCell
-              label="Fecha:"
+              label="Atención:"
               value={d.fecha}
               span={1}
               isLight={false}
@@ -149,9 +127,15 @@ export default function CertificadoEsterilizacion({
           {/* Row 2: Nombre dueño */}
           <TableRow isLight={false}>
             <TableCell
-              label="Nombre Dueño:"
+              label="Nombre:"
               value={d.responsable.nombre}
-              span={3}
+              span={2}
+              isLight={false}
+            />
+            <TableCell
+              label="Rol:"
+              value={<EsDuenoCheckBox value={d.responsable.rol} />}
+              span={1}
               isLight={false}
               isLast
             />
@@ -193,7 +177,7 @@ export default function CertificadoEsterilizacion({
         {/* DATOS DEL PACIENTE */}
         <View style={certStyles.sectionBoxLight}>
           <View>
-            <Text style={customStyles.sectionTitleSecondary}>
+            <Text style={certStyles.sectionTitleSecondary}>
               DATOS DEL PACIENTE
             </Text>
           </View>
@@ -283,7 +267,7 @@ export default function CertificadoEsterilizacion({
         {/* AUTORIZACION */}
         <View style={certStyles.sectionBoxLight}>
           <View>
-            <Text style={customStyles.sectionTitleSecondary}>AUTORIZACIÓN</Text>
+            <Text style={certStyles.sectionTitleSecondary}>AUTORIZACIÓN</Text>
           </View>
           <View style={certStyles.consentimientoBox}>
             <View style={certStyles.bulletRow}>
@@ -301,9 +285,7 @@ export default function CertificadoEsterilizacion({
         {/* ESTERILIZACIÓN */}
         <View style={certStyles.sectionBoxLight}>
           <View>
-            <Text style={customStyles.sectionTitleSecondary}>
-              ESTERILIZACIÓN
-            </Text>
+            <Text style={certStyles.sectionTitleSecondary}>ESTERILIZACIÓN</Text>
           </View>
           <View style={certStyles.consentimientoBox}>
             {/* 1 */}
@@ -387,7 +369,7 @@ export default function CertificadoEsterilizacion({
         {/* REGISTRO */}
         <View style={certStyles.sectionBoxLight}>
           <View>
-            <Text style={customStyles.sectionTitleSecondary}>REGISTRO</Text>
+            <Text style={certStyles.sectionTitleSecondary}>REGISTRO</Text>
           </View>
           <View style={certStyles.consentimientoBox}>
             {/* 1 */}
@@ -425,7 +407,7 @@ export default function CertificadoEsterilizacion({
         {/* CUIDADOS POST OPERATORIOS */}
         <View style={certStyles.sectionBoxLight}>
           <View>
-            <Text style={customStyles.sectionTitleSecondary}>
+            <Text style={certStyles.sectionTitleSecondary}>
               CUIDADOS POST OPERATORIOS
             </Text>
           </View>

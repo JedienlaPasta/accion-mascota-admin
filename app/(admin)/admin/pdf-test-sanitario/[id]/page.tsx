@@ -5,12 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, FileText, Download, X } from 'lucide-react';
 import { Button } from '@/app/ui/components/Button';
 import { TIPO_STYLES } from '@/app/_lib/static-data/tipos-atencion';
-import {
-  formatDate,
-  formatPhone,
-  formatRUT,
-  formatShortDate,
-} from '@/app/_lib/utils/format';
+import { formatDate, formatPhone, formatRUT } from '@/app/_lib/utils/format';
 import { BaseLink } from '@/app/ui/components/Link';
 import PdfViewerSuspenseBoundary from '../../../../ui/components/pdf/PdfViewerSuspenseBoundary';
 
@@ -28,6 +23,7 @@ export default async function PdfTestPage(props: PageProps) {
       a.public_id AS atencion_public_id,
       a.fecha_atencion,
       a.tipo_atencion,
+      a.rol,
       a.peso_actual,
       a.observaciones,
       -- Consulta Médica
@@ -83,25 +79,21 @@ export default async function PdfTestPage(props: PageProps) {
     LIMIT 1
   `;
 
-  console.log(rows);
-
   const atencion = rows[0];
   if (!atencion) notFound();
 
-  console.log(
-    'Fecha nacimiento de la mascota:',
-    atencion.mascota_fecha_nacimiento
-  );
-
-  const nombreVeterinario = atencion.veterinario_nombre?.toUpperCase() ?? '';
-
   const pdfPayload = {
-    fecha: formatDate(String(atencion.fecha_atencion)),
+    fecha: formatDate(String(atencion.fecha_atencion))
+      .toUpperCase()
+      .replaceAll('DE ', ''),
     responsable: {
       nombre: atencion.propietario_nombre ?? '',
+      rol: atencion.rol ?? '',
       rut: atencion.propietario_rut ? formatRUT(atencion.propietario_rut) : '',
       fechaNacimiento: atencion.propietario_fn
-        ? formatDate(String(atencion.propietario_fn))
+        ? formatDate(atencion.propietario_fn)
+            .toUpperCase()
+            .replaceAll('DE ', '')
         : '',
       direccion: atencion.propietario_direccion ?? '',
       comuna: atencion.propietario_comuna ?? '',
@@ -113,7 +105,9 @@ export default async function PdfTestPage(props: PageProps) {
     paciente: {
       nombre: atencion.mascota_nombre ?? '',
       fechaNacimiento: atencion.mascota_fecha_nacimiento
-        ? formatShortDate(atencion.mascota_fecha_nacimiento)
+        ? formatDate(atencion.mascota_fecha_nacimiento)
+            .toUpperCase()
+            .replaceAll('DE ', '')
         : '',
       especie: atencion.mascota_especie ?? '',
       raza: atencion.mascota_raza ?? '',

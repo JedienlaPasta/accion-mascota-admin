@@ -5,12 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, FileText, Download, X } from 'lucide-react';
 import { Button } from '@/app/ui/components/Button';
 import { TIPO_STYLES } from '@/app/_lib/static-data/tipos-atencion';
-import {
-  formatDate,
-  formatPhone,
-  formatRUT,
-  formatShortDate,
-} from '@/app/_lib/utils/format';
+import { formatDate, formatPhone, formatRUT } from '@/app/_lib/utils/format';
 import { BaseLink } from '@/app/ui/components/Link';
 import PdfViewerSuspenseBoundary from '@/app/ui/components/pdf/PdfViewerSuspenseBoundary';
 
@@ -28,6 +23,7 @@ export default async function PdfTestPage(props: PageProps) {
       a.public_id AS atencion_public_id,
       a.fecha_atencion,
       a.tipo_atencion,
+      a.rol,
       a.peso_actual,
       a.observaciones,
       -- Mascota
@@ -43,15 +39,15 @@ export default async function PdfTestPage(props: PageProps) {
       m.modo_obtencion AS mascota_modo_obtencion,
       m.razon_tenencia AS mascota_razon_tenencia,
       m.esterilizado AS mascota_esterilizado,
-      -- Propietario
-      p.public_id AS propietario_public_id,
-      p.nombre AS propietario_nombre,
-      p.rut AS propietario_rut,
-      p.fecha_nacimiento AS propietario_fn,
-      p.direccion AS propietario_direccion,
-      p.comuna AS propietario_comuna,
-      p.correo_personal AS propietario_correo,
-      p.telefono AS propietario_telefono,
+      -- Responsable
+      p.public_id AS responsable_public_id,
+      p.nombre AS responsable_nombre,
+      p.rut AS responsable_rut,
+      p.fecha_nacimiento AS responsable_fn,
+      p.direccion AS responsable_direccion,
+      p.comuna AS responsable_comuna,
+      p.correo_personal AS responsable_correo,
+      p.telefono AS responsable_telefono,
       -- Veterinario
       vet_p.public_id AS veterinario_public_id,
       vet_p.nombre AS veterinario_nombre,
@@ -67,37 +63,35 @@ export default async function PdfTestPage(props: PageProps) {
     LIMIT 1
   `;
 
-  console.log(rows);
-
   const atencion = rows[0];
   if (!atencion) notFound();
 
-  console.log(
-    'Fecha nacimiento de la mascota:',
-    atencion.mascota_fecha_nacimiento
-  );
-
-  const nombreVeterinario = atencion.veterinario_nombre?.toUpperCase() ?? '';
-
   const pdfPayload = {
-    fecha: formatDate(String(atencion.fecha_atencion)),
+    fecha: formatDate(String(atencion.fecha_atencion))
+      .toUpperCase()
+      .replaceAll('DE ', ''),
     responsable: {
-      nombre: atencion.propietario_nombre ?? '',
-      rut: atencion.propietario_rut ? formatRUT(atencion.propietario_rut) : '',
-      fechaNacimiento: atencion.propietario_fn
-        ? formatDate(String(atencion.propietario_fn))
+      nombre: atencion.responsable_nombre ?? '',
+      rol: atencion.rol ?? '',
+      rut: atencion.responsable_rut ? formatRUT(atencion.responsable_rut) : '',
+      fechaNacimiento: atencion.responsable_fn
+        ? formatDate(atencion.responsable_fn)
+            .toUpperCase()
+            .replaceAll('DE ', '')
         : '',
-      direccion: atencion.propietario_direccion ?? '',
-      comuna: atencion.propietario_comuna ?? '',
-      mail: atencion.propietario_correo ?? '',
-      telefono: atencion.propietario_telefono
-        ? formatPhone(atencion.propietario_telefono)
+      direccion: atencion.responsable_direccion ?? '',
+      comuna: atencion.responsable_comuna ?? '',
+      mail: atencion.responsable_correo ?? '',
+      telefono: atencion.responsable_telefono
+        ? formatPhone(atencion.responsable_telefono)
         : '',
     },
     paciente: {
       nombre: atencion.mascota_nombre ?? '',
       fechaNacimiento: atencion.mascota_fecha_nacimiento
-        ? formatShortDate(atencion.mascota_fecha_nacimiento)
+        ? formatDate(atencion.mascota_fecha_nacimiento)
+            .toUpperCase()
+            .replaceAll('DE ', '')
         : '',
       especie: atencion.mascota_especie ?? '',
       raza: atencion.mascota_raza ?? '',
