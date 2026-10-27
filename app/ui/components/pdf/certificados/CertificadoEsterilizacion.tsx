@@ -182,55 +182,45 @@ export default function CertificadoEsterilizacion({
             </Text>
           </View>
 
-          {/* Row 1: Nombre mascota + Especie */}
+          {/* Row 1: Nombre mascota / Especie / Raza */}
           <TableRow>
             <TableCell label="Nombre:" value={d.paciente.nombre} />
             <TableCell label="Especie:" value={d.paciente.especie} />
             <TableCell label="Raza:" value={d.paciente.raza} isLast />
           </TableRow>
 
-          {/* Row 2: Raza / Color / Sexo H-M */}
+          {/* Row 2: Fecha Nac. / Color / Sexo H-M */}
           <TableRow isAlt>
             <TableCell label="Fecha Nac.:" value={d.paciente.fechaNacimiento} />
+            <TableCell label="Color:" value={d.paciente.color} />
             <TableCell
               label="Sexo:"
               value={<HCheckBox value={d.paciente.sexo} />}
+              isLast
             />
-            <TableCell label="Color:" value={d.paciente.color} isLast />
           </TableRow>
 
-          {/* Row 3: Fecha nac. / Patrón / Peso */}
+          {/* Row 3: Tipo Tenencia / Patrón / Peso */}
           <TableRow>
             <TableCell label="Tipo Tenencia:" value={d.paciente.tipoTenencia} />
             <TableCell label="Patrón:" value={d.paciente.patron} />
             <TableCell label="Peso:" value={d.paciente.peso} isLast />
           </TableRow>
 
-          {/* Row 4: Tipo Tenencia + Modo de obtención */}
-          <TableRow>
-            <TableCell
-              label="Modo de obtención:"
-              value={d.paciente.modoObtencion}
-              span={2}
-            />
-            <TableCell
-              label="Esterilizado:"
-              value={<SiNoCheckBox value={d.paciente.esterilizado} />}
-              span={1}
-              isLast
-            />
-          </TableRow>
-
-          {/* Row 5: Razón tenencia + Esterilizado SI-NO */}
+          {/* Row 4: Razón tenencia / Modo de obtención / Mascotas en Casa */}
           <TableRow>
             <TableCell
               label="Razón de tenencia:"
               value={d.paciente.razonTenencia}
-              span={2}
             />
-            <TableCell label="Mascotas en Casa:" value="3" span={1} isLast />
+            <TableCell
+              label="Modo de obtención:"
+              value={d.paciente.modoObtencion}
+            />
+            <TableCell label="Mascotas en Casa:" value="3" isLast />
           </TableRow>
 
+          {/* Row 5: ¿Primera Visita Vet? / ¿Microchip implantado hoy? / Esterilizado SI-NO */}
           <TableRow isLast>
             <TableCell
               label="¿Primera Visita Vet?:"
@@ -240,7 +230,12 @@ export default function CertificadoEsterilizacion({
               label="¿Microchip implantado hoy?:"
               value={<SiNoCheckBox value={d.paciente.esterilizado} />}
             />
-            <TableCell label="Microchip:" value={d.paciente.microchip} isLast />
+            <TableCell
+              label="Esterilizado:"
+              value={<SiNoCheckBox value={d.paciente.esterilizado} />}
+              span={1}
+              isLast
+            />
           </TableRow>
         </View>
 

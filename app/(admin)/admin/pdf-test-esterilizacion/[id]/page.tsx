@@ -47,6 +47,7 @@ export default async function PdfTestPage(props: PageProps) {
       p.direccion AS responsable_direccion,
       p.comuna AS responsable_comuna,
       p.correo_personal AS responsable_correo,
+      p.correo_contacto AS responsable_correo_contacto,
       p.telefono AS responsable_telefono,
       -- Veterinario
       vet_p.public_id AS veterinario_public_id,
@@ -81,7 +82,10 @@ export default async function PdfTestPage(props: PageProps) {
         : '',
       direccion: atencion.responsable_direccion ?? '',
       comuna: atencion.responsable_comuna ?? '',
-      mail: atencion.responsable_correo ?? '',
+      mail:
+        atencion.responsable_correo ||
+        atencion.responsable_correo_contacto ||
+        '',
       telefono: atencion.responsable_telefono
         ? formatPhone(atencion.responsable_telefono)
         : '',

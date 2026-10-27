@@ -51,6 +51,7 @@ export default async function PdfTestPage(props: PageProps) {
       p.direccion AS propietario_direccion,
       p.comuna AS propietario_comuna,
       p.correo_personal AS propietario_correo,
+      p.correo_contacto AS propietario_correo_contacto,
       p.telefono AS propietario_telefono,
       -- Veterinario
       vet_p.public_id AS veterinario_public_id,
@@ -97,7 +98,10 @@ export default async function PdfTestPage(props: PageProps) {
         : '',
       direccion: atencion.propietario_direccion ?? '',
       comuna: atencion.propietario_comuna ?? '',
-      mail: atencion.propietario_correo ?? '',
+      mail:
+        atencion.propietario_correo ||
+        atencion.propietario_correo_contacto ||
+        '',
       telefono: atencion.propietario_telefono
         ? formatPhone(atencion.propietario_telefono)
         : '',

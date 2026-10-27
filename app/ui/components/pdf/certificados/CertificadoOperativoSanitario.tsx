@@ -190,14 +190,15 @@ export default function CertificadoOperativoSanitario({
             <TableCell label="Raza:" value={d.paciente.raza} isLast />
           </TableRow>
 
-          {/* Row 2: Fecha Nac. / Sexo / Color */}
+          {/* Row 2: Fecha Nac. / Color / Sexo H-M */}
           <TableRow isAlt>
             <TableCell label="Fecha Nac.:" value={d.paciente.fechaNacimiento} />
+            <TableCell label="Color:" value={d.paciente.color} />
             <TableCell
               label="Sexo:"
               value={<HCheckBox value={d.paciente.sexo} />}
+              isLast
             />
-            <TableCell label="Color:" value={d.paciente.color} isLast />
           </TableRow>
 
           {/* Row 3: Tipo Tenencia / Patrón / Peso */}
@@ -207,7 +208,7 @@ export default function CertificadoOperativoSanitario({
             <TableCell label="Peso:" value={d.paciente.peso} isLast />
           </TableRow>
 
-          {/* Row 4: Razón de tenencia / Modo de obtención / Mascotas en Casa */}
+          {/* Row 4: Razón tenencia / Modo de obtención / Mascotas en Casa */}
           <TableRow>
             <TableCell
               label="Razón de tenencia:"
@@ -220,7 +221,7 @@ export default function CertificadoOperativoSanitario({
             <TableCell label="Mascotas en Casa:" value="3" isLast />
           </TableRow>
 
-          {/* Row 5: Primera Visita? / Microchip implantado hoy? / Esterilizado SI-NO */}
+          {/* Row 5: ¿Primera Visita Vet? / ¿Microchip implantado hoy? / Esterilizado SI-NO */}
           <TableRow isLast>
             <TableCell
               label="¿Primera Visita Vet?:"
@@ -233,6 +234,7 @@ export default function CertificadoOperativoSanitario({
             <TableCell
               label="Esterilizado:"
               value={<SiNoCheckBox value={d.paciente.esterilizado} />}
+              span={1}
               isLast
             />
           </TableRow>
@@ -246,42 +248,7 @@ export default function CertificadoOperativoSanitario({
             </Text>
           </View>
 
-          {/* <TableRow>
-            <TableCell
-              label="Vacunas:"
-              value={<VaccineCheckBox list={d.procedimientos} />}
-              isLast
-            />
-          </TableRow> */}
-
           <TableRow>
-            {/* <TableCellItemTitle label={vacunaLabel} span={1} /> */}
-            {/* <TableCell
-              label=""
-              value={
-                vacuna ? (
-                  <View style={certStyles.vaccineItem}>
-                    <View
-                      style={[certStyles.squareBox, certStyles.squareBoxFilled]}
-                    />
-                    <Text style={certStyles.vaccineLabel}>
-                      {vacuna.nombre}
-                    </Text>
-                  </View>
-                ) : null
-              }
-              span={1}
-            /> */}
-            {/* <TableCell
-              label="Vacuna:"
-              value={
-                d.procedimientos.find(
-                  (item) =>
-                    item.codigo === 'OCTUPLE' || item.codigo === 'TRIPLE_FELINA'
-                )?.nombre || ''
-              }
-              span={5}
-            /> */}
             <TableCell
               label="Vacuna:"
               value={<VaccineCheckBox list={d.procedimientos} />}
@@ -300,19 +267,31 @@ export default function CertificadoOperativoSanitario({
             <TableCell label="N° Serie:" value="" span={3} isLast />
           </TableRow>
 
-          <TableRow>
-            <TableCellItemTitle label="Desparasitación Int" value="" span={2} />
-            <TableCell label="Fármaco:" value="" span={3} />
-            <TableCell label="Dosis:" value="" span={3} />
-            <TableCell label="Presentación:" value="" span={3} isLast />
-          </TableRow>
+          {d.procedimientos.find((item) => item.codigo === 'DI') ? (
+            <TableRow>
+              <TableCellItemTitle
+                label="Desparasitación Int"
+                value=""
+                span={2}
+              />
+              <TableCell label="Fármaco:" value="" span={3} />
+              <TableCell label="Dosis:" value="" span={3} />
+              <TableCell label="Presentación:" value="" span={3} isLast />
+            </TableRow>
+          ) : null}
 
-          <TableRow>
-            <TableCellItemTitle label="Desparasitación Ext" value="" span={2} />
-            <TableCell label="Fármaco:" value="" span={3} />
-            <TableCell label="Dosis:" value="" span={3} />
-            <TableCell label="Presentación:" value="" span={3} isLast />
-          </TableRow>
+          {d.procedimientos.find((item) => item.codigo === 'DE') ? (
+            <TableRow>
+              <TableCellItemTitle
+                label="Desparasitación Ext"
+                value=""
+                span={2}
+              />
+              <TableCell label="Fármaco:" value="" span={3} />
+              <TableCell label="Dosis:" value="" span={3} />
+              <TableCell label="Presentación:" value="" span={3} isLast />
+            </TableRow>
+          ) : null}
 
           <TableRow isLast>
             <TableCell
