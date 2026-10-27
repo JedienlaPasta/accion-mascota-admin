@@ -67,7 +67,7 @@ export default function YearFilter({
       {isOpen && (
         <div className="ring-opacity-5 absolute top-full left-1/2 z-100 mt-1 max-h-40 w-48 -translate-x-5/7 overflow-hidden rounded-lg border border-slate-200 bg-white p-2 shadow-lg">
           <div className="mb-1 px-2 py-1 text-[10px] font-semibold text-slate-400 uppercase">
-            Año Entrega
+            Año Detalle
           </div>
 
           <div className="my-1 border-t border-slate-100" />
