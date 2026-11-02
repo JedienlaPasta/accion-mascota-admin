@@ -10,7 +10,6 @@ import {
   ArrowLeft,
   AtSign,
   BadgeCheck,
-  Building2,
   CalendarDays,
   Check,
   FileText,

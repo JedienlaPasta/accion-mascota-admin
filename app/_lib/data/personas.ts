@@ -17,13 +17,14 @@ export const getAllOwnersWithQuery = async (
   try {
     const safePage = Math.max(1, Number(page) || 1);
     const offset = (safePage - 1) * pageSize;
-    const { hasFilter, term } = queryFilterChecker(query);
+    const { hasFilter, term, rutTerm } = queryFilterChecker(query);
 
     const whereClause = hasFilter
       ? sql`
         WHERE nombre ILIKE ${term}
-          OR rut ILIKE ${term}
-          OR telefono ILIKE ${term}
+          OR REPLACE(REPLACE(rut, '.', ''), '-', '') ILIKE ${rutTerm}
+          OR telefono_personal ILIKE ${term}
+          OR telefono_contacto ILIKE ${term}
           OR correo_personal ILIKE ${term}
           OR direccion ILIKE ${term}
           OR comuna ILIKE ${term}
@@ -49,7 +50,9 @@ export const getAllOwnersWithQuery = async (
           p.direccion,
           p.comuna,
           p.region,
-          p.telefono,
+          p.telefono_personal,
+          p.telefono_contacto,
+          p.fecha_nacimiento,
           COALESCE(pet_count.total, 0)::int AS total_mascotas
         FROM personas p
         LEFT JOIN LATERAL (
@@ -103,9 +106,9 @@ export type OwnerDetails = {
   direccion: string | null;
   comuna: string | null;
   region: string | null;
-  telefono: string | null;
+  telefono_personal: string | null;
+  telefono_contacto: string | null;
   fecha_nacimiento: string | null;
-  profesion: string | null;
   rsh: number | null;
   total_mascotas: number;
   creado_en: string | null;
@@ -125,7 +128,8 @@ export const getOwnerDetailsById = async (
         p.direccion,
         p.comuna,
         p.region,
-        p.telefono,
+        p.telefono_personal,
+        p.telefono_contacto,
         p.fecha_nacimiento,
         p.rsh,
         (SELECT COUNT(*) FROM mascotas m WHERE m.responsable_id = p.id)::int AS total_mascotas

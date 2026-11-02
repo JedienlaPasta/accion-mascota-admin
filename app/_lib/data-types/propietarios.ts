@@ -8,7 +8,8 @@ export type Owner = {
   direccion: string | null;
   comuna: string | null;
   region: string | null;
-  telefono: string | null;
+  telefono_personal: string | null;
+  telefono_contacto: string | null;
   profesion: string;
 };
 
@@ -21,7 +22,8 @@ export type OwnersTableData = {
   direccion: string | null;
   comuna: string | null;
   region: string | null;
-  telefono: string | null;
+  telefono_personal: string | null;
+  telefono_contacto: string | null;
   total_mascotas: number;
 };
 

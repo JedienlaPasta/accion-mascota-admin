@@ -71,6 +71,8 @@ export default async function PropietarioDetallePage(
 
   const emailPrincipal =
     propietario.correo_personal || propietario.correo_contacto || '';
+  const telefono =
+    propietario.telefono_personal || propietario.telefono_contacto || '';
   const tieneCuentaPortal = Boolean(propietario.correo_personal?.trim());
   const totalMascotas = propietario.total_mascotas || mascotas.length || 0;
 
@@ -182,13 +184,6 @@ export default async function PropietarioDetallePage(
                     </span>
                   </Badge>
                 ) : null}
-
-                {/* Profesión si existe */}
-                {propietario.profesion ? (
-                  <Badge className="bg-slate-50 px-3 py-1 text-slate-700 shadow-sm ring-slate-200">
-                    {capitalizeAll(propietario.profesion)}
-                  </Badge>
-                ) : null}
               </div>
             </div>
           </div>
@@ -206,11 +201,9 @@ export default async function PropietarioDetallePage(
                 </p>
                 <p
                   className="truncate text-sm font-bold text-gray-800 tabular-nums"
-                  title={propietario.telefono || 'No registrado'}
+                  title={telefono || 'No registrado'}
                 >
-                  {propietario.telefono
-                    ? formatPhone(propietario.telefono)
-                    : 'No registrado'}
+                  {telefono ? formatPhone(telefono) : 'No registrado'}
                 </p>
               </div>
             </div>

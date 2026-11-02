@@ -47,7 +47,8 @@ export async function getOwnerForEdit(
   try {
     const rows = await sql`
       SELECT
-        public_id, rut,
+        public_id,
+        rut,
         nombre,
         correo_personal,
         correo_contacto,

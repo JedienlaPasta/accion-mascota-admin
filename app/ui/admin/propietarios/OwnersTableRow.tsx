@@ -29,11 +29,13 @@ function OwnerTableRowInner(props: OwnersTableData) {
     direccion,
     comuna,
     region,
-    telefono,
+    telefono_personal,
+    telefono_contacto,
     total_mascotas,
   } = props;
 
   const correo = correo_personal || correo_contacto || '';
+  const telefono = telefono_personal || telefono_contacto || '';
   const direccionCompleta = [direccion, comuna, region]
     .filter(Boolean)
     .map((s) => capitalizeAll(String(s)))

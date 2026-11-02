@@ -52,7 +52,8 @@ export default async function PdfTestPage(props: PageProps) {
       p.comuna AS propietario_comuna,
       p.correo_personal AS propietario_correo,
       p.correo_contacto AS propietario_correo_contacto,
-      p.telefono AS propietario_telefono,
+      p.telefono_personal AS propietario_telefono_personal,
+      p.telefono_contacto AS propietario_telefono_contacto,
       -- Veterinario
       vet_p.public_id AS veterinario_public_id,
       vet_p.nombre AS veterinario_nombre,
@@ -102,9 +103,11 @@ export default async function PdfTestPage(props: PageProps) {
         atencion.propietario_correo ||
         atencion.propietario_correo_contacto ||
         '',
-      telefono: atencion.propietario_telefono
-        ? formatPhone(atencion.propietario_telefono)
-        : '',
+      telefono: atencion.propietario_telefono_personal
+        ? formatPhone(atencion.propietario_telefono_personal)
+        : atencion.propietario_telefono_contacto
+          ? formatPhone(atencion.propietario_telefono_contacto)
+          : '',
     },
     paciente: {
       nombre: atencion.mascota_nombre ?? '',

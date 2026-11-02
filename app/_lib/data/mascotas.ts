@@ -21,7 +21,7 @@ export const getAllPetsWithQuery = async (
   try {
     const safePage = Math.max(1, Number(page) || 1);
     const offset = (safePage - 1) * pageSize;
-    const { hasFilter, term } = queryFilterChecker(query);
+    const { hasFilter, term, rutTerm } = queryFilterChecker(query);
 
     const whereClause = hasFilter
       ? sql`
@@ -30,7 +30,7 @@ export const getAllPetsWithQuery = async (
              OR m.nombre ILIKE ${term}
              OR m.microchip ILIKE ${term}
              OR p.nombre ILIKE ${term}
-             OR p.rut ILIKE ${term}
+             OR REPLACE(REPLACE(p.rut, '.', ''), '-', '') ILIKE ${rutTerm}
         `
       : sql``;
 
@@ -110,7 +110,8 @@ export const getPetDetailsById = async (id: string): Promise<PetDetails> => {
       m.esterilizado,
       p.public_id AS propietario_id,
       p.nombre AS nombre_propietario,
-      p.telefono,
+      p.telefono_personal,
+      p.telefono_contacto,
       p.correo_personal,
       p.correo_contacto
     FROM mascotas m

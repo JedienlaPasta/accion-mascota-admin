@@ -329,12 +329,12 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                 Teléfono
               </p>
               <p className="font-bold text-gray-900 tabular-nums">
-                {formatPhone(mascota.telefono) || 'No registrado'}
+                {formatPhone(mascota.telefono_personal) || 'No registrado'}
               </p>
             </div>
           </div>
 
-          {mascota.correo && (
+          {(mascota.correo_personal || mascota.correo_contacto) && (
             <div className="group flex items-center gap-4 rounded-2xl bg-gray-50 p-4 transition-all hover:bg-slate-50 sm:col-span-2">
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br from-slate-100 to-slate-200 text-slate-700 transition-all group-hover:scale-105">
                 <svg
@@ -355,7 +355,9 @@ export default async function MascotaDetallePage(props: MascotaDetalleProps) {
                 <p className="text-[10px] font-semibold tracking-wide text-gray-400 uppercase">
                   Email
                 </p>
-                <p className="font-bold text-gray-900">{mascota.correo}</p>
+                <p className="font-bold text-gray-900">
+                  {mascota.correo_personal || mascota.correo_contacto}
+                </p>
               </div>
             </div>
           )}

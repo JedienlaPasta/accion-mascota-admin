@@ -17,7 +17,7 @@ export const getAllVisitsWithFilters = async (
     // Validaciones de entrada
     const safePage = Math.max(1, Math.trunc(page));
     const offset = (safePage - 1) * pageSize;
-    const { hasFilter, term } = queryFilterChecker(query);
+    const { hasFilter, term, rutTerm } = queryFilterChecker(query);
 
     const whereClause = hasFilter
       ? sql`
@@ -25,7 +25,7 @@ export const getAllVisitsWithFilters = async (
             OR m.microchip ILIKE ${term}
             OR m.nombre ILIKE ${term}
             OR p.nombre ILIKE ${term}
-            OR p.rut ILIKE ${term}
+            OR REPLACE(REPLACE(p.rut, '.', ''), '-', '') ILIKE ${rutTerm}
             OR vet_p.nombre ILIKE ${term}
         `
       : sql``;

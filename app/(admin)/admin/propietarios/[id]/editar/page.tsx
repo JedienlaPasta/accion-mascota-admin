@@ -10,7 +10,6 @@ import {
   ArrowLeft,
   AtSign,
   BadgeCheck,
-  Building2,
   CalendarDays,
   Check,
   FileText,
@@ -50,9 +49,9 @@ export default function EditOwnerAdminPage() {
     direccion: '',
     comuna: '',
     region: '',
-    telefono: '',
+    telefonoPersonal: '',
+    telefonoContacto: '',
     rsh: '',
-    profesionOficio: '',
   });
 
   useEffect(() => {
@@ -71,9 +70,9 @@ export default function EditOwnerAdminPage() {
           direccion: owner.direccion,
           comuna: owner.comuna,
           region: owner.region,
-          telefono: owner.telefono,
+          telefonoPersonal: owner.telefonoPersonal,
+          telefonoContacto: owner.telefonoContacto,
           rsh: owner.rsh,
-          profesionOficio: owner.profesionOficio,
         });
       } else {
         setSubmitError('No se encontró el propietario solicitado.');
@@ -138,8 +137,11 @@ export default function EditOwnerAdminPage() {
       const response = await updateOwner({
         id,
         ...ownerData,
-        telefono: ownerData.telefono.trim()
-          ? formatPhone(ownerData.telefono)
+        telefonoPersonal: ownerData.telefonoPersonal.trim()
+          ? formatPhone(ownerData.telefonoPersonal)
+          : '',
+        telefonoContacto: ownerData.telefonoContacto.trim()
+          ? formatPhone(ownerData.telefonoContacto)
           : '',
         rsh: rshClean(ownerData.rsh),
       });
@@ -343,25 +345,27 @@ export default function EditOwnerAdminPage() {
                 </div>
               </div>
 
-              {/* Telefono */}
+              {/* RSH */}
               <div>
-                <div className="contents">
-                  <Input
-                    label="Teléfono / Celular"
-                    nombre="telefono"
-                    placeHolder="Ej: 9 1234 5678"
-                    maxLength={9}
-                    value={ownerData.telefono}
-                    setData={(val) => handleChange('telefono', val)}
-                  />
-                </div>
+                <Input
+                  label="Tramo RSH"
+                  nombre="rsh"
+                  placeHolder="Ej: 40 (solo números)"
+                  value={ownerData.rsh}
+                  maxLength={3}
+                  setData={(val) => handleChange('rsh', val)}
+                />
                 <div className="mt-1.5 flex items-center justify-between px-1 text-[11px]">
                   <span className="text-gray-500">
-                    {!ownerData.telefono
-                      ? 'Ingresar un número de 9 dígitos (sin +56).'
-                      : `${ownerData.telefono}`}
+                    {requirementsHint(
+                      ownerData.rsh.length,
+                      2,
+                      3,
+                      'Tramo del Registro Social de Hogares.',
+                      'Tramo RSH registrado.'
+                    )}
                   </span>
-                  {ok(ownerData.telefono.replace(/\D/g, '').length >= 9)}
+                  {ok(ownerData.rsh.length >= 2 && ownerData.rsh.length <= 3)}
                 </div>
               </div>
             </div>
@@ -386,6 +390,7 @@ export default function EditOwnerAdminPage() {
               </span>
             </div>
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              {/* Correos Personal */}
               <div>
                 <Input
                   label="Correo Personal"
@@ -412,6 +417,8 @@ export default function EditOwnerAdminPage() {
                   )}
                 </div>
               </div>
+
+              {/* Correos Contacto */}
               <div>
                 <Input
                   label="Correo de Contacto / Tercero"
@@ -435,6 +442,54 @@ export default function EditOwnerAdminPage() {
                       ownerData.correoContacto &&
                       EMAIL_REGEX.test(ownerData.correoContacto)
                     )
+                  )}
+                </div>
+              </div>
+
+              {/* Telefono Personal */}
+              <div>
+                <div>
+                  <Input
+                    label="Teléfono / Celular - Personal"
+                    nombre="telefonoPersonal"
+                    placeHolder="Ej: 9 1234 5678"
+                    maxLength={9}
+                    value={ownerData.telefonoPersonal}
+                    setData={(val) => handleChange('telefonoPersonal', val)}
+                  />
+                </div>
+                <div className="mt-1.5 flex items-center justify-between px-1 text-[11px]">
+                  <span className="text-gray-500">
+                    {!ownerData.telefonoPersonal
+                      ? 'Ingresar un número de 9 dígitos (sin +56).'
+                      : `${ownerData.telefonoPersonal}`}
+                  </span>
+                  {ok(
+                    ownerData.telefonoPersonal.replace(/\D/g, '').length >= 9
+                  )}
+                </div>
+              </div>
+
+              {/* Telefono Adicional */}
+              <div>
+                <div>
+                  <Input
+                    label="Teléfono / Celular - Contacto"
+                    nombre="telefonoContacto"
+                    placeHolder="Ej: 9 1234 5678"
+                    maxLength={9}
+                    value={ownerData.telefonoContacto}
+                    setData={(val) => handleChange('telefonoContacto', val)}
+                  />
+                </div>
+                <div className="mt-1.5 flex items-center justify-between px-1 text-[11px]">
+                  <span className="text-gray-500">
+                    {!ownerData.telefonoContacto
+                      ? 'Ingresar un número de 9 dígitos (sin +56).'
+                      : `${ownerData.telefonoContacto}`}
+                  </span>
+                  {ok(
+                    ownerData.telefonoContacto.replace(/\D/g, '').length >= 9
                   )}
                 </div>
               </div>
@@ -532,80 +587,6 @@ export default function EditOwnerAdminPage() {
               </div>
             </div>
           </section>
-
-          {/* Socioeconómico y Laboral */}
-          <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-            <div className="mb-5 flex items-start justify-between gap-4">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex size-9 items-center justify-center rounded-xl bg-amber-50 text-amber-700 ring-1 ring-amber-100">
-                  <Building2 className="size-4.5" />
-                </span>
-                <div>
-                  <h2 className="text-lg font-bold text-gray-900">
-                    Socioeconómico y Laboral
-                  </h2>
-                  <p className="mt-1 text-xs text-gray-500">
-                    Datos complementarios.
-                  </p>
-                </div>
-              </div>
-              <span className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-gray-50 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-gray-500 ring-1 ring-gray-200">
-                Opcional
-              </span>
-            </div>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              {/* RSH */}
-              <div>
-                <Input
-                  label="Tramo RSH"
-                  nombre="rsh"
-                  placeHolder="Ej: 40 (solo números)"
-                  value={ownerData.rsh}
-                  maxLength={3}
-                  setData={(val) => handleChange('rsh', val)}
-                />
-                <div className="mt-1.5 flex items-center justify-between px-1 text-[11px]">
-                  <span className="text-gray-500">
-                    {requirementsHint(
-                      ownerData.rsh.length,
-                      2,
-                      3,
-                      'Tramo del Registro Social de Hogares.',
-                      'Tramo RSH registrado.'
-                    )}
-                  </span>
-                  {ok(ownerData.rsh.length >= 2 && ownerData.rsh.length <= 3)}
-                </div>
-              </div>
-
-              {/* Profesion / Oficio */}
-              <div>
-                <Input
-                  label="Profesión u Oficio"
-                  nombre="profesionOficio"
-                  placeHolder="Ej: Docente, Jubilado, Empleada Doméstica"
-                  maxLength={10}
-                  value={ownerData.profesionOficio}
-                  setData={(val) => handleChange('profesionOficio', val)}
-                />
-                <div className="mt-1.5 flex items-center justify-between px-1 text-[11px]">
-                  <span className="text-gray-500">
-                    {requirementsHint(
-                      ownerData.profesionOficio.length,
-                      2,
-                      80,
-                      'Actividad principal actual o última registrada.',
-                      'Profesión / oficio registrado.'
-                    )}
-                  </span>
-                  {ok(
-                    ownerData.profesionOficio.length >= 2 &&
-                      ownerData.profesionOficio.length <= 80
-                  )}
-                </div>
-              </div>
-            </div>
-          </section>
         </div>
 
         {/* DERECHA - PANEL DE AYUDA Y PREVISUALIZACIÓN */}
@@ -658,11 +639,19 @@ export default function EditOwnerAdminPage() {
 
               {/* Lista de datos (solo aparecen los que tienen valor) */}
               <ul className="mt-5 space-y-2.5 text-xs">
-                {ownerData.telefono.trim() && (
+                {ownerData.telefonoPersonal.trim() && (
                   <li className="flex items-center gap-2 text-gray-600">
                     <Phone className="size-3.5 shrink-0 text-gray-400" />
                     <span className="truncate">
-                      {formatPhone(ownerData.telefono)}
+                      {formatPhone(ownerData.telefonoPersonal)}
+                    </span>
+                  </li>
+                )}
+                {ownerData.telefonoContacto.trim() && (
+                  <li className="flex items-center gap-2 text-gray-600">
+                    <Phone className="size-3.5 shrink-0 text-gray-400" />
+                    <span className="truncate">
+                      {formatPhone(ownerData.telefonoContacto)}
                     </span>
                   </li>
                 )}
@@ -700,22 +689,14 @@ export default function EditOwnerAdminPage() {
                     </span>
                   </li>
                 )}
-                {ownerData.profesionOficio.trim() && (
-                  <li className="flex items-start gap-2 text-gray-600">
-                    <Building2 className="mt-0.5 size-3.5 shrink-0 text-gray-400" />
-                    <span className="truncate">
-                      {capitalizeAll(ownerData.profesionOficio)}
-                    </span>
-                  </li>
-                )}
-                {!ownerData.telefono.trim() &&
+                {!ownerData.telefonoPersonal.trim() &&
+                  !ownerData.telefonoContacto.trim() &&
                   !ownerData.correoPersonal?.trim() &&
                   !ownerData.correoContacto?.trim() &&
                   !ownerData.fechaNacimiento.trim() &&
                   !ownerData.direccion.trim() &&
                   !ownerData.comuna.trim() &&
-                  !ownerData.region.trim() &&
-                  !ownerData.profesionOficio.trim() && (
+                  !ownerData.region.trim() && (
                     <li className="rounded-xl bg-slate-50 px-3 py-2 text-[11px] leading-relaxed text-gray-500 ring-1 ring-slate-100">
                       Completa los campos opcionales — aquí se verá una vista
                       previa de cómo quedará la ficha.
@@ -842,7 +823,7 @@ export default function EditOwnerAdminPage() {
                   className="h-10 w-full gap-2 bg-emerald-600 text-sm hover:bg-emerald-700"
                 >
                   <Check className="h-4 w-4" />
-                  {isSubmitting ? 'Guardando…' : 'Guardar cambios'}
+                  {isSubmitting ? 'Guardando…' : 'Guardar'}
                 </Button>
               </div>
             </div>

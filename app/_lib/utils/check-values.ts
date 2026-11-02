@@ -45,8 +45,11 @@ export const validateRutDv = (rut: string) => {
 export function queryFilterChecker(query: string): {
   hasFilter: boolean;
   term: string;
+  rutTerm: string;
 } {
   const q = query?.trim() ?? '';
-  if (q.length === 0) return { hasFilter: false, term: '' };
-  return { hasFilter: true, term: `%${q}%` };
+  if (q.length === 0)
+    return { hasFilter: false, term: '', rutTerm: '' };
+  const rutClean = q.replace(/[.\-\s]/g, '');
+  return { hasFilter: true, term: `%${q}%`, rutTerm: `%${rutClean}%` };
 }

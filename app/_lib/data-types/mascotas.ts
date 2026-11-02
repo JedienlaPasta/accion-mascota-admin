@@ -54,8 +54,10 @@ export type PetDetails = {
   esterilizado: boolean | null;
   propietario_id: string;
   nombre_propietario: string;
-  telefono: string | null;
-  correo: string | null;
+  telefono_personal: string | null;
+  telefono_contacto: string | null;
+  correo_personal: string | null;
+  correo_contacto: string | null;
 };
 
 // Procedimiento individual aplicado en OPERATIVO_SANITARIO
