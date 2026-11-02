@@ -11,9 +11,9 @@ export type CreateOwnerInput = {
   direccion?: string | null;
   comuna?: string | null;
   region?: string | null;
-  telefono?: string | null;
+  telefonoPersonal?: string | null;
+  telefonoContacto?: string | null;
   rsh?: number | string | null;
-  profesionOficio?: string | null;
 };
 
 export type CreateOwnerResult =
@@ -36,9 +36,9 @@ export type OwnerForEdit = {
   direccion: string;
   comuna: string;
   region: string;
-  telefono: string;
+  telefonoPersonal: string;
+  telefonoContacto: string;
   rsh: string;
-  profesionOficio: string;
 };
 
 export async function getOwnerForEdit(
@@ -47,9 +47,17 @@ export async function getOwnerForEdit(
   try {
     const rows = await sql`
       SELECT
-        public_id, rut, nombre, correo_personal, correo_contacto,
-        fecha_nacimiento, direccion, comuna, region, telefono, rsh,
-        profesion_oficio
+        public_id, rut,
+        nombre,
+        correo_personal,
+        correo_contacto,
+        fecha_nacimiento,
+        direccion,
+        comuna,
+        region,
+        telefono_personal,
+        telefono_contacto,
+        rsh
       FROM personas
       WHERE public_id = ${id}
       LIMIT 1
@@ -72,9 +80,9 @@ export async function getOwnerForEdit(
       direccion: String(row.direccion ?? ''),
       comuna: String(row.comuna ?? ''),
       region: String(row.region ?? ''),
-      telefono: String(row.telefono ?? '').replace(/\D/g, ''),
+      telefonoPersonal: String(row.telefono_personal ?? '').replace(/\D/g, ''),
+      telefonoContacto: String(row.telefono_contacto ?? '').replace(/\D/g, ''),
       rsh: row.rsh != null ? String(row.rsh) : '',
-      profesionOficio: String(row.profesion_oficio ?? ''),
     };
   } catch (error) {
     console.error('[getOwnerForEdit] DB error:', error);
@@ -94,9 +102,9 @@ export async function createOwner(
     const direccion = input.direccion?.trim() || null;
     const comuna = input.comuna?.trim() || null;
     const region = input.region?.trim() || null;
-    const telefono = input.telefono?.trim() || null;
+    const telefonoPersonal = input.telefonoPersonal?.trim() || null;
+    const telefonoContacto = input.telefonoContacto?.trim() || null;
     const rshRaw = input.rsh;
-    const profesionOficio = input.profesionOficio?.trim() || null;
 
     // Campos obligatorios
     if (!rutRaw)
@@ -168,8 +176,13 @@ export async function createOwner(
       );
 
     // Teléfono: debe tener 9 dígitos
-    if (telefono) {
-      const digits = telefono.replace(/\D/g, '');
+    if (telefonoPersonal) {
+      const digits = telefonoPersonal.replace(/\D/g, '');
+      if (digits.length !== 9)
+        return fail('VALIDATION', 'El teléfono debe tener 9 dígitos');
+    }
+    if (telefonoContacto) {
+      const digits = telefonoContacto.replace(/\D/g, '');
       if (digits.length !== 9)
         return fail('VALIDATION', 'El teléfono debe tener 9 dígitos');
     }
@@ -221,9 +234,9 @@ export async function createOwner(
           direccion,
           comuna,
           region,
-          telefono,
-          rsh,
-          profesion_oficio
+          telefono_personal,
+          telefono_contacto,
+          rsh
         )
       VALUES
         (
@@ -236,9 +249,9 @@ export async function createOwner(
           ${direccion},
           ${comuna},
           ${region},
-          ${telefono},
-          ${rsh},
-          ${profesionOficio}
+          ${telefonoPersonal},
+          ${telefonoContacto},
+          ${rsh}
         )
     `;
 
@@ -269,8 +282,7 @@ export async function updateOwner(
 ): Promise<UpdateOwnerResult> {
   try {
     const id = input.id?.trim();
-    if (!id)
-      return failUpdate('VALIDATION', 'No se identificó al propietario');
+    if (!id) return failUpdate('VALIDATION', 'No se identificó al propietario');
 
     const rutRaw = input.rut?.trim() ?? '';
     const nombre = input.nombre?.trim() ?? '';
@@ -280,9 +292,9 @@ export async function updateOwner(
     const direccion = input.direccion?.trim() || null;
     const comuna = input.comuna?.trim() || null;
     const region = input.region?.trim() || null;
-    const telefono = input.telefono?.trim() || null;
+    const telefonoPersonal = input.telefonoPersonal?.trim() || null;
+    const telefonoContacto = input.telefonoContacto?.trim() || null;
     const rshRaw = input.rsh;
-    const profesionOficio = input.profesionOficio?.trim() || null;
 
     if (!rutRaw)
       return failUpdate('VALIDATION', 'No se ingresó el RUT del propietario');
@@ -361,8 +373,13 @@ export async function updateOwner(
         'El correo de contacto no tiene un formato de email válido'
       );
 
-    if (telefono) {
-      const digits = telefono.replace(/\D/g, '');
+    if (telefonoPersonal) {
+      const digits = telefonoPersonal.replace(/\D/g, '');
+      if (digits.length !== 9)
+        return failUpdate('VALIDATION', 'El teléfono debe tener 9 dígitos');
+    }
+    if (telefonoContacto) {
+      const digits = telefonoContacto.replace(/\D/g, '');
       if (digits.length !== 9)
         return failUpdate('VALIDATION', 'El teléfono debe tener 9 dígitos');
     }
@@ -405,9 +422,9 @@ export async function updateOwner(
         direccion = ${direccion},
         comuna = ${comuna},
         region = ${region},
-        telefono = ${telefono},
-        rsh = ${rsh},
-        profesion_oficio = ${profesionOficio}
+        telefono_personal = ${telefonoPersonal},
+        telefono_contacto = ${telefonoContacto},
+        rsh = ${rsh}
       WHERE public_id = ${id}
     `;
 

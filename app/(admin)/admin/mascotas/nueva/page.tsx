@@ -69,10 +69,10 @@ export default function NewPetAdminPage() {
     if (
       !petData.nombre ||
       !petData.especie ||
-      !petData.raza ||
+      // !petData.raza ||
       !petData.sexo ||
       !petData.color ||
-      !petData.peso ||
+      // !petData.peso ||
       !petData.esterilizado
     ) {
       setSubmitError('Faltan datos obligatorios para registrar la mascota');
@@ -220,7 +220,6 @@ export default function NewPetAdminPage() {
                   options={[
                     { value: 'perro', label: 'Perro' },
                     { value: 'gato', label: 'Gato' },
-                    { value: 'otro', label: 'Otro' },
                   ]}
                   required
                 />
@@ -228,7 +227,7 @@ export default function NewPetAdminPage() {
                   <span className="text-gray-500">
                     {petData.especie
                       ? 'Especie seleccionada.'
-                      : 'Selecciona Perro / Gato / Otro.'}
+                      : 'Selecciona Perro / Gato.'}
                   </span>
                   {petData.especie && (
                     <span className="inline-flex items-center gap-1 font-semibold text-emerald-600">
@@ -386,8 +385,8 @@ export default function NewPetAdminPage() {
                   value={petData.esterilizado}
                   onChange={(val) => handleChange('esterilizado', val)}
                   options={[
-                    { value: 'true', label: 'Sí, está castrado/a' },
-                    { value: 'false', label: 'No, aún no' },
+                    { value: 'true', label: 'Sí' },
+                    { value: 'false', label: 'No' },
                   ]}
                   required
                 />
