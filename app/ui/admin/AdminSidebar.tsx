@@ -67,6 +67,11 @@ const navItems = [
     label: 'PDF - Esterilización',
     icon: ClipboardList,
   },
+  {
+    href: '/admin/pdf-test-tratamiento',
+    label: 'PDF - Tratamiento',
+    icon: ClipboardList,
+  },
 ];
 
 export function AdminSidebar() {
