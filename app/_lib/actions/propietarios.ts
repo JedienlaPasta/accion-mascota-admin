@@ -91,6 +91,65 @@ export async function getOwnerForEdit(
   }
 }
 
+export type OwnerLookupResult =
+  | {
+      found: true;
+      owner: {
+        publicId: string;
+        nombre: string;
+        rut: string;
+        correo: string;
+        telefono: string;
+        direccion: string;
+        comuna: string;
+      };
+    }
+  | { found: false };
+
+export async function findOwnerByRut(rut: string): Promise<OwnerLookupResult> {
+  try {
+    const rutNormalized = String(rut ?? '')
+      .replace(/[^0-9kK]/g, '')
+      .toUpperCase();
+    if (rutNormalized.length < 7) return { found: false };
+
+    const rows = await sql`
+      SELECT
+        public_id,
+        nombre,
+        rut,
+        correo_personal,
+        correo_contacto,
+        telefono_personal,
+        telefono_contacto,
+        direccion,
+        comuna
+      FROM personas
+      WHERE REPLACE(REPLACE(UPPER(rut), '.', ''), '-', '') = ${rutNormalized}
+      LIMIT 1
+    `;
+
+    const row = rows[0] as Record<string, unknown> | undefined;
+    if (!row) return { found: false };
+
+    return {
+      found: true,
+      owner: {
+        publicId: String(row.public_id ?? ''),
+        nombre: String(row.nombre ?? ''),
+        rut: String(row.rut ?? ''),
+        correo: String(row.correo_personal ?? row.correo_contacto ?? ''),
+        telefono: String(row.telefono_personal ?? row.telefono_contacto ?? ''),
+        direccion: String(row.direccion ?? ''),
+        comuna: String(row.comuna ?? ''),
+      },
+    };
+  } catch (error) {
+    console.error('Error al buscar propietario por RUT:', error);
+    return { found: false };
+  }
+}
+
 export async function createOwner(
   input: CreateOwnerInput
 ): Promise<CreateOwnerResult> {

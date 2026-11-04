@@ -39,6 +39,9 @@ export const validateRutDv = (rut: string) => {
   const remainder = 11 - (sum % 11);
   const expected =
     remainder === 11 ? '0' : remainder === 10 ? 'K' : String(remainder);
+  const minLength = 8;
+  if (clean.length < minLength)
+    return { valid: false, expectedDv: expected, actualDv: dv };
   return { valid: expected === dv, expectedDv: expected, actualDv: dv };
 };
 
@@ -48,8 +51,7 @@ export function queryFilterChecker(query: string): {
   rutTerm: string;
 } {
   const q = query?.trim() ?? '';
-  if (q.length === 0)
-    return { hasFilter: false, term: '', rutTerm: '' };
+  if (q.length === 0) return { hasFilter: false, term: '', rutTerm: '' };
   const rutClean = q.replace(/[.\-\s]/g, '');
   return { hasFilter: true, term: `%${q}%`, rutTerm: `%${rutClean}%` };
 }

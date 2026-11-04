@@ -1,4 +1,5 @@
 'use client';
+import { Search } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useRef } from 'react';
 
@@ -18,6 +19,7 @@ type InputProps = {
   maxLength?: number;
   onBlurCapture?: () => void;
   setData?: (prevState: string) => void;
+  onSearch?: (value: string) => void;
 };
 
 export default function Input({
@@ -219,6 +221,90 @@ export function TextArea({
         }
         className="h-20 w-full rounded-lg border border-slate-200 bg-white pt-2 pr-10 pl-4 text-sm text-gray-700 shadow-sm transition-all outline-none placeholder:text-gray-400"
       />
+    </div>
+  );
+}
+
+export function SearchButtonInput({
+  label,
+  nombre,
+  type,
+  pattern,
+  value,
+  readonly,
+  required,
+  showIsRequired = true,
+  placeHolder,
+  labelStyle = 'ml-1 mb-1 flex justify-between text-[10px] font-bold text-slate-500 uppercase',
+  minLength,
+  maxLength,
+  onBlurCapture,
+  setData,
+  onSearch,
+}: InputProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (setData) {
+      setData(e.target.value);
+    }
+  };
+
+  const handleSearch = () => {
+    const term = inputRef.current?.value ?? value ?? '';
+    if (term.trim()) onSearch?.(term);
+  };
+
+  return (
+    <div className="flex grow flex-col">
+      {label && (
+        <label className={labelStyle}>
+          <span>
+            {label}
+            {showIsRequired &&
+              (required ? (
+                <span className="text-xs font-normal text-red-500"> *</span>
+              ) : (
+                <span className="text-[10px] font-normal text-slate-400">
+                  {' '}
+                  (opcional)
+                </span>
+              ))}
+          </span>
+          {type === 'password' && (
+            <Link href="#" className="text-primary text-[10px] hover:underline">
+              ¿Olvidaste tu contraseña?
+            </Link>
+          )}
+        </label>
+      )}
+      <div className="relative">
+        <input
+          ref={inputRef}
+          required={required}
+          id={label}
+          name={nombre}
+          type={type}
+          readOnly={readonly}
+          pattern={pattern}
+          onBlurCapture={onBlurCapture}
+          autoComplete="off"
+          placeholder={placeHolder}
+          value={value}
+          onChange={handleChange}
+          minLength={minLength}
+          maxLength={maxLength}
+          className="h-11 w-full rounded-lg border border-slate-200 bg-white px-4 text-sm text-gray-700 shadow-sm shadow-gray-200 transition-all outline-none placeholder:text-[13px] placeholder:text-gray-400 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100"
+        />
+        <button
+          type="button"
+          className="absolute top-1/2 right-2 -translate-y-1/2 cursor-pointer rounded-md bg-white p-2 text-sm text-gray-500 hover:bg-gray-100"
+          title="Buscar propietario"
+          onClick={handleSearch}
+        >
+          <Search className="size-4" />
+        </button>
+      </div>
     </div>
   );
 }

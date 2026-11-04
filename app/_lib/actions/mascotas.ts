@@ -118,10 +118,10 @@ export async function createPet(
     if (!nombre)
       return fail('VALIDATION', 'No se ingresó nombre de la mascota');
     if (!especie) return fail('VALIDATION', 'No se seleccionó especie');
-    if (!raza) return fail('VALIDATION', 'No se ingresó raza');
+    // if (!raza) return fail('VALIDATION', 'No se ingresó raza');
     if (!sexo) return fail('VALIDATION', 'No se seleccionó sexo');
     if (!color) return fail('VALIDATION', 'No se ingresó color/pelaje');
-    if (!chip) return fail('VALIDATION', 'No se ingresó número de microchip');
+    // if (!chip) return fail('VALIDATION', 'No se ingresó número de microchip');
 
     // Fecha nacimiento: regex + Date.parse + no futuro + max 30 años atras
     if (!/^\d{4}-\d{2}-\d{2}$/.test(fechaNacimientoRaw || ''))
@@ -268,8 +268,7 @@ export async function updatePet(
     if (!especie) return failUpdate('VALIDATION', 'No se seleccionó especie');
     if (!raza) return failUpdate('VALIDATION', 'No se ingresó raza');
     if (!sexo) return failUpdate('VALIDATION', 'No se seleccionó sexo');
-    if (!color)
-      return failUpdate('VALIDATION', 'No se ingresó color/pelaje');
+    if (!color) return failUpdate('VALIDATION', 'No se ingresó color/pelaje');
     if (!chip)
       return failUpdate('VALIDATION', 'No se ingresó número de microchip');
 
@@ -304,10 +303,7 @@ export async function updatePet(
       SELECT id FROM mascotas WHERE public_id = ${id} LIMIT 1
     `;
     if ((exists as unknown as unknown[]).length === 0)
-      return failUpdate(
-        'NOT_FOUND',
-        'La mascota no existe o fue eliminada'
-      );
+      return failUpdate('NOT_FOUND', 'La mascota no existe o fue eliminada');
 
     const chipConflict = await sql`
       SELECT id FROM mascotas

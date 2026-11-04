@@ -400,10 +400,12 @@ export default async function PropietarioDetallePage(
                     : `Mascotas asociadas a ${capitalize(propietario.nombre_propietario.split(' ')[0])}`}
                 </p>
               </div>
-              <Link href="/admin/mascotas">
+              <Link
+                href={`/admin/propietarios/${propietario.id}/nueva-mascota`}
+              >
                 <SecondaryButton className="gap-2 px-4 py-2 text-sm font-medium shadow-sm transition-all hover:shadow">
-                  Ver todas las mascotas
-                  <ChevronRight className="h-3 w-3" />
+                  <Plus className="size-3.5 text-gray-500" />
+                  Registrar nueva mascota
                 </SecondaryButton>
               </Link>
             </div>
@@ -504,22 +506,10 @@ export default async function PropietarioDetallePage(
               Acciones Administrativas
             </h3>
             <div className="flex flex-col space-y-2">
-              <Link href="#">
-                <SecondaryButton className="w-full justify-start gap-2 border-gray-200 hover:bg-gray-50 hover:text-gray-900">
-                  <Plus className="h-4 w-4 text-gray-500" />
-                  Registrar nueva mascota
-                </SecondaryButton>
-              </Link>
               <Link href={`/admin/propietarios/${propietario.id}/editar`}>
                 <SecondaryButton className="w-full justify-start gap-2 border-gray-200 hover:bg-gray-50 hover:text-gray-900">
                   <Pencil className="h-4 w-4 text-gray-500" />
-                  Editar propietario
-                </SecondaryButton>
-              </Link>
-              <Link href="/admin/citas">
-                <SecondaryButton className="w-full justify-start gap-2 border-gray-200 hover:bg-gray-50 hover:text-gray-900">
-                  <Calendar className="h-4 w-4 text-gray-500" />
-                  Agendar cita
+                  Editar registro
                 </SecondaryButton>
               </Link>
               <Link href="#">
@@ -587,58 +577,6 @@ export default async function PropietarioDetallePage(
                 Gestionar citas
               </Button>
             </Link>
-          </div>
-
-          {/* Detalles rápidos */}
-          <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
-            <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-gray-900">
-              <UserCheck className="h-5 w-5 text-purple-600" />
-              Detalles Administrativos
-            </h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Cuenta portal</span>
-                {tieneCuentaPortal ? (
-                  <Badge className="bg-emerald-50 text-emerald-700 ring-emerald-200">
-                    Registrado
-                  </Badge>
-                ) : (
-                  <Badge className="bg-gray-50 text-gray-500 ring-gray-200">
-                    Sin cuenta
-                  </Badge>
-                )}
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Email secundario</span>
-                <span
-                  className="max-w-[50%] truncate text-xs text-gray-500 tabular-nums"
-                  title={propietario.correo_contacto || 'N/A'}
-                >
-                  {propietario.correo_contacto || 'N/A'}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">RUT formateado</span>
-                <Badge className="bg-slate-50 text-slate-600 tabular-nums ring-slate-200">
-                  {formatRUT(propietario.rut)}
-                </Badge>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">RSH</span>
-                <Badge
-                  className={`${
-                    propietario.rsh
-                      ? 'bg-sky-50 text-sky-700 ring-sky-200'
-                      : 'bg-gray-50 text-gray-500 ring-gray-200'
-                  }`}
-                >
-                  {propietario.rsh ? `N° ${propietario.rsh}` : 'No aplica'}
-                </Badge>
-              </div>
-            </div>
           </div>
         </div>
       </div>
